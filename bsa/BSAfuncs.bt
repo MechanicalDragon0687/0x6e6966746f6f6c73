@@ -1,0 +1,248 @@
+//------------------------------------------------
+//--- 010 Editor v7.0.2 Binary Template
+//
+//      File: BSAfuncs.bt
+//   Authors: jonwd7
+//   Version: 1.0 
+//   Purpose: 
+//  Category: 
+// File Mask: 
+//  ID Bytes: 
+//   History: 
+//------------------------------------------------
+
+
+string StringRead( String& s )
+{
+    return s.path;
+}
+
+string SizedStringRead( SizedString& s )
+{
+    return s.path;
+}
+
+string ArchiveFlagsRead( ArchiveFlags& f )
+{
+    string s;
+    
+    if ( f.flags & 1 )
+        s += ""; // Always needs this, don't bother showing
+    if ( f.flags & 2 )
+        s += ""; // Always needs this, don't bother showing
+    if ( f.flags & 4 )
+        s += "Compressed ";
+    if ( f.flags & 8 )
+        s += "RetainDirNames ";
+    if ( f.flags & 16 )
+        s += "RetainFileNames ";
+    if ( f.flags & 32 )
+        s += "RetainFileNameOffsets ";
+    if ( f.flags & 64 )
+        s += "Xbox360 ";
+    if ( f.flags & 128 )
+        s += "RetainStringsDuringStartup ";
+    if ( f.flags & 256 )
+        s += "EmbedFileNames ";
+    if ( f.flags & 512 )
+        s += "XMemCodec";
+
+    return s;
+}
+
+string FileFlagsRead( FileFlags& f )
+{
+    string s;
+
+    if ( f.flags & 1 )
+        s += "NIF ";
+    if ( f.flags & 2 )
+        s += "DDS ";
+    if ( f.flags & 4 )
+        s += "XML ";
+    if ( f.flags & 8 )
+        s += "WAV ";
+    if ( f.flags & 16 )
+        s += "MP3 ";
+    if ( f.flags & 32 )
+        s += "TXT ";
+    if ( f.flags & 64 )
+        s += "SPT ";
+    if ( f.flags & 128 )
+        s += "FNT ";
+    if ( f.flags & 256 )
+        s += "MISC ";
+    if ( f.flags & 512 )
+        s += "??? ";
+    if ( f.flags & 1024 )
+        s += "??? ";
+    if ( f.flags & 2048 )
+        s += "??? ";
+    if ( f.flags & 4096 )
+        s += "??? ";
+    if ( f.flags & 8192 )
+        s += "??? ";
+    if ( f.flags & 16384 )
+        s += "???";
+
+    return s;
+}
+
+string FileDataRead( FileData& f )
+{
+    string s;
+
+    SPrintf( s, "%i bytes", f.size );
+
+    return s;
+}
+
+string FileDataComment( FileData& f )
+{
+    if ( exists( f.pre ) )
+        return "Embedded Filename";
+    
+    return "";
+}
+
+string FileNameRead( FileName& f )
+{
+    string s;
+    SPrintf( s, "%s", f.path );
+    return s;
+}
+
+string FileRecordsRead( FileRecords& f )
+{
+    string s;
+    SPrintf( s, "%i in %s", (sizeof(f) - f.path.length - 1) / 16, f.path.path );
+    return s;
+}
+
+string FolderRecordRead( FolderRecord& f )
+{
+    int offset = f.offset;
+    int filesPos = 36 + 16 * ReadUInt( 16 ); // 16 = header.FolderCount
+    offset -= filesPos + ReadUInt( 28 );     // 28 = header.FileNameLength
+
+    string s = ReadString( filesPos + offset + 1 );
+
+    // Verify hash algorithm
+    /////////////////////////
+    uint64 hash = CreateHash( s, "", Strlen( s ) );
+    if ( hash != f.hash ) {
+        string h1;
+        SPrintf( h1, "%LX", hash );
+        string h2;
+        SPrintf( h2, "%LX", f.hash );
+    
+        Assert( false , "Unexpected hash value. Expected: " + h2 + ", Actual: " + h1 );
+    }
+
+    return s;
+}
+
+string FolderRecordRead64( FolderRecord64& f )
+{
+    int64 offset = f.offset;
+    int64 filesPos = 36 + 16 * ReadUInt( 16 ); // 16 = header.FolderCount
+    offset -= filesPos + ReadUInt( 28 );     // 28 = header.FileNameLength
+
+    string s = ReadString( filesPos + offset + 1 );
+
+    // Verify hash algorithm
+    /////////////////////////
+    uint64 hash = CreateHash( s, "", Strlen( s ) );
+    if ( hash != f.hash ) {
+        string h1;
+        SPrintf( h1, "%LX", hash );
+        string h2;
+        SPrintf( h2, "%LX", f.hash );
+    
+        Assert( false , "Unexpected hash value. Expected: " + h2 + ", Actual: " + h1 );
+    }
+
+    return s;
+}
+
+string RevStr( string& s )
+{
+    string t;
+    uint l = Strlen( s );
+    int i;
+    for ( i = l - 1; i >= 0; i-- ) {
+        t += s[i];
+    }
+
+    Assert( Strlen(t) == Strlen(s), "RevStr failure" );
+
+    return t;
+}
+
+string FileRead( FileRecord& f )
+{
+    string s;
+
+    SPrintf( s, "%s", bsa.fileNames.fileName[f.index].path );
+    
+    // Verify hash algorithm
+    /////////////////////////
+    // 010 lacks reverse / lastof searching. Reverse string and find first '.'
+    string r = RevStr( s );
+    uint dot = Strchr( r, '.' ) + 1;
+
+    string file = SubStr( s, 0, Strlen(s) - dot );
+    string ext = SubStr( s, Strlen(s) - dot, dot );
+    
+    uint64 hash = CreateHash( file, ext, Strlen( file ) );
+    if ( hash != f.hash ) {
+        string h1;
+        SPrintf( h1, "%LX", hash );
+        string h2;
+        SPrintf( h2, "%LX", f.hash );
+        
+        Assert( false, "Unexpected hash value. Expected: " + h2 + ", Actual: " + h1 + " for " + file + "|" + ext );
+    }
+    //string h;
+    //SPrintf( h, "%LX", hash);
+    //s += " " + h;
+
+    return s;
+}
+
+uint64 CreateHash(string fname, string ext, uint length)
+{
+    uint64 hash = 0, hash2 = 0, hash3 = 0;
+    hash = (uint64)( fname[length - 1]
+                     | (uint64)((length > 2) ? fname[length - 2] : 0) << 8
+                     | length << 16
+                     | (uint64)fname[0] << 24 );
+
+    switch (ext)
+    {
+        case ".dds":
+            hash |= 0x8080;
+            break;
+        case ".nif":
+            hash |= 0x8000;
+            break;
+        case ".kf":
+            hash |= 0x80;
+            break;
+        case ".wav":
+            hash |= 0x80000000;
+            break;
+    }
+
+    uint i;
+    if (length > 3)
+        for (i = 1; i < length - 2; i++)
+            hash2 = fname[i] + (hash2 << 6) + (hash2 << 16) - hash2;
+    hash += (hash2 << 32);
+
+    for (i = 0; i < Strlen(ext); i++)
+        hash3 = ext[i] + (hash3 << 6) + (hash3 << 16) - hash3;
+    hash += (hash3 << 32);
+
+    return hash;
+}

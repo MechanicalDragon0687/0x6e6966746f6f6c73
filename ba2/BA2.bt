@@ -1,0 +1,105 @@
+//------------------------------------------------
+//--- 010 Editor v7.0.2 Binary Template
+//
+//      File: BA2 (GNRL).bt
+//   Authors: jonwd7
+//   Version: 1.0
+//   Purpose:
+//  Category: 
+// File Mask: *.ba2
+//  ID Bytes: 42 54 44 58 01 00 00 00 47 4E 52 4C
+//   History: 
+//------------------------------------------------
+
+typedef struct _ShortString
+{
+    ushort length;
+    uchar text[length];
+};
+typedef _ShortString ShortString <open=suppress, read=ShortStringRead>;
+typedef char char4 <open=suppress>;
+
+typedef struct FileRecord( uint i ) {
+    local uint index = i;
+	uint32	fileHash <format=hex>;		// 00
+	char4 	ext[4];		                // 04
+	uint32	dirHash <format=hex>;		// 08
+	uint32	flags <format=hex>;	    // 0C - always 0x100100?
+	uint64	offset;                     // 10 - relative to start of file
+	uint32	packedLen;                  // 18 - packed length (zlib)
+	uint32	unpackedLen;                // 1C - unpacked length
+	uint32	unk20 <format=hex>;         // 20 - BAADF00D
+
+    Assert( flags == 0x100100, "Flags value unexpected" );
+    Assert( unk20 == 0xBAADF00D, "unk20 value unexpected" );
+};
+
+struct BA2 {
+    struct HEADER {
+		char4	sig[4];				// 00 BTDX
+		uint32	version;			// 04 
+		char4	type[4];			// 08 GNRL or DX10
+        Assert( type == "GNRL", "Incorrect BA2 format for this template" );
+		uint32	numFiles;			// 0C
+		uint64	nameTableOffset;	// 10 - relative to start of file
+    } header <bgcolor=0xffb399, open=true>;
+
+    local uint i;
+
+    for ( i = 0; i < header.numFiles; i++ ) {
+        FileRecord record(i) <optimize=true, bgcolor=0xffe699, read=FileRecordRead, size=FileRecordSize>;
+    }
+
+    local uint32 size;
+    local byte reachedDataEnd = 0;
+    for ( i = 0; i < header.numFiles; i++ ) {
+        FSeek( record[i].offset );
+        struct FileData {
+            if ( record[i].packedLen == 0 )
+                size = record[i].unpackedLen;
+            else
+                size = record[i].packedLen;
+
+            byte data[size] <open=suppress>;
+        } fileData <open=suppress, bgcolor=0x99b3ff>;
+
+        if ( header.nameTableOffset > 0 && FTell() == header.nameTableOffset )
+            reachedDataEnd++;
+    }
+
+    if ( header.nameTableOffset > 0 ) {
+        Assert( reachedDataEnd == 1, "Did not reach end of data block" );
+
+        FSeek( header.nameTableOffset );
+        ShortString fileName[header.numFiles] <optimize=false>;
+    }
+
+    Assert( FEof(), "Did not reach end of file." );
+} ba2 <open=true>;
+
+
+#include "BA2funcs.bt"
+
+// UI Functions
+///////////////////////////////////
+
+string FileRecordRead( FileRecord& f )
+{
+    string s = ShortStringRead( ba2.fileName[f.index] );
+    string filename, filepath;
+
+    SplitPath( s, filename, filepath );
+
+    uint32 filehash = 0, dirhash = 0;
+    GenerateHashes( filehash, dirhash, filename, filepath, f.fileHash, f.dirHash );
+
+    //string h;
+    //SPrintf( h, "%X %X", filehash, dirhash );
+
+    return s;
+}
+
+int FileRecordSize( FileRecord& f )
+{
+    return 36;
+}

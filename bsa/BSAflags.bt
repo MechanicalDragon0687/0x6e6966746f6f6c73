@@ -1,0 +1,85 @@
+//------------------------------------------------
+//--- 010 Editor v7.0.2 Binary Template
+//
+//      File: BSAflags.bt
+//   Authors: jonwd7
+//   Version: 1.0
+//   Purpose: 
+//  Category: 
+// File Mask: 
+//  ID Bytes: 
+//   History: 
+//------------------------------------------------
+
+union ArchiveFlags
+{
+    uint flags;
+    struct ArchiveBit {
+	    int NamedDirectories : 1;
+        int NamedFiles : 1;
+        int Compressed : 1;
+        int RetainDirNames : 1;
+        int RetainFileNames : 1;
+        int RetainFileNameOffsets : 1;
+        int Xbox360 : 1;
+        int RetainStringsDuringStartup : 1;
+
+        int EmbedFileNames : 1;
+        int XMemCodec      : 1; // Xbox only
+        int          : 22;
+
+        Assert( NamedDirectories != 0, "NamedDirectories differs from expected" );
+        Assert( NamedFiles != 0, "NamedFiles differse from expected" );
+    } bits;
+};
+
+union FileFlags
+{
+    uint flags;
+    struct FileBit {
+	    int NIF : 1; // Meshes
+        int DDS : 1; // Textures
+        int XML : 1; // Menus
+        int WAV : 1; // Sounds
+        int MP3 : 1; // Sounds MP3, XWM
+        int TXT : 1; // TXT, HTML, BAT, SCC
+        int SPT : 1; // Trees
+        int FNT : 1; // Fonts FNT, TEX
+
+        int MISC : 1; // Misc
+        int unk0 : 1 <hidden=true>;
+        int unk1 : 1 <hidden=true>;
+        int unk2 : 1 <hidden=true>;
+        int unk3 : 1 <hidden=true>;
+        int unk4 : 1 <hidden=true>;
+        int unk5 : 1 <hidden=true>;
+        int unk6 : 1 <hidden=true>;
+        
+        Assert( unk0 == 0, "unk0 FileFlags" );
+        Assert( unk1 == 0, "unk1 FileFlags" );
+        Assert( unk2 == 0, "unk2 FileFlags" );
+        Assert( unk3 == 0, "unk3 FileFlags" );
+        Assert( unk4 == 0, "unk4 FileFlags" );
+        Assert( unk5 == 0, "unk5 FileFlags" );
+        Assert( unk6 == 0, "unk6 FileFlags" );
+
+        // All Sounds Below
+        int aud0 : 1; // Zeta - Sounds
+        int aud1 : 1; // BrokenSteel - Sounds
+        int aud2 : 1; // ThePitt - Sounds
+        int aud3 : 1; // Zeta - Sounds
+        int aud4 : 1; // Anchorage - Sounds
+        int aud5 : 1; // Zeta - Sounds
+        int aud6 : 1; // Fallout - MenuVoices
+        int aud7 : 1; // Oblivion - Voices2
+
+	    int aud8 : 1; // PointLookout - Sounds
+        int aud9 : 1; // Fallout - MenuVoices
+        int aud10 : 1; // Fallout - MenuVoices
+        int aud11 : 1; // Anchorage - Sounds
+        int aud12 : 1; // ThePitt - Sounds
+        int aud13 : 1; // Fallout - MenuVoices
+        int aud14 : 1; // Fallout - MenuVoices
+        int aud15 : 1; // Anchorage - Sounds
+    } bits;
+};

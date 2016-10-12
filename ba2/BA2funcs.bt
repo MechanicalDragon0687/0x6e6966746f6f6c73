@@ -1,0 +1,78 @@
+//------------------------------------------------
+//--- 010 Editor v7.0.2 Binary Template
+//
+//      File: BA2funcs.bt
+//   Authors: jonwd7
+//   Version: 1.0
+//   Purpose: 
+//  Category: 
+// File Mask: 
+//  ID Bytes: 
+//   History: 
+//------------------------------------------------
+
+#include "BSCRC32.bt"
+
+string ShortStringRead( ShortString& f )
+{
+    string s;
+    SPrintf( s, "%s", f.text );
+    return s;
+}
+
+string RevStr( string& s )
+{
+    string t;
+    uint l = Strlen( s );
+    int i;
+    for ( i = l - 1; i >= 0; i-- ) {
+        t += s[i];
+    }
+
+    Assert( Strlen(t) == Strlen(s), "RevStr failure" );
+
+    return t;
+}
+
+uint32 CreateHash(string path)
+{
+   return bscrc32_lower( path );
+}
+
+void SplitPath( string& s, string& filename, string& dirpath )
+{
+    string rpath = RevStr( s );
+    uint length = Strlen(s);
+    uint dot = Strchr( rpath, '.' ) + 1;
+    uint slash = Strchr( rpath, 0x5C );
+    if ( slash == -1 )
+        slash = Strchr( rpath, 0x2F );
+    if ( slash == -1 )
+        slash = length;
+
+    uint namelength = slash - dot;
+    
+    filename = SubStr( s, length - slash, namelength );
+    if ( slash < length )
+        dirpath = SubStr( s, 0, length - slash - 1 );
+}
+
+void GenerateHashes( uint32& filehash, uint32& dirhash,
+                     string& filename, string& dirpath,
+                     uint32 origFilehash, uint32 origDirhash )
+{
+    filehash = CreateHash( filename );
+    dirhash = CreateHash( dirpath );
+    if ( filehash != origFilehash || dirhash != origDirhash ) {
+        string h1;
+        SPrintf( h1, "%X", filehash );
+        string h2;
+        SPrintf( h2, "%X", origFilehash );
+        string h3;
+        SPrintf( h3, "%X", dirhash );
+        string h4;
+        SPrintf( h4, "%X", origDirhash );
+      
+        Assert( false, "Unexpected hash value. Computed: " + h1 + ", " + h3 + ". Stored: " + h2 + ", " + h4 );
+    }
+}

@@ -1,0 +1,159 @@
+//------------------------------------------------
+//--- 010 Editor v7.0.2 Binary Template
+//
+//      File: BA2 (DX10).bt
+//   Authors: jonwd7
+//   Version: 1.0
+//   Purpose:
+//  Category: 
+// File Mask: *.ba2
+//  ID Bytes: 42 54 44 58 01 00 00 00 44 58 31 30
+//   History: 
+//------------------------------------------------
+
+#include "DXGI.bt"
+
+typedef struct _ShortString
+{
+    ushort length;
+    char text[length] <open=suppress>;
+};
+typedef _ShortString ShortString <open=suppress, read=ShortStringRead>;
+typedef char char4 <open=suppress>;
+
+typedef struct TexChunk
+{
+	uint64	offset;			// 00
+	uint32	packedSize;		// 08
+	uint32	unpackedSize;	// 0C
+	uint16	startMip;		// 10
+	uint16	endMip;			// 12
+	uint32	unk14 <format=hex>;			// 14 - BAADFOOD
+};
+
+typedef struct TexRecord( uint i )
+{
+    local uint index = i;
+	uint32	    nameHash <format=hex>;		// 00
+	char4 	    ext[4];			// 04
+	uint32	    dirHash <format=hex>;		// 08
+	byte	    gnrlFlags;		// 0C - Always 0 on DX10 header BA2s
+	byte	    numChunks;		// 0D
+	uint16	    chunkHeaderSize;// 0E
+	uint16	    height;			// 10
+	uint16	    width;			// 12
+	byte	    numMips;		// 14
+	DXGI_FORMAT	format;			// 15 - DXGI_FORMAT
+	uint16	    dx10Flags;		// 16 - 0800 - Normal, 0801 - Cubemap
+    Assert( gnrlFlags == 0, "gnrlFlags is not 0" );
+    Assert( numChunks > 0 && numChunks < 5, "numChunks differs from expected" ); // Note: Archive2 settings allow you to set higher than 4 for max.
+    Assert( chunkHeaderSize == 24, "Chunk Header size differs from expected" );
+    Assert( width > 0 && height > 0 && width < 16385 && height < 16385, "Height or width differs from expected" );
+    Assert( format > 0 && format < 100, "DXGI format differs from expected" );
+    Assert( dx10Flags == 0x800 || dx10Flags == 0x801, "dx10Flags differs from expected" );
+
+	TexChunk    chunks[numChunks] <optimize=true, name="Chunks">;
+};
+
+
+struct BA2 {
+    struct HEADER {
+		char4	sig[4];				// 00 BTDX
+		uint32	version;			// 04 00000001
+		char4	type[4];			// 08 GNRL or DX10
+        Assert( type == "DX10", "Incorrect BA2 format for this template" );
+		uint32	numFiles;			// 0C
+		uint64	nameTableOffset;	// 10 - relative to start of file
+    } header <bgcolor=0xffb399, open=true>;
+
+    local uint i;
+    local uint j;
+    
+    for ( i = 0; i < header.numFiles; i++ ) {
+        TexRecord record(i) <bgcolor=0xffe699, optimize=false,
+                          read=TexRecordRead, comment=TexRecordComment, size=TexRecordSize, name="Texture Record">;
+    }
+
+    local uint32 size;
+    local byte reachedDataEnd = 0;
+    for ( i = 0; i < header.numFiles; i++ ) {
+        struct TextureData {
+            for ( j = 0; j < record[i].numChunks; j++ ) {
+                FSeek( record[i].chunks[j].offset );
+                struct ChunkData {
+                    if ( record[i].chunks[j].packedSize == 0 )
+                        size = record[i].chunks[j].unpackedSize;
+                    else
+                        size = record[i].chunks[j].packedSize;
+    
+                    byte data[size];
+                } chunkData <open=suppress, name="Chunk Data">;
+            }
+        } texData <bgcolor=0x99b3ff, open=suppress, name="Texture Data">;
+        if ( FTell() == header.nameTableOffset )
+            reachedDataEnd++;
+    }
+    Assert( reachedDataEnd == 1, "Did not reach end of data block" );
+
+    if ( header.nameTableOffset > 0 ) {
+        FSeek( header.nameTableOffset );
+        ShortString fileName[header.numFiles] <optimize=false, name="Filename">;
+    }
+
+    Assert( FEof(), "Did not reach end of file." );
+
+} ba2 <open=true>;
+
+// UI Functions
+
+#include "BA2funcs.bt"
+
+string TexRecordRead( TexRecord& t )
+{
+    string s = ShortStringRead( ba2.fileName[t.index] );
+    string filename, filepath;
+
+    SplitPath( s, filename, filepath );
+
+    uint32 filehash = 0, dirhash = 0;
+    GenerateHashes( filehash, dirhash, filename, filepath, t.nameHash, t.dirHash );
+
+    return s;
+}
+
+string TexRecordComment( TexRecord& t )
+{
+    string s;
+    string fmt;
+
+    switch( t.format )
+    {
+        case DXGI_FORMAT_BC1_UNORM:
+            fmt = "BC1";
+            break;
+        case DXGI_FORMAT_BC3_UNORM:
+            fmt = "BC3";
+            break;
+        case DXGI_FORMAT_BC5_UNORM:
+            fmt = "BC5";
+            break;
+        case DXGI_FORMAT_B8G8R8A8_UNORM:
+            fmt = "B8G8R8A8";
+            break;
+        default:
+            fmt = EnumToString( t.format );
+            break;
+    }
+
+    SPrintf( s, "%s (%ix%i) [%ic%im]", fmt, t.height, t.width, t.numChunks, t.numMips );
+
+    if ( t.dx10Flags & 0x1 )
+        s += " CUBEMAP ";
+
+    return s;
+}
+
+int TexRecordSize( TexRecord& t )
+{
+    return 24 + ReadUByte( startof( t ) + 13 ) * ReadUShort( startof( t ) + 14 );
+}

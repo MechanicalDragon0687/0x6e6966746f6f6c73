@@ -1,0 +1,151 @@
+//------------------------------------------------
+//--- 010 Editor v7.0.2 Binary Template
+//
+//      File: BSA.bt
+//   Authors: jonwd7
+//   Version: 1.0
+//   Purpose:
+//  Category: 
+// File Mask: *.bsa
+//  ID Bytes: 42 53 41 00
+//   History: 
+//------------------------------------------------
+
+#include "BSAflags.bt"
+
+typedef struct _String {
+    ubyte length;
+    string path; // They also happen to be null-terminated so length can be ignored
+};
+typedef _String String <read=StringRead, open=suppress>;
+
+typedef struct _SizedString {
+    ubyte length;
+    char path[length]; // Not null-terminated
+};
+typedef _SizedString SizedString <read=SizedStringRead, open=suppress>;
+
+typedef struct FileRecord( string & p, uint32 i ) {
+    local string path = p;
+    local uint32 index = i;
+	uint64 hash <format=hex>;   // Hash of the filename
+	uint32 size;                // Size of the data, possibly with a compress flag set
+    uint32 offset;              // Offset to raw file data
+};
+
+typedef struct FolderRecord {
+    uint64 hash <format=hex>;   // Hash of the folder name
+    uint32 fileCount;           // Number of files in folder
+    uint32 offset;              // Offset to name of this folder
+};
+
+typedef struct FolderRecord64 {
+    uint64 hash <format=hex>;   // Hash of the folder name
+    uint32 fileCount;           // Number of files in folder
+    uint32 unk;
+    uint64 offset;              // Offset to name of this folder
+};
+
+typedef struct Data( uint sz )
+{
+    local uint size = sz;
+    byte data[size] <open=suppress>;
+};
+
+typedef struct FileData(uint pfx, uint sz) {
+    local uint size = sz;
+    local uint prefix = pfx;
+    if ( size > 0 ) {
+        if ( prefix > 0 ) {
+            SizedString pre <name="Prefix">;
+            size -= pre.length + 1;
+        }
+        
+        //char unk[17];
+
+        Data data(size); // -17
+    }
+};
+
+struct BSA {
+    struct HEADER {
+		char	sig[4] <hidden=true>;				                // 00 - BSA\O
+		uint32	version <name="Version">;			                // 04 
+		uint32  FolderRecordOffset <name="Folder Record Offset">;   // 08 - Offset of beginning of folder records
+		ArchiveFlags  archiveFlags <name="Archive Flags", read=ArchiveFlagsRead>;   // 0C - Archive flags
+		uint32  FolderCount <name="Folder Count">;                  // 10 - Total number of folder records
+		uint32  FileCount <name="File Count">;                      // 14 - Total number of file records
+		uint32  FolderNameLength <name="Folder Name Length">;       // 18 - Total length of folder names
+		uint32  FileNameLength <name="File Name Length">;           // 1C - Total length of file names
+        FileFlags fileFlags <name="File Flags", read=FileFlagsRead>;
+    } header <bgcolor=0xffb399, open=true>;
+
+    local uint prefix = bsa.header.archiveFlags.flags & 0x100;
+    if ( header.version != 0x68 && header.version != 0x69 )
+        prefix = 0;
+    
+    FSeek(bsa.header.FolderRecordOffset);
+    if ( header.version == 0x69 )
+        FolderRecord64 folder[bsa.header.FolderCount] <bgcolor=0xffe699, open=suppress, optimize=true, read=FolderRecordRead64, name="Folder Record">;
+    else
+        FolderRecord folder[bsa.header.FolderCount] <bgcolor=0xffe699, open=suppress, optimize=true, read=FolderRecordRead, name="Folder Record">;
+
+    local int i;
+    local int j;
+    local int idx = 0;
+    struct Files {
+        for ( i = 0; i < bsa.header.FolderCount; i++ ) {
+            struct FileRecords {
+                String path <name="Path">;
+
+                for ( j = 0; j < bsa.folder[i].fileCount; j++ ) {
+                    FileRecord file(path.path, idx) <read=FileRead, open=suppress, name="File Record">;
+                    idx++;
+                }
+            } fileRecord <read=FileRecordsRead, open=true, name="Folder">;
+        }
+    } files <bgcolor=0xffff99, open=true, name="Files">;
+
+    struct FileNames {
+        for ( i = 0; i < bsa.header.FileCount; i++ ) {
+            struct FileName {
+                string path;
+            } fileName <read=FileNameRead, open=suppress, name="Filename">;
+        }
+    } fileNames <bgcolor=0x99ffe6, name="Filenames">;
+
+    local uint numFiles;
+    local uint size;
+    local uint sizeMasked;
+
+    local byte reachedEnd = 0;
+
+    for ( i = 0; i < bsa.header.FolderCount; i++ ) {
+        numFiles = folder[i].fileCount;
+        for ( j = 0; j < numFiles; j++ ) {
+            FSeek(files.fileRecord[i].file[j].offset);
+            size = files.fileRecord[i].file[j].size & 0x3fffffff;
+
+            // I guess only Oblivion uses this
+            sizeMasked = size & 0xC0000000;
+            if ( sizeMasked > 0 )
+                size = sizeMasked;
+
+            if ( FTell() + size == FileSize() ) {
+                if ( reachedEnd == 0 )
+                    reachedEnd++;
+                else
+                    Assert( false, "Reached end of file more than once" );
+            }
+            
+           FileData fileData(prefix, size) <bgcolor=0x99b3ff, read=FileDataRead, comment=FileDataComment, name="File Data">;
+        }
+    }
+
+    Assert( reachedEnd > 0, "Did not reach end of file." );
+} bsa <open=true>;
+
+// Functions
+////////////////////////////////////////
+
+#include "BSAfuncs.bt"
