@@ -25,6 +25,7 @@ typedef struct _SizedString {
 };
 typedef _SizedString SizedString <read=SizedStringRead, open=suppress>;
 
+// File Record
 typedef struct FileRecord( string & p, uint32 i ) {
     local string path = p;
     local uint32 index = i;
@@ -33,12 +34,14 @@ typedef struct FileRecord( string & p, uint32 i ) {
     uint32 offset;              // Offset to raw file data
 };
 
+// Folder Record for Version < 0x69
 typedef struct FolderRecord {
     uint64 hash <format=hex>;   // Hash of the folder name
     uint32 fileCount;           // Number of files in folder
     uint32 offset;              // Offset to name of this folder
 };
 
+// Folder Record for Version 0x69
 typedef struct FolderRecord64 {
     uint64 hash <format=hex>;   // Hash of the folder name
     uint32 fileCount;           // Number of files in folder
@@ -57,19 +60,23 @@ typedef struct FileData(uint pfx, uint sz) {
     local uint prefix = pfx;
     if ( size > 0 ) {
         if ( prefix > 0 ) {
-            SizedString pre <name="Prefix">;
+            SizedString pre <name="Filename">;
             size -= pre.length + 1;
         }
-        
-        //char unk[17];
 
-        Data data(size); // -17
+        Data data(size);
     }
 };
 
+// Versions
+// ---------------------
+// 0x67 - Oblivion
+// 0x68 - FO3/NV, Skyrim
+// 0x69 - Skyrim: SE
+
 struct BSA {
     struct HEADER {
-		char	sig[4] <hidden=true>;				                // 00 - BSA\O
+		char	sig[4] <hidden=true>;				                // 00 - BSA\0
 		uint32	version <name="Version">;			                // 04 
 		uint32  FolderRecordOffset <name="Folder Record Offset">;   // 08 - Offset of beginning of folder records
 		ArchiveFlags  archiveFlags <name="Archive Flags", read=ArchiveFlagsRead>;   // 0C - Archive flags
