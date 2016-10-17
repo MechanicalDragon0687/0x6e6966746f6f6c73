@@ -1,0 +1,167 @@
+//------------------------------------------------
+//--- 010 Editor v7.0.2 Binary Template
+//
+//      File: ExtraData.bt
+//   Authors: jonwd7
+//   Version: 
+//   Purpose: 
+//  Category: 
+// File Mask: 
+//  ID Bytes: 
+//   History: 
+//------------------------------------------------
+
+typedef struct {
+    STRING name;
+} NiExtraData <name="NiExtraData", read=ReadED>;
+
+typedef struct {
+    NiExtraData data;
+    byte boolData;
+} NiBoolED <name="NiBooleanExtraData", read=ReadBoolED>;
+
+typedef struct {
+    NiExtraData data;
+    float floatData;
+} NiFloatED <name="NiFloatExtraData", read=ReadFloatED>;
+
+typedef struct {
+    NiExtraData data;
+    uint integerData;
+} NiIntegerED <name="NiIntegerExtraData", read=ReadIntED>;
+
+typedef struct {
+    NiExtraData data;
+    STRING stringData;
+} NiStringED <name="NiStringExtraData", read=ReadStringED>;
+
+typedef struct {
+    NiExtraData data;
+    uint numKeys;
+    if ( numKeys > 0 )
+        StringKey keys(1)[numKeys] <optimize=true>;
+} NiTextKeyED <name="NiTextKeyExtraData">;
+
+typedef struct {
+    NiExtraData data;
+    STRING file;
+    byte controlsBaseSkel;
+} BSBGED <name="BSBehaviorGraphExtraData">;
+
+typedef struct {
+    NiExtraData data;
+    ushort rotX;
+    ushort rotY;
+    ushort rotZ;
+    float zoom;
+} BSInvMarker <name="BSInvMarker">;
+
+typedef enum <ushort> {
+    Sit = 1,
+    Sleep = 2,
+    Lean = 4
+} FurnAnimType;
+
+typedef enum <ushort> {
+    Front = 1 << 0,
+    Behind = 1 << 1,
+    Right = 1 << 2,
+    Left = 1 << 3,
+    Up = 1 << 4
+} FurnEntryPoints;
+
+typedef struct {
+    Vec3 offset;
+    float heading;
+    FurnAnimType animationType;
+    FurnEntryPoints entryPoints;
+} FURNPOS;
+
+typedef struct {
+    NiExtraData data;
+    uint numPos;
+    if ( numPos > 0 )
+        FURNPOS pos[numPos];
+} BSFurnMarker <name="BSFurnitureMarkerNode">;
+
+// BSEyeCenterExtraData
+typedef struct {
+    NiExtraData data;
+    uint numData;
+    if ( numData > 0 )
+        float floatData[numData];
+} BSEyeCenterED <name="BSEyeCenterExtraData">;
+
+// BSPositionData
+typedef struct {
+    NiExtraData data;
+    uint numData;
+    if ( numData > 0 )
+        hfloat floatData[numData];
+} BSPositionData <name="BSPositionData">;
+
+typedef struct {
+    SSTRING parent;
+    SSTRING name;
+    Quat rotation;
+    Vec3 translation;
+    float scale;
+} BSConnectPoint;
+
+// BSConnectPoint::Parents
+typedef struct {
+    NiExtraData data;
+    uint numConnectPoints;
+    if ( numConnectPoints > 0 )
+        BSConnectPoint connectPoint[numConnectPoints] <optimize=false>;
+} BSConnectPtParents <name="BSConnectPoint::Parents">;
+
+// BSConnectPoint::Children
+typedef struct {
+    NiExtraData data;
+    byte isSkinned;
+    uint numPoints;
+    if ( numPoints > 0 )
+        SSTRING name[numPoints];
+} BSConnectPtChildren <name="BSConnectPoint::Children">;
+
+
+// READ FUNCTIONS
+
+string ReadED( NiExtraData& ed )
+{
+    return ReadSTRING(ed.name);
+}
+
+string ReadBoolED( NiBoolED& ed )
+{
+    string s;
+    string b = "True";
+    if ( ed.boolData == 0 )
+        b = "False";
+
+    SPrintf(s, "%s: %s", ReadSTRING(ed.data.name), b);
+
+    return s;
+}
+
+string ReadFloatED( NiFloatED& ed )
+{
+    string s;
+    SPrintf(s, "%s: %f", ReadSTRING(ed.data.name), ed.floatData);
+    return s;
+}
+
+string ReadIntED( NiIntegerED& ed )
+{
+    string s;
+    SPrintf(s, "%s: %u", ReadSTRING(ed.data.name), ed.integerData);
+    return s;
+}
+
+string ReadStringED( NiStringED& ed )
+{
+    string s;
+    SPrintf(s, "%s: %s", ReadSTRING(ed.data.name), ReadSTRING(ed.stringData));
+    return s;
+}

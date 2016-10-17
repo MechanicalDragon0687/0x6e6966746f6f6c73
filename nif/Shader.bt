@@ -1,0 +1,134 @@
+//------------------------------------------------
+//--- 010 Editor v7.0.2 Binary Template
+//
+//      File: Shader.bt
+//   Authors: jonwd7
+//   Version: 
+//   Purpose: 
+//  Category: 
+// File Mask: 
+//  ID Bytes: 
+//   History: 
+//------------------------------------------------
+
+// BSShaderTextureSet
+typedef struct {
+    int numTextures;
+    SSTRING texture[numTextures] <optimize=false, open=suppress>;
+} BSShaderTextureSet <name="BSShaderTextureSet">;
+
+typedef struct {
+    STRING name;
+    uint numExtraData;
+    if ( numExtraData > 0)
+        Ref extraData[numExtraData];
+    Ref controller; // NiTimeController
+    uint SLSF1;
+    uint SLSF2;
+    TexCoord UVOffset <open=suppress>;
+    TexCoord UVScale <open=suppress>;
+} BSShaderProperty <open=true>;
+
+// BSLightingShaderProperty
+typedef struct {
+    ShaderType type;
+    BSShaderProperty prop;
+    Ref textureSet; // BSShaderTextureSet
+    Color3 emissiveColor <open=suppress>;
+    float emissiveMult;
+    if ( stream == 130 )
+        STRING rootMaterial;
+    uint texClampMode;
+    float alpha;
+    float refractionStrength;
+    float glossiness;
+    Color3 specularColor <open=suppress>;
+    float specularStrength;
+
+    if ( stream < 130 ) {
+        float lightingEffect1;
+        float lightingEffect2;
+    } else {
+        float subsurfaceRolloff;
+        float unkFloat;
+        float shaderControls[9];
+    }
+
+    switch ( type )
+    {
+        case 1:
+            float envMapScale;
+            if ( stream == 130 )
+                ushort unkEnvShort;
+            break;
+        case 5:
+            Color3 skinTintColor;
+            if ( stream == 130 )
+                uint unkSkinTintInt;
+            break;
+        case 6:
+            Color3 hairTintColor;
+            break;
+        case 7:
+            float maxPasses;
+            float scale;
+            break;
+        case 11:
+            float innerLayerThickness;
+            float refractionScale;
+            TexCoord textureScale;
+            float envMapStrength;
+            break;
+        case 14:
+            Vec4 sparkleParams;
+            break;
+        case 16:
+            float cubemapScale;
+            Vec3 leftEyeReflCenter;
+            Vec3 rightEyeReflCenter;
+            break;
+    }
+
+} BSLightingShaderProperty <name="BSLightingShaderProperty">;
+
+// BSEffectShaderProperty
+typedef struct {
+    BSShaderProperty prop;
+    SSTRING baseTexture;
+    ubyte texClampMode;
+    ubyte lightingInfluence;
+    ubyte envMapMinLOD;
+    ubyte unk;
+    float falloffStartAngle;
+    float falloffStopAngle;
+    float falloffStartOpacity;
+    float falloffStopOpacity;
+    Color4 baseColor;
+    float baseMultiple;
+    float softFalloffDepth;
+    SSTRING grayscaleTexture;
+    if ( stream == 130 ) {
+        SSTRING envMapTexture;
+        SSTRING normalTexture;
+        SSTRING envMaskTexture;
+        float envMapScale;
+    }
+} BSEffectShaderProperty <name="BSEffectShaderProperty">;
+
+// BSWaterShaderProperty
+typedef struct {
+    BSShaderProperty prop;
+    ubyte waterShaderFlags; // Bitflag
+    byte waterDirection;
+    ushort unk; 
+} BSWaterShaderProperty <name="BSWaterShaderProperty">;
+
+typedef struct {
+    STRING name;
+    uint numData;
+    if ( numData > 0 )
+        Ref data[numData];
+    Ref controller;
+    ushort flags;
+    ubyte threshold;
+} NiAlphaProperty <name="NiAlphaProperty">;

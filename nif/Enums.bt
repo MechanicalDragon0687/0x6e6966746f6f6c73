@@ -1,0 +1,254 @@
+//------------------------------------------------
+//--- 010 Editor v7.0.2 Binary Template
+//
+//      File: Enums.bt
+//   Authors: jonwd7
+//   Version: 
+//   Purpose: 
+//  Category: 
+// File Mask: 
+//  ID Bytes: 
+//   History: 
+//------------------------------------------------
+
+// General
+
+typedef enum <ushort> {
+    ALWAYS_FACE_CAMERA, ROTATE_ABOUT_UP, RIGID_FACE_CAMERA, ALWAYS_FACE_CENTER,
+    RIGID_FACE_CENTER, BSROTATE_ABOUT_UP, ROTATE_ABOUT_UP2 = 9
+} BillboardMode <name="Billboard Mode">;
+
+// Shaders
+
+typedef enum <uint> {
+    DEFAULT,
+    ENV_MAP,
+    GLOW,
+    PARALLAX,
+    FACE,
+    SKIN,
+    HAIR,
+    POM,
+    WORLD_MT,
+    WORLDMAP_1,
+    UNKNOWN_10,
+    MULTILAYER,
+    UNKNOWN_12,
+    WORLDMAP_2,
+    SPARKLE,
+    WORLDMAP_3,
+    EYE_ENV,
+    UNKNOWN_17,
+    WORLDMAP_4,
+    WORLDLOD_MT    
+} ShaderType <name="Shader Type">;
+
+// Collision
+
+typedef enum <ushort> { CT_MUTABLE = 0, CT_VOLATILE = 32768, CT_STATIC = 16384 } ConsistencyType;
+
+typedef enum <byte> {
+    OL_UNIDENTIFIED,
+    OL_STATIC,    
+    OL_ANIM_STATIC,    
+    OL_TRANSPARENT,
+    OL_CLUTTER,
+    OL_WEAPON,
+    OL_PROJECTILE,
+    OL_SPELL,
+    OL_BIPED,
+    OL_TREES,
+    OL_PROPS,
+    OL_WATER,
+    OL_TRIGGER,
+    OL_TERRAIN,
+    OL_TRAP,
+    OL_NONCOLLIDABLE,
+    OL_CLOUD_TRAP,
+    OL_GROUND,
+    OL_PORTAL,
+    OL_STAIRS,
+    OL_CHAR_CONTROLLER,
+    OL_AVOID_BOX,
+    OL_UNKNOWN1,
+    OL_UNKNOWN2,
+    OL_CAMERA_PICK,
+    OL_ITEM_PICK,
+    OL_LINE_OF_SIGHT,
+    OL_PATH_PICK,
+    OL_CUSTOM_PICK_1,
+    OL_CUSTOM_PICK_2,
+    OL_SPELL_EXPLOSION,
+    OL_DROPPING_PICK,
+    OL_OTHER,
+    OL_HEAD,
+    OL_BODY,
+    OL_SPINE1,
+    OL_SPINE2,
+    OL_L_UPPER_ARM,
+    OL_L_FOREARM,
+    OL_L_HAND,
+    OL_L_THIGH,
+    OL_L_CALF,
+    OL_L_FOOT,
+    OL_R_UPPER_ARM,
+    OL_R_FOREARM,
+    OL_R_HAND,
+    OL_R_THIGH,
+    OL_R_CALF,
+    OL_R_FOOT,
+    OL_TAIL,
+    OL_SIDE_WEAPON,
+    OL_SHIELD,
+    OL_QUIVER,
+    OL_BACK_WEAPON,
+    OL_BACK_WEAPON2,
+    OL_PONYTAIL,
+    OL_WING,
+    OL_NULL,
+} OblivionLayer <name="Collision Layer">;
+
+typedef enum <byte> {
+    FO3_UNIDENTIFIED,
+    FO3_STATIC,
+    FO3_ANIM_STATIC,
+    FO3_TRANSPARENT,
+    FO3_CLUTTER,
+    FO3_WEAPON,
+    FO3_PROJECTILE,
+    FO3_SPELL,
+    FO3_BIPED,
+    FO3_TREES,
+    FO3_PROPS,
+    FO3_WATER,
+    FO3_TRIGGER,
+    FO3_TERRAIN,
+    FO3_TRAP,
+    FO3_NONCOLLIDABLE,
+    FO3_CLOUD_TRAP,
+    FO3_GROUND,
+    FO3_PORTAL,
+    FO3_DEBRIS_SMALL,
+    FO3_DEBRIS_LARGE,
+    FO3_ACOUSTIC_SPACE,
+    FO3_ACTORZONE,
+    FO3_PROJECTILEZONE,
+    FO3_GASTRAP,
+    FO3_SHELLCASING,
+    FO3_TRANSPARENT_SMALL,
+    FO3_INVISIBLE_WALL,
+    FO3_TRANSPARENT_SMALL_ANIM,
+    FO3_BIPED2,
+    FO3_CHARCONTROLLER,
+    FO3_AVOIDBOX,
+    FO3_COLLISIONBOX,
+    FO3_CAMERASPHERE,
+    FO3_DOORDETECTION,
+    FO3_CAMERAPICK,
+    FO3_ITEMPICK,
+    FO3_LINEOFSIGHT,
+    FO3_PATHPICK,
+    FO3_CUSTOMPICK1,
+    FO3_CUSTOMPICK2,
+    FO3_SPELLEXPLOSION,
+    FO3_DROPPINGPICK,
+    FO3_NULL,
+    FO3_OTHER,
+    FO3_HEAD,
+    FO3_BODY,
+    FO3_SPINE1,
+    FO3_SPINE2,
+    FO3_L_UPPER_ARM,
+    FO3_L_FORE_ARM,
+    FO3_L_HAND,
+    FO3_L_THIGH,
+    FO3_L_CALF,
+    FO3_L_FOOT,
+    FO3_R_UPPER_ARM,
+    FO3_R_FORE_ARM,
+    FO3_R_HAND,
+    FO3_R_THIGH,
+    FO3_R_CALF,
+    FO3_R_FOOT,
+    FO3_TAIL,
+    FO3_SHIELD,
+    FO3_QUIVER,
+    FO3_WEAPON2,
+    FO3_PONYTAIL,
+    FO3_WING,
+    FO3_PACK,
+    FO3_CHAIN,
+    FO3_ADDONHEAD,
+    FO3_ADDONCHEST,
+    FO3_ADDONARM,
+    FO3_ADDONLEG
+} FO3Layer <name="Collision Layer">;
+
+typedef enum <byte> {
+    SK_UNIDENTIFIED,
+    SK_STATIC,
+    SK_ANIMSTATIC,
+    SK_TRANSPARENT,
+    SK_CLUTTER,
+    SK_WEAPON,
+    SK_PROJECTILE,
+    SK_SPELL,
+    SK_BIPED,
+    SK_TREES,
+    SK_PROPS,
+    SK_WATER,
+    SK_TRIGGER,
+    SK_TERRAIN,
+    SK_TRAP,
+    SK_NONCOLLIDABLE,
+    SK_CLOUD_TRAP,
+    SK_GROUND,
+    SK_PORTAL,
+    SK_DEBRIS_SMALL,
+    SK_DEBRIS_LARGE,
+    SK_ACOUSTIC_SPACE,
+    SK_ACTORZONE,
+    SK_PROJECTILEZONE,
+    SK_GASTRAP,
+    SK_SHELLCASING,
+    SK_TRANSPARENT_SMALL,
+    SK_INVISIBLE_WALL,
+    SK_TRANSPARENT_SMALL_ANIM,
+    SK_WARD,
+    SK_CHARCONTROLLER,
+    SK_STAIRHELPER,
+    SK_DEADBIP,
+    SK_BIPED_NO_CC,
+    SK_AVOIDBOX,
+    SK_COLLISIONBOX,
+    SK_CAMERASHPERE,
+    SK_DOORDETECTION,
+    SK_CONEPROJECTILE,
+    SK_CAMERAPICK,
+    SK_ITEMPICK,
+    SK_LINEOFSIGHT,
+    SK_PATHPICK,
+    SK_CUSTOMPICK1,
+    SK_CUSTOMPICK2,
+    SK_SPELLEXPLOSION,
+    SK_DROPPINGPICK,
+    SK_NULL
+} SkyrimLayer <name="Collision Layer">;
+
+typedef enum <byte> {
+    INVALID,
+    SIMPLE_CONTACT,
+    REPORTING,
+    NONE    
+} hkResponseType <name="Response Type">;
+
+
+// Animation
+
+typedef enum <uint> {
+    LINEAR_KEY = 1,
+    QUADRATIC_KEY,
+    TBC_KEY,
+    XYZ_ROTATION_KEY,
+    CONST_KEY
+} KeyType <name="Key Type">;

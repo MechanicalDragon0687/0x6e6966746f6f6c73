@@ -1,0 +1,344 @@
+//------------------------------------------------
+//--- 010 Editor v7.0.2 Binary Template
+//
+//      File: Geometry.bt
+//   Authors: jonwd7
+//   Version: 
+//   Purpose: 
+//  Category: 
+// File Mask: 
+//  ID Bytes: 
+//   History: 
+//------------------------------------------------
+
+typedef struct {
+    NiAVObject base;
+    local STRING name = base.name;
+    Ref data; // NiGeometryData
+    Ref skin; // NiSkinInstance
+    uint nummaterials;
+    if ( nummaterials > 0 ) {
+        uint materialstring;
+        uint material[nummaterials];
+    }
+
+    uint activematerial;
+    byte dirtyflag;
+
+    if ( stream > 34 ) {
+        Ref bsprop1;
+        Ref bsprop2;
+    }
+
+} NiGeometry <name="NiGeometry">; // Abstract
+
+typedef struct {
+    NiAVObject base;
+    local STRING name = base.name;
+    Ref data; // NiGeometryData
+    Ref skin; // NiSkinInstance
+    uint nummaterials;
+    if ( nummaterials > 0 ) {
+        uint materialstring;
+        uint material[nummaterials];
+    }
+
+    uint activematerial;
+    if ( stream < 100 )
+        byte dirtyFlag;
+    else {
+        uint dirtyFlag;
+        // Try to find non-null values
+        Assert( dirtyFlag == 4294967295, "Flag is not 0xFFFF" );
+        Printf("PSYS flag value: %u\n", dirtyFlag);
+    }
+        
+    Ref bsprop1;
+    Ref bsprop2;
+} NiGeometryPSys <name="NiGeometry">; // Abstract
+
+// NiTriShape
+typedef NiGeometry NiTriShape <name="NiTriShape">;
+
+// BSLODTriShape
+typedef struct {
+    NiTriShape base <open=true>;
+    uint lvl0;
+    uint lvl1;
+    uint lvl2;
+} BSLODTriShape <name="BSLODTriShape">;
+
+// NiTriShapeData
+typedef struct {
+    uint unknown;
+    ushort numVerts;
+    byte keepFlags;
+    byte compressFlags;
+    byte hasVerts;
+    
+    if ( hasVerts == 1 ) {
+       Vec3 vertices[numVerts] <open=suppress>;
+    }
+
+    ushort numUVSets;
+    
+    if ( stream > 34 )
+        uint unknown2;
+    
+    byte hasNormals;
+    
+    if ( hasNormals == 1 )
+        Vec3 normals[numVerts] <open=suppress>;
+    
+    if ( hasNormals == 1 && (numUVSets & 4096) ) {
+        Vec3 tangents[numVerts] <open=suppress>;
+        Vec3 bitangents[numVerts] <open=suppress>;
+    }
+
+    Vec3 center;
+    float radius;
+    byte hasVertColors;
+
+    if ( hasVerts == 1 ) {
+        if ( hasVertColors == 1 )
+            Color4 vertColors[numVerts] <open=suppress>;
+        if ( numUVSets & 4096 ) {
+            TexCoord UVSets[numVerts] <open=suppress>;
+        }
+    }
+    
+    ConsistencyType ct;
+    Ref additionalData;
+
+    ushort numTris;
+    ushort numPoints;
+    ushort what;
+    byte hasTris;
+    if ( hasTris == 1 ) {
+        Triangle tris[numTris] <open=suppress>;
+    }
+
+    ushort numGroups;
+    if ( numGroups > 0 ) {
+        MatchGroup groups[numGroups] <open=suppress>;
+    }
+} NiTriShapeData <name="NiTriShapeData">; // END
+
+
+// BSVertexData
+typedef struct ( uint64 f ) {
+    local uint64 vf = (f & 0xffff0000000000) >> 40;
+
+    if ( vf & 16 ) {
+        if ( stream == 100 ) {
+            Vec3 vertex;
+        } else if ( vf & 16384 ) {
+            Vec3 vertex;
+        } else {
+            HalfVec3 vertex; 
+        }
+    }
+
+    if ( stream == 100 || (stream == 130 && (vf & 16384)) ) {
+        if ( vf & 256 )
+            float bitX;
+        else
+            uint unk;
+    } else if ( vf & 256 ) {
+        hfloat bitX;
+    } else {
+        ushort unkShort;
+    }
+
+    if ( (vf & 16) && (vf & 32) ) // & 16 seems necessary only on BSDynamicTriShape vertex data
+        HalfTexCoord uv;          // because of improper vertex flags
+        
+
+    if ( vf & 128 ) {
+        ByteVec4 normal("BitY");
+        if ( vf & 256 )
+            ByteVec4 tangent("BitZ");
+    }
+
+    if ( vf & 512 )
+        ByteColor4 vertexColors;
+
+    if ( vf & 1024 ) {
+        hfloat weights[4];
+        byte indices[4];
+    }
+    
+    if ( stream == 130 && (vf & 4096) ) // Needs testing for stream version 100
+        uint unkInt;
+
+} BSVertexData;
+
+// BSTriShape
+typedef struct {
+    NiAVObject base;
+    BVSphere bounds;
+    Ref NiSkinInstance;
+    Ref bsprop1;
+    Ref bsprop2;
+    VertexDesc vertexDesc;
+    if ( stream < 130 )
+        ushort numTris;
+    else
+        uint numTris;
+    ushort numVerts;
+
+    uint dataSize;
+    if ( dataSize > 0 )
+        BSVertexData vertexData(vertexDesc)[numVerts] <open=suppress, optimize=true>;
+    if ( dataSize > 0 && numTris > 0 )
+        Triangle triangles[numTris];
+
+    if ( stream == 100 ) {
+        uint someDataSize;
+        if ( someDataSize > 0 ) {
+            Vec3 verts[numVerts];
+            Triangle tris[numTris];
+        }
+    }
+} BSTriShape <optimize=false, name="BSTriShape">;
+
+// BSSubIndexTriShape
+typedef struct {
+    BSTriShape base <open=true>;
+    if ( base.dataSize > 0 ) {
+        uint numPrimitives;
+        uint numSegments;
+        uint totalSegments;
+        if ( numSegments > 0 ) {
+            struct {
+                struct {
+                    uint startIndex;
+                    uint numPrimitives;
+                    uint parentArrayIndex;
+                    uint numSubSegments;
+                    if ( numSubSegments > 0 ) {
+                        struct {
+                            uint startIndex;
+                            uint numPrimitives;
+                            uint parentArrayIndex;
+                            uint unk;
+                        } BSSITSSubSegment[numSubSegments] <optimize=true>;
+                    }
+                } BSSITSSegment[numSegments] <optimize=false>;
+            } BSSITSSegments <name="Segments">;
+        }
+
+        if ( totalSegments > numSegments ) {
+            struct {
+                uint numSegments;
+                uint totalSegments;
+                if ( numSegments > 0 )
+                    uint arrayIndex[numSegments];
+                if ( totalSegments > 0 )
+                    struct {
+                        uint segmentOrUser;
+                        uint unk;
+                        uint numUnkData;
+                        if ( numUnkData > 0 )
+                            float unkData[numUnkData];
+                    } BSSITSSubSegmentRecord[totalSegments] <optimize=false>;
+                SSTRING16 ssfFile;
+            } BSSITSSubSegmentData <name="Sub Segment Data">;
+        }
+    }
+    
+} BSSubIndexTriShape <name="BSSubIndexTriShape">;
+
+// BSDynamicTriShape
+typedef struct {
+    BSTriShape base;
+    uint dataSize;
+    Vec4 wut[base.numVerts];
+} BSDynamicTriShape <optimize=false, name="BSDynamicTriShape">;
+
+// BSMeshLODTriShape
+typedef struct {
+    BSTriShape base <open=true>;
+    uint lvl0;
+    uint lvl1;
+    uint lvl2;
+} BSMeshLODTriShape <name="BSMeshLODTriShape">;
+
+
+// SKIN
+
+// NiSkinInstance
+typedef struct {
+    Ref data; // NiSkinData
+    Ref partition; // NiSkinPartition
+    Ref root; // NiNode
+    uint numBones;
+    if ( numBones > 0 )
+        Ref bone[numBones]; // NiNode
+} NiSkinInstance <name="NiSkinInstance">;
+
+// BSDSkinInstance
+typedef struct {
+    NiSkinInstance instance;
+    uint numParts;
+    if ( numParts > 0 )
+        BSBodyPartList parts[numParts];
+} BSDSkinInstance <name="BSDismemberSkinInstance">;
+
+// BSSkin::Instance
+typedef struct {
+    Ref rootParent;
+    Ref boneData;
+    uint numBones;
+    if ( numBones > 0 )
+        Ref bone[numBones];
+    uint numUnk;
+    if ( numUnk > 0 )
+        Vec3 unk[numUnk];
+} BSSkinInstance <name="BSSkin::Instance">;
+
+
+// NiSkinData
+typedef struct {
+    SkinTransform transform;
+    uint numBones;
+    byte hasWeights;
+    SkinData bones(hasWeights)[numBones];
+} NiSkinData <name="NiSkinData">;
+
+// BSSkin::BoneData
+typedef struct {
+    uint numBones;
+    if ( numBones > 0 )
+        BSSkinBoneTrans bone[numBones];
+} BSSkinBoneData <name="BSSkin::BoneData">;
+
+// NiSkinPartition
+typedef struct {
+    uint numParts;
+    if ( stream < 100 ) {
+        SkinPartition parts[numParts];
+    } else {
+        uint dataSize;
+        uint vertexSize;
+        VertexDesc vertexDesc;
+        //local uint64 fakeDesc = (uint64)(vertexSize / 4) << 64;
+
+        if ( dataSize > 0 )
+            BSVertexData vertexData(vertexDesc)[dataSize/vertexSize] <open=suppress, optimize=true>;
+        SkinPartition parts[numParts] <optimize=false>;
+    }   
+} NiSkinPartition <name="NiSkinPartition">;
+
+
+// BOUNDS
+
+typedef struct {
+    Ref data; // BSMultiBoundData
+} BSMultiBound <name="BSMultiBound">;
+
+typedef struct {
+    Vec3 center;
+    Vec3 size;
+    Matrix33 rotation;
+} BSMultiBoundOBB <name="BSMultiBoundOBB">;

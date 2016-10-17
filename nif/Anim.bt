@@ -1,0 +1,348 @@
+//------------------------------------------------
+//--- 010 Editor v7.0.2 Binary Template
+//
+//      File: Anim.bt
+//   Authors: jonwd7
+//   Version: 
+//   Purpose: 
+//  Category: 
+// File Mask: 
+//  ID Bytes: 
+//   History: 
+//------------------------------------------------
+
+typedef struct {
+    SSTRING name;
+   Ref object;
+} NIAVOBJ <name="AV Object", open=true>;
+
+typedef struct {
+    uint unk;
+    uint numObjs;
+    if ( numObjs > 0 )
+        NIAVOBJ object[numObjs] <optimize=false>;
+} NiAVObjPalette <name="NiDefaultAVObjectPalette">;
+
+typedef struct {
+    Ref nextController;
+    ushort flags;
+    float frequency;
+    float phase;
+    float startTime;
+    float stopTime;
+    Ref target;
+} NITIMECTLR <open=true>; // Abstract
+
+typedef NITIMECTLR NIINTERPCTLR <open=true>; // Abstract
+
+typedef struct {
+    NITIMECTLR controller;
+    Ref interpolator;
+} NISINGLEINTERPCTLR <open=true>; // Abstract
+
+typedef NISINGLEINTERPCTLR NIFLOATINTERPCTLR <open=true>; // Abstract
+typedef NISINGLEINTERPCTLR NIBOOLINTERPCTLR <open=true>; // Abstract
+typedef NISINGLEINTERPCTLR NIEXTRADATACTLR <open=true>; // Abstract
+
+typedef NIBOOLINTERPCTLR NiVisCtlr <name="NiVisController", open=false>;
+
+typedef struct {
+    NIEXTRADATACTLR controller;
+    STRING extraData;
+} NiFloatEDCtlr <name="NiFloatExtraDataController">;
+
+typedef struct {
+    Ref interpolator;
+    Ref controller;
+    byte priority;
+    STRING nodeName;
+    STRING propType;
+    STRING ctrlType;
+    STRING var1;
+    STRING var2;
+} CTRLLINK <name="Controlled Block">;
+
+typedef struct {
+    STRING name;
+    uint numBlocks;
+    uint unk1;
+    if ( numBlocks > 0 )
+        CTRLLINK block[numBlocks];
+} NISEQ <name="NiSequence">;
+
+typedef struct {
+    NISEQ sequence;
+    float weight;
+    Ref textKey;
+    uint CycleType; // enum
+    float frequency;
+    float startTime;
+    float stopTime;
+    Ref manager;
+    STRING targetName;
+    ushort unk;
+} NiCtlrSeq <name="NiControllerSequence">;
+
+typedef struct {
+    NITIMECTLR controller;
+    byte isCumulative;
+    uint numCtrlSeq;
+    if ( numCtrlSeq > 0 )
+        Ref ctrlSeq[numCtrlSeq];
+    Ref objPalette;
+} NiControllerMgr <name="NiControllerManager">;
+
+typedef struct {
+    NITIMECTLR controller;
+    Ref interpolator; // NiKeyframeData
+} NiTransCtlr <name="NiTransformController">;
+
+typedef struct {
+    NIINTERPCTLR controller;
+    ushort numTargets;
+    if ( numTargets > 0 )
+        Ref targets[numTargets];
+} NiMultiTransCtlr <name="NiMultiTargetTransformController">;
+
+typedef struct {
+    NITIMECTLR controller;
+    Ref interpolator; // NiFloatInterpolator
+} BSFrustumCtlr <name="BSFrustumFOVController">;
+
+typedef struct {
+    NIFLOATINTERPCTLR controller;
+    uint controlledVariable; // Enum
+} BSLSPFloatCtlr <name="BSLightingShaderPropertyFloatController">;
+
+typedef struct {
+    NIFLOATINTERPCTLR controller;
+    uint controlledColor; // Enum
+} BSLSPColorCtlr <name="BSLightingShaderPropertyColorController">;
+
+typedef struct {
+    NIFLOATINTERPCTLR controller;
+    uint controlledVariable; // Enum
+} BSESPFloatCtlr <name="BSEffectShaderPropertyFloatController">;
+
+typedef struct {
+    NIFLOATINTERPCTLR controller;
+    uint controlledColor; // Enum
+} BSESPColorCtlr <name="BSEffectShaderPropertyColorController">;
+
+typedef NIFLOATINTERPCTLR NiAlphaCtlr <name="NiAlphaController", open=false>;
+typedef NiAlphaCtlr BSNiAlphaCtlr <name="BSNiAlphaPropertyTestRefController", open=false>;
+
+typedef struct {
+    NISINGLEINTERPCTLR controller;
+    STRING modifier;
+} NIPSYSMODCTLR <open=true>; // Abstract
+
+typedef NIPSYSMODCTLR NIPSYSBOOLCTLR <name="NiPSysModifierCtlr", open=true>; // Abstract
+typedef NIPSYSBOOLCTLR NiPSysActiveCtlr <name="NiPSysModifierActiveCtlr", open=false>;
+
+typedef NIPSYSMODCTLR NIPSYSMODFLOATCTRLTR <name="NiPSysModifierFloatCtlr", open=true>; // Abstract
+typedef NIPSYSMODFLOATCTRLTR NiPSysGravStrCtlr <name="NiPSysGravityStrengthCtlr", open=false>;
+
+typedef struct {
+    NIPSYSMODCTLR controller;
+    Ref visInterpolator;
+} NiPSysEmitterCtlr <name="NiPSysEmitterCtlr">;
+
+typedef NITIMECTLR NiPSysUpdateCtlr <name="NiPSysUpdateCtlr", open=false>;
+
+typedef NIFLOATINTERPCTLR NiLightRadiusCtlr <name="NiLightRadiusController", open=false>;
+
+// DATA
+
+typedef struct ( KeyType i ) {
+    float time;
+    Vec3 value;
+    if ( i == 2 ) {
+        Vec3 forward;
+        Vec3 backward;
+    }
+    if ( i == 3 )
+        TBC tbc;
+} Vec3Key <name="Vector3 Key">;
+
+typedef struct {
+    uint numKeys;
+    if ( numKeys > 0 ) {
+        KeyType interpolation;
+        if ( numKeys > 0 )
+            Vec3Key key(interpolation)[numKeys] <optimize=true>;
+    }
+} Vec3KeyGrp <name="Keys">;
+
+typedef struct ( KeyType i ) {
+    float time;
+    Vec4 value;
+    if ( i == 2 ) {
+        Vec4 forward;
+        Vec4 backward;
+    }
+    if ( i == 3 )
+        TBC tbc;
+} Vec4Key <name="Vector4 Key">;
+
+typedef struct {
+    uint numKeys;
+    if ( numKeys > 0 ) {
+        KeyType interpolation;
+        if ( numKeys > 0 )
+            Vec4Key key(interpolation)[numKeys] <optimize=true>;
+    }
+} VEC4KEYGRP <name="Keys">;
+
+typedef struct ( KeyType i ) {
+    float time;
+    float value;
+    if ( i == 2 ) {
+        float forward;
+        float backward;
+    }
+    if ( i == 3 )
+        TBC tbc;
+} FloatKey <name="Float Key">;
+
+typedef struct {
+    uint numKeys;
+    if ( numKeys > 0 ) {
+        KeyType interpolation;
+        if ( numKeys > 0 )
+            FloatKey key(interpolation)[numKeys] <optimize=true>;
+    }
+
+} FloatKeyGrp <name="Keys">;
+
+typedef struct ( KeyType i ) {
+    float time;
+    byte value;
+    if ( i == 2 ) {
+        byte forward;
+        byte backward;
+    }
+    if ( i == 3 )
+        TBC tbc;
+} ByteKey <name="Byte Key">;
+
+typedef struct {
+    uint numKeys;
+    if ( numKeys > 0 ) {
+        KeyType interpolation;
+        if ( numKeys > 0 )
+            ByteKey key(interpolation)[numKeys] <optimize=true>;
+    }
+} ByteKeyGrp <name="Keys">;
+
+typedef struct ( KeyType i ) {
+    float time;
+    STRING value;
+    if ( i == 2 ) {
+        STRING forward;
+        STRING backward;
+    }
+    if ( i == 3 )
+        TBC tbc;
+} StringKey <name="String Key">;
+
+typedef struct {
+    uint numKeys;
+    if ( numKeys > 0 ) {
+        KeyType interpolation;
+        if ( numKeys > 0 )
+            StringKey key(interpolation)[numKeys] <optimize=true>;
+    }
+} StringKeyGrp <name="Keys">;
+
+typedef struct {
+    uint numRotKeys;
+    if ( numRotKeys > 0 )
+    {
+        KeyType rotType;
+        if ( rotType != XYZ_ROTATION_KEY )
+            Vec4Key rotations(rotType)[numRotKeys] <optimize=true>;
+        else if ( rotType == XYZ_ROTATION_KEY ) {
+            FloatKeyGrp rotations[3] <optimize=false>;
+        }
+            
+    }
+    Vec3KeyGrp translations;
+    FloatKeyGrp scales;
+} NiKFData <name="NiKeyFrameData">;
+
+typedef struct {
+    NiKFData data;
+} NiTransformData <name="NiTransformData">;
+
+typedef struct {
+    Vec3KeyGrp positions;
+} NiPosData <name="NiPosData">;
+
+typedef struct {
+    ByteKeyGrp data;
+} NiByteData;
+typedef NiByteData NiBoolData <name="NiBoolData">;
+
+typedef struct {
+    FloatKeyGrp data;
+} NiFloatData <name="NiFloatData">;
+
+
+// INTERPOLATORS
+
+typedef struct {
+    ushort unk1;
+    uint unk2;
+} NIBLENDINTERP; // Abstract
+
+typedef struct {
+    byte value;
+    Ref data; // NiBoolData
+} NiBoolInterp <name="NiBoolInterpolator">;
+
+typedef NiBoolInterp NiBoolTimeInterp <name="NiBoolTimelineInterpolator">;
+
+typedef struct {
+    NIBLENDINTERP blend;
+    byte value;
+} NiBlendBool <name="NiBlendBoolInterpolator">;
+
+typedef struct {
+    float value;
+    Ref data; // NiFloatData
+} NiFloatInterp <name="NiFloatInterpolator">;
+
+typedef struct {
+    NIBLENDINTERP blend;
+    float value;
+} NiBlendFloat <name="NiBlendFloatInterpolator">;
+
+typedef struct {
+    Vec3  translation;
+    Quat rotation;
+    float scale;
+    Ref data; // NiTransformData
+} NiTransformInterp <name="NiTransformInterpolator">;
+
+typedef struct {
+    Vec3 point;
+    Ref data; // NiPosData
+} NiPoint3Interp <name="NiPoint3Interpolator">;
+
+typedef struct {
+    NIBLENDINTERP blend;
+    Vec3 point;
+} NiBlendPoint3 <name="NiBlendPoint3Interpolator">;
+
+typedef struct {
+    ushort unk1;
+    Ref lookAt;
+    STRING target;
+    Vec3 translation;
+    Quat rotation;
+    float scale;
+    Ref unkLink1;
+    Ref unkLink2;
+    Ref unkLink3;
+} NiLookAtInterp <name="NiLookAtInterpolator">;

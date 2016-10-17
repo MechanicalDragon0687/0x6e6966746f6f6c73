@@ -1,0 +1,309 @@
+//------------------------------------------------
+//--- 010 Editor v7.0.2 Binary Template
+//
+//      File: bhk.bt
+//   Authors: jonwd7
+//   Version: 
+//   Purpose: 
+//  Category: 
+// File Mask: 
+//  ID Bytes: 
+//   History: 
+//------------------------------------------------
+
+typedef struct {
+    byte data;
+} FlagPart <name="Flags and Part Number">;
+
+typedef struct {
+    Ref shape;
+    if ( stream < 83 )
+        FO3Layer layer;
+    else if ( stream == 83 || stream == 100 )
+        SkyrimLayer layer;
+    else
+        OblivionLayer layer;
+    FlagPart flags;
+    ushort unk;
+} bhkWorldOBJ <open=true>;
+
+typedef struct {
+    bhkWorldOBJ obj;
+    int unknownInt1;
+    int unknownInt2;
+    int unknown3Ints[3];
+    hkResponseType collisionResponse;
+    ubyte unknownByte;
+    ushort callbackDelay;
+    ushort unknown2shorts[2];
+    if ( stream < 83 )
+        FO3Layer layerCopy;
+    else if ( stream == 83 || stream == 100 )
+        SkyrimLayer layerCopy;
+    else
+        OblivionLayer layerCopy;
+    byte colFilterCopy;
+    ushort unknown7shorts[7];
+    Vec4 translation;
+    QuatXYZW rotation;
+    Vec4 linearVel;
+    Vec4 angularVel;
+    Matrix43 inertia;
+    Vec4 center;
+    float mass;
+    float linearDamping;
+    float angularDamping;
+
+    if ( stream > 34 ) {
+        float unknownTimeFactor;
+        float unknownTimeFactor2;
+    }
+
+    float friction;
+    if ( stream > 34 )
+        float rollingFrictionMult;
+    float restitution;
+    float maxLinearVel;
+    float maxAngularVel;
+    float penDepth;
+    byte motionSystem;
+    byte deactivatorType;
+    byte solverDeactivation;
+    byte qualityType;
+    uint unknownInt6;
+    uint unknownInt7;
+    uint unknownInt8;
+    if ( stream > 34 )
+        uint unknownInt81;
+    uint numConstraints;
+    if ( numConstraints > 0 )
+        Ref constraints[numConstraints] <optimize=false>;
+    
+    if ( stream <= 34 )
+        uint wind;
+    else
+        ushort wind;
+} bhkRigidBody <name="bhkRigidBody">;
+
+typedef bhkRigidBody bhkRigidBodyT <name="bhkRigidBodyT">;
+
+// OBJECTS
+
+typedef struct {
+    Ref target;
+    ushort flags;
+    Ref body;
+} bhkCollisionObj <name="bhkCollisionObject">;
+
+typedef struct {
+    Ref target;
+    ushort flags;
+    Ref data;
+    uint bodyID;
+} bhkNPCollObj <name="bhkNPCollisionObject">;
+
+typedef bhkCollisionObj bhkSPCollObj <name="bhkSPCollisionObject">;
+
+// SHAPES
+
+typedef struct {
+    uint numShapes;
+    if ( numShapes > 0 )
+        Ref shape[numShapes];
+    uint HavokMaterial; // enum
+    float unkFloats[6];
+    uint numUnk;
+    if ( numUnk > 0 )
+        uint unkInts[numUnk];
+} bhkListShape <name="bhkListShape">;
+
+typedef struct {
+    uint HavokMaterial; // enum
+    float radius;
+} bhkConvexShape <open=true>; // Abstract
+
+typedef bhkConvexShape bhkSphereShape <name="bhkSphereShape", open=false>;
+
+typedef struct {
+    bhkConvexShape shape;
+    byte unk[8];
+    Vec3 dimensions;
+    float minSize;
+} bhkBoxShape <name="bhkBoxShape">;
+
+typedef struct {
+    bhkConvexShape shape;
+    byte unk[8];
+    Vec3 point1;
+    float radius1;
+    Vec3 point2;
+    float radius2;
+} bhkCapsuleShape <name="bhkCapsuleShape">;
+
+typedef struct {
+    bhkWorldOBJ obj;
+    float unkData[23];
+} bhkSSPhantom <name="bhkSimpleShapePhantom">;
+
+typedef struct {
+    uint mat;
+    float radius;
+    float unknown[6];
+    uint numVerts;
+    if ( numVerts > 0 )
+        Vec4 verts[numVerts] <optimize=true>;
+    uint numNormals;
+    if ( numNormals > 0 )
+        Vec4 normals[numNormals] <optimize=true>;
+} bhkCVS <name="bhkConvexVerticesShape">;
+
+typedef struct {
+    Ref shape;
+    uint HavokMaterial; // Enum
+    float unk1;
+    byte unk[8];
+    Matrix44 transform;
+} bhkTS <name="bhkTransformShape">;
+
+typedef bhkTS bhkCTS <name="bhkConvexTransformShape">;
+
+typedef struct {
+    Ref shape;
+    uint unkInt1;
+    byte unkBytes[8];
+    float unkFloat1;
+    uint dataSize;
+    Vec3 origin;
+    float scale;
+    if ( stream > 34 )
+        byte buildType;
+    if ( dataSize > 0 )
+        byte data[dataSize];
+} bhkMoppBVShape <name="bhkMoppBvTreeShape">;
+
+typedef struct {
+    Ref target;
+    uint unkInt1;
+    float unkFloat1;
+    byte unkBytes[4];
+    Vec4 unkVec4;
+    float radius;
+    float scale;
+    float unkFloats[3];
+    Ref data;
+} bhkCMS <name="bhkCompressedMeshShape">;
+
+typedef struct {
+    uint skyrimMat;
+    uint unknown;
+} bhkCMSDMat;
+
+typedef struct {
+    Vec4 translation;
+    QuatXYZW rotation;
+} bhkCMSDTrans;
+
+typedef struct {
+    ushort tri1;
+    ushort tri2;
+    ushort tri3;
+    uint unknownInt1;
+    ushort unknownShort1;
+} bhkCMSDBT;
+
+typedef struct {
+    Vec4 translation;
+    uint matIndex;
+    ushort unknownShort1;
+    ushort transformIndex;
+    uint numVerts;
+    ushort verts[numVerts] <optimize=false>;
+    uint numIndices;
+    ushort indices[numIndices] <optimize=false>;
+    uint numStrips;
+    ushort strips[numStrips] <optimize=false>;
+    uint numIndices2;
+    ushort indices2[numIndices2] <optimize=false>;
+    
+} bhkCMSDChunk;
+
+typedef struct {
+    uint bitsPerIndex;
+    uint bitsPerWIndex;
+    uint maskWIndex;
+    uint maskIndex;
+    float error;
+    Vec4 boundsMin;
+    Vec4 boundsMax;
+    byte unknownByte1;
+    uint unknownInt1;
+    uint unknownInt2;
+    uint unknownInt3;
+    byte unknownByte2;
+    uint numMaterials;
+    bhkCMSDMat materials[numMaterials] <optimize=false>;
+    uint unknownInt4;
+    uint numTransforms;
+    bhkCMSDTrans transforms[numTransforms] <optimize=false>;
+    uint numBigVerts;
+    if ( numBigVerts > 0 )
+        Vec4 bigVerts[numBigVerts] <optimize=false>;
+    uint numBigTris;
+    if ( numBigTris > 0 )
+        bhkCMSDBT bigTris[numBigTris] <optimize=false>;
+    uint numChunks;
+    bhkCMSDChunk chunks[numChunks] <optimize=false>;
+    uint unknownInt5;
+} bhkCMSD <name="bhkCompressedMeshShapeData">;
+
+
+// CONSTRAINTS
+
+typedef struct {
+    Vec4 axleA;
+    Vec4 axleInA1;
+    Vec4 axleInA2;
+    Vec4 pivotA;
+    Vec4 axleB;
+    Vec4 axleInB1;
+    Vec4 axleInB2;
+    Vec4 pivotB;
+} bhkHinge <open=true>; // Abstract
+
+typedef struct {
+    float unk[6];
+    byte unkByte;
+} bhkMotor;
+
+typedef struct {
+    bhkHinge hinge <open=true>;
+    float minAngle;
+    float maxAngle;
+    float maxFriction;
+    byte enableMotor;
+    if ( enableMotor == 1 )
+        bhkMotor motor;
+} bhkLimitedHinge <open=true>; // Abstract
+
+typedef struct {
+    uint numEntities;
+    if ( numEntities > 0 )
+       Ref entity[numEntities];
+    uint priority;
+} bhkConstraint <open=true>; // Abstract
+
+typedef struct {
+    bhkConstraint base;
+    bhkHinge hinge;
+} bhkHingeConstraint <name="bhkHingeConstraint">;
+
+typedef struct {
+    bhkConstraint base;
+    bhkLimitedHinge hinge;
+} bhkLHConstraint <name="bhkLimitedHingeConstraint">;
+
+
+// SYSTEMS
+
+typedef ByteArray bhkPhysSystem <name="bhkPhysicsSystem">;
+typedef ByteArray bhkRagSystem <name="bhkRagdollSystem">;

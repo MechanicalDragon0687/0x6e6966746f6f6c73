@@ -1,0 +1,300 @@
+//------------------------------------------------
+//--- 010 Editor v7.0.2 Binary Template
+//
+//      File: Particles.bt
+//   Authors: jonwd7
+//   Version: 
+//   Purpose: 
+//  Category: 
+// File Mask: 
+//  ID Bytes: 
+//   History: 
+//------------------------------------------------
+
+typedef struct {
+    //NiAVObject base;
+    NiGeometryPSys base;
+    ushort unk1;
+    ushort unk2;
+    uint unk3;
+    if ( stream >= 100 ) {
+        uint unk4;
+        uint unk5;
+        Ref data; // NiPSysData
+    }
+
+    byte worldSpace;
+    uint numModifiers;
+    if ( numModifiers > 0 )
+        Ref modifier[numModifiers]; // NiPSysModifier
+} NiParticleSys <name="NiParticleSystem">;
+
+typedef struct {
+    uint unknown;
+    ushort numVerts;
+    byte keepFlags;
+    byte compressFlags;
+    byte hasVerts;
+    ushort numUVSets;
+    byte hasNormals;
+    
+    if ( hasNormals == 1 )
+        Vec3 normals[numVerts] <open=suppress>;
+    
+    if ( hasNormals == 1 && (numUVSets & 4096) ) {
+        Vec3 tangents[numVerts] <open=suppress>;
+        Vec3 bitangents[numVerts] <open=suppress>;
+    }
+
+    Vec3 center;
+    float radius;
+    byte hasVertColors;
+
+    if ( hasVerts == 1 ) {
+        if ( hasVertColors == 1 )
+            Color4 vertColors[numVerts] <open=suppress>;
+        if ( numUVSets & 4096 ) {
+            TexCoord UVSets[numVerts] <open=suppress>;
+        }
+    }
+
+    byte hasRadii;
+    ushort numActive;
+    byte hasSizes;
+    byte hasRotations;
+    byte unk1;
+    Ref unkLink;
+    byte hasRotationAngles;
+    byte hasRotationAxes;
+    byte unk2;
+    ushort unk3;
+    ushort unk4;
+    byte hasSubtexOffsetUVs;
+    uint numSubtexOffsetUVs;
+    float aspectRatio;
+    if ( hasSubtexOffsetUVs == 1 )
+        Vec4 subtexOffsetUVs[numSubtexOffsetUVs];
+    uint unk5;
+    uint unk6;
+    uint unk7;
+    ushort unk8;
+    byte unk9;
+} NiPSysData <name="NiPSysData">;
+
+
+// MODIFIERS
+
+typedef enum <uint> {
+    FORCE_PLANAR,
+    FORCE_SPHERICAL,
+    FORCE_UNKNOWN
+} ForceType;
+
+typedef struct {
+    STRING name;
+    uint order;
+    Ref target;
+    byte isActive;
+} NiPSysModifier <open=true>; // Abstract
+
+// NiPSysAgeDeathModifier
+typedef struct {
+    NiPSysModifier base;
+    byte spawnOnDeath;
+    Ref spawnModifier; // NiPSysSpawnModifier
+} NiPSAgeDeathMod <name="NiPSysAgeDeathModifier">;
+
+// NiPSysSpawnModifier
+typedef struct {
+    NiPSysModifier base;
+    ushort numSpawnGenerations;
+    float percentSpawned;
+    ushort minSpawned;
+    ushort maxSpawned;
+    float spawnSpeedVariation;
+    float spawnDirVariation;
+    float lifeSpan;
+    float lifeSpanVariation;
+} NiPSSpawnMod <name="NiPSysSpawnModifier">;
+
+// BSPSysSimpleColorModifier
+typedef struct {
+    NiPSysModifier base;
+    float fadeInPercent;
+    float fadeOutPercent;
+    float color1EndPercent;
+    float color1StartPercent;
+    float color2EndPercent;
+    float color2StartPercent;
+    Color4 color[3];   
+} BSPSSimpleColorMod <name="BSPSysSimpleColorModifier">;
+
+// NiPSysRotationModifier
+typedef struct {
+    NiPSysModifier base;
+    float initialSpeed;
+    float initialSpeedVariation;
+    float initialAngle;
+    float initialAngelVariation;
+    byte randomSpeedSign;
+    byte randomInitialAxis;
+    Vec3 initialAxis;
+} NiPSRotationMod <name="NiPSysRotationModifier">;
+
+// BSPSysScaleModifier
+typedef struct {
+    NiPSysModifier base;
+    uint numScales;
+    if ( numScales > 0 )
+        float scale[numScales];
+} BSPSScaleMod <name="BSPSysScaleModifier">;
+
+// BSPSysLODModifier
+typedef struct {
+    NiPSysModifier base;
+    Vec4 unk;
+} BSPSLODMod <name="BSPSysLODModifier">;
+
+// NiPSysGravityModifier
+typedef struct {
+    NiPSysModifier base;
+    Ref gravityObj;
+    Vec3 gravityAxis;
+    float decay;
+    float strength;
+    ForceType forceType;
+    float turbulence;
+    float turbulenceScale;
+    byte unk;
+} NiPSGravityMod <name="NiPSysGravityModifier">;
+
+// NiPSysDragModifier
+typedef struct {
+    NiPSysModifier base;
+    Ref parent;
+    Vec3 dragAxis;
+    float percentage;
+    float range;
+    float rangeFalloff;
+} NiPSDragMod <name="NiPSysDragModifier">;
+
+// NiPSysPositionModifier
+typedef NiPSysModifier NiPSPositionMod <name="NiPSysPositionModifier", open=false>;
+
+// NiPSysBoundUpdateModifier
+typedef struct {
+    NiPSysModifier base;
+    ushort updateSkip;
+} NiPSBoundUpdateMod <name="NiPSysBoundUpdateModifier">;
+
+// BSPSysSubTexModifier
+typedef struct {
+    NiPSysModifier base;
+    float startFrame; // uint??
+    float startFrameVariation;
+    float endFrame;
+    float loopStartFrame;
+    float loopStartFrameVariation;
+    float frameCount;
+    float frameCountVariation;
+} BSPSysSubTexMod <name="BSPSysSubTexModifier">;
+
+//BSWindModifier
+//BSPSysInheritVelocityModifier
+
+// NiPSysColliderManager
+typedef struct {
+    NiPSysModifier base;
+    Ref collider;
+} NiPSysCollMgr <name="NiPSysColliderManager">;
+
+// EMITTERS
+
+typedef enum <uint> {
+    VELOCITY_USE_NORMALS,
+    VELOCITY_USE_RANDOM,
+    VELOCITY_USE_DIRECTION
+} VelocityType;
+
+typedef enum <uint> {
+    EMIT_FROM_VERTICES,
+    EMIT_FROM_FACE_CENTER,
+    EMIT_FROM_EDGE_CENTER,
+    EMIT_FROM_FACE_SURFACE,
+    EMIT_FROM_EDGE_SURFACE
+} EmissionType;
+
+typedef struct {
+    NiPSysModifier base;
+    float speed;
+    float speedVariation;
+    float declination;
+    float declinationVariation;
+    float planarAngle;
+    float planarAngleVariation;
+    Color4 color;
+    float radius;
+    float radiusVariation;
+    float lifeSpan;
+    float lifeSpanVariation;
+} NiPSysEmitter <open=true>; // Abstract
+
+typedef struct {
+    NiPSysEmitter base;
+    Ref emitterNode; // NiNode
+} NiPSysVolumeEmitter <open=true>; // Abstract
+
+typedef struct {
+    NiPSysEmitter base;
+    uint numMeshes;
+    if ( numMeshes > 0 )
+        Ref mesh[numMeshes];
+    VelocityType velocityType;
+    EmissionType emissionType;
+    Vec3 emissionAxis;
+} NiPSysMeshEmitter <name="NiPSysMeshEmitter">;
+
+typedef struct {
+    NiPSysVolumeEmitter base;
+    float radius;
+} NiPSysSphEmitter <name="NiPSysSphereEmitter">;
+
+typedef struct {
+    NiPSysVolumeEmitter base;
+    float width;
+    float height;
+    float depth;
+} NiPSysBoxEmitter <name="NiPSysBoxEmitter">;
+
+typedef struct {
+    NiPSysVolumeEmitter base;
+    float radius;
+    float height;
+} NiPSysCylEmitter <name="NiPSysCylinderEmitter">;
+
+
+// COLLIDERS
+
+// NiPSysCollider
+typedef struct {
+    float bound;
+    byte spawnOnCollide;
+    byte dieOnCollide;
+    Ref spawnModifier; // NiPSysSpawnModifier
+    Ref parent;
+    Ref nextCollider;
+    Ref colliderNode; // NiNode
+} NiPSysCollider <open=true>; // Abstract
+
+typedef struct {
+    NiPSysCollider base;
+    float width;
+    float height;
+    Vec3 xAxis;
+    Vec3 yAxis;
+} NiPSysPlanarColl <name="NiPSysPlanarCollider">;
+
+typedef struct {
+    NiPSysCollider base;
+    float radius;
+} NiPSysSphColl <name="NiPSysSphericalCollider">;

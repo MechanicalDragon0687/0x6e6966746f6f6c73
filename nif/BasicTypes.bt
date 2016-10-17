@@ -1,0 +1,294 @@
+//------------------------------------------------
+//--- 010 Editor v7.0.2 Binary Template
+//
+//      File: BasicTypes.bt
+//   Authors: jonwd7
+//   Version: 
+//   Purpose: 
+//  Category: 
+// File Mask: 
+//  ID Bytes: 
+//   History: 
+//------------------------------------------------
+
+//typedef float float <read=ParseFloat>;
+
+typedef uint64 VertexDesc <format=hex>;
+
+typedef struct {
+    float X;
+    float Y;
+    float Z;
+} Vec3 <read=ReadVec3, open=suppress>;
+
+typedef struct {
+    hfloat X;
+    hfloat Y;
+    hfloat Z;
+} HalfVec3;
+
+typedef struct {
+    byte X;
+    byte Y;
+    byte Z;
+} ByteVec3;
+
+typedef struct {
+    float X;
+    float Y;
+    float Z;
+    float W;
+} Vec4 <read=ReadVec4, open=suppress>;
+
+typedef struct ( string str ) {
+    local string sW = str;
+    byte X;
+    byte Y;
+    byte Z;
+    byte W;
+} ByteVec4 <read=ReadByteVec4, open=suppress>;
+
+typedef struct {
+    float W;
+    float X;
+    float Y;
+    float Z;
+} Quat;
+
+typedef Vec4 QuatXYZW;
+
+typedef struct {
+    float R;
+    float G;
+    float B;
+} Color3;
+
+typedef struct {
+    float R;
+    float G;
+    float B;
+    float A;
+} Color4;
+
+typedef struct {
+    ubyte R;
+    ubyte G;
+    ubyte B;
+    ubyte A;
+} ByteColor4;
+
+typedef struct {
+    Vec3 _1;
+    Vec3 _2;
+    Vec3 _3;
+} Matrix33;
+
+typedef struct {
+    Vec4 _1;
+    Vec4 _2;
+    Vec4 _3;
+} Matrix43;
+
+typedef struct {
+    Vec4 _1;
+    Vec4 _2;
+    Vec4 _3;
+    Vec4 _4;
+} Matrix44;
+
+typedef struct {
+    uint size;
+    if ( size > 0 )
+        byte data[size] <open=suppress>;
+} ByteArray <open=suppress>;
+
+typedef struct {
+    float U;
+    float V;
+} TexCoord <name="UV", read=ReadTexCoord>;
+
+typedef struct {
+    hfloat U;
+    hfloat V;
+} HalfTexCoord <name="UV", read=ReadHalfTexCoord>;
+
+typedef struct {
+    ushort A;
+    ushort B;
+    ushort C;
+} Triangle <read=ReadTriangle, open=suppress>;
+
+typedef struct {
+    float t;
+    float b;
+    float c;
+} TBC;
+
+typedef struct {
+    Vec3 center;
+    float radius;
+} BVSphere;
+
+typedef struct {
+    ushort numverts;
+    ushort indices[numverts];
+} MatchGroup;
+
+// STRING 
+typedef uint STRING <read=ReadSTRINGIndex>;
+
+string ReadSTRINGIndex ( STRING &s ) {
+    if ( s == -1 )
+        return "";
+
+    string t;
+    SPrintf(t, "%s [%u]", file.header.strs[s].str, s);
+    return t;
+}
+
+string ReadSTRING ( STRING &s ) {
+    if ( s == -1 )
+        return "";
+    string t;
+    SPrintf(t, "%s", file.header.strs[s].str);
+    return t;
+}
+
+// SSTRING
+typedef struct {
+    uint stringlength <hidden=true>;
+    if ( stringlength > 0 )
+        char str[stringlength] <open=suppress>;
+    else
+        local char str = '\0';
+} SSTRING <read=ReadSSTRING>;
+
+string ReadSSTRING( SSTRING &s )
+{
+    if ( s.stringlength > 0 )
+        return s.str;
+
+    return "";
+}
+
+// SSTRING16
+typedef struct {
+    ushort stringlength <hidden=true>;
+    if ( stringlength > 0 )
+        char str[stringlength] <open=suppress>;
+    else
+        local char str = '\0';
+} SSTRING16 <read=ReadSSTRING16>;
+
+string ReadSSTRING16( SSTRING16 &s )
+{
+    if ( s.stringlength > 0 )
+        return s.str;
+
+    return "";
+}
+
+// BLOCKTYPEINDEX
+typedef struct  {
+    short index;
+} BLOCKTYPEINDEX <read=ReadBLOCKTYPEINDEX>;
+
+string ReadBLOCKTYPEINDEX( BLOCKTYPEINDEX &b )
+{
+    string s;
+    SPrintf(s, "%s", file.header.btype[b.index].str);
+    return s;
+}
+
+// Ref
+typedef uint Ref <read=ReadREF, open=suppress>;
+
+string ReadREF ( Ref &r )
+{
+    if ( r == 4294967295 )
+        return "None";
+
+    string n;
+    string t = file.header.btype[file.header.btypeindex[r].index].str;
+    if ( exists(file.blocks.data[r].base.name) ) {
+        n = ReadSTRING( file.blocks.data[r].base.name );
+    }
+
+    string s;
+    SPrintf(s, "%s [%u] (%s)", n, r, t);
+
+    return s;
+}
+
+
+// BASIC READ FUNCTIONS
+
+string ParseFloat( float& f )
+{
+    string s;
+    // -FLT_MAX = FF FF 7F FF, +FLT_MAX = FF FF 7F 7F
+    uchar n[4] = { 0xFF, 0xFF, 0x7F, 0xFF };
+    uchar p[4] = { 0xFF, 0xFF, 0x7F, 0x7F };
+
+    uchar b[4];
+    ConvertDataToBytes( f, b );
+
+    if ( b == p )
+        s = "+FLT_MAX";
+    else if ( b == n )
+        s = "-FLT_MAX";
+    else
+        SPrintf(s, "%f", f);
+
+    return s;
+}
+
+string ReadTexCoord( TexCoord& uv )
+{
+    string s;
+    SPrintf(s, "U %f V %f", uv.U, uv.V);
+    return s;
+}
+
+string ReadHalfTexCoord( HalfTexCoord& uv )
+{
+    string s;
+    SPrintf(s, "U %f V %f", uv.U, uv.V);
+    return s;
+}
+
+string ReadVec3( Vec3& vec )
+{
+    string s;
+    SPrintf(s, "X %s Y %s Z %s", ParseFloat(vec.X), ParseFloat(vec.Y), ParseFloat(vec.Z));
+    return s;
+}
+
+string ReadVec4( Vec4& vec )
+{
+    string s;
+    SPrintf(s, "X %s Y %s Z %s W %s", ParseFloat(vec.X), ParseFloat(vec.Y), 
+                                      ParseFloat(vec.Z), ParseFloat(vec.W)
+    );
+    return s;
+}
+
+string ReadByteVec4( ByteVec4& vec )
+{
+    string s;
+    float x, y, z, w;
+    x = (vec.X / 255.0);
+    y = (vec.Y / 255.0);
+    z = (vec.Z / 255.0);
+    w = (vec.W / 255.0);
+
+    SPrintf(s, "X %f Y %f Z %f | %s: %f", x, y, z, vec.sW, w);
+    return s;
+}
+
+string ReadTriangle( Triangle& t )
+{
+    string s;
+    SPrintf(s, "%u %u %u", t.A, t.B, t.C);
+    return s;
+}

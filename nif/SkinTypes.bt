@@ -1,0 +1,91 @@
+//------------------------------------------------
+//--- 010 Editor v7.0.2 Binary Template
+//
+//      File: SkinTypes.bt
+//   Authors: jonwd7
+//   Version: 
+//   Purpose: 
+//  Category: 
+// File Mask: 
+//  ID Bytes: 
+//   History: 
+//------------------------------------------------
+
+typedef struct {
+    Matrix33 rotation;
+    Vec3 translation;
+    float scale;
+} SkinTransform <name="Transform", open=true>;
+
+typedef struct {
+    ushort index;
+    float weight;
+} SkinWeight <name="Weights", open=suppress>;
+
+typedef struct ( byte hasWeights )  {
+    SkinTransform transform;
+    BVSphere bounds;
+    ushort numVerts;
+    if ( hasWeights != 0 )
+        SkinWeight weights[numVerts];
+} SkinData <optimize=false>;
+
+typedef struct ( ushort numWeights ) {
+    float weight[numWeights];
+} PartWeight;
+
+typedef struct ( ushort numWeights ) {
+    byte index[numWeights];
+} PartBone;
+
+typedef struct {
+    ushort numVerts;
+    ushort numTris;
+    ushort numBones;
+    ushort numStrips;
+    ushort numWeights;
+    ushort bones[numBones];
+    byte hasMap;
+    if (hasMap != 0)
+        ushort map[numVerts];
+    byte hasWeights;
+    if (hasWeights != 0)
+        struct {
+            PartWeight weights(numWeights)[numVerts] <optimize=false>;
+        } weights;
+    if (numStrips > 0)
+        ushort stripLengths[numStrips];
+    byte hasFaces;
+    if (hasFaces != 0)
+        Triangle triangle[numTris];
+    byte hasBoneIndices;
+    if (hasBoneIndices != 0)
+        struct {
+            PartBone boneIndices(numWeights)[numVerts] <optimize=false>;
+        } indices;
+    ushort unk;
+    if ( file.stream == 100 )
+    {
+        VertexDesc vertexDesc;
+        Triangle tris[numTris];
+    }
+} SkinPartition <optimize=false>;
+
+
+typedef struct {
+    SkinPartition part;
+} BSSkinPart <optimize=false>;
+
+typedef struct {
+    ushort partFlag;
+    ushort partType;
+} BSBodyPartList;
+
+// Stream 130
+
+typedef struct {
+    BVSphere boundingSphere;
+    Matrix33 rotation;
+    Vec3 translation;
+    float scale;
+} BSSkinBoneTrans <open=true>;
