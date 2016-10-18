@@ -280,7 +280,7 @@ typedef struct {
     float minAngle;
     float maxAngle;
     float maxFriction;
-    byte enableMotor;
+    bool enableMotor;
     if ( enableMotor == 1 )
         bhkMotor motor;
 } bhkLimitedHinge <open=true>; // Abstract

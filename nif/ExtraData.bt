@@ -17,7 +17,7 @@ typedef struct {
 
 typedef struct {
     NiExtraData data;
-    byte boolData;
+    bool boolData;
 } NiBoolED <name="NiBooleanExtraData", read=ReadBoolED>;
 
 typedef struct {
@@ -45,7 +45,7 @@ typedef struct {
 typedef struct {
     NiExtraData data;
     STRING file;
-    byte controlsBaseSkel;
+    bool controlsBaseSkel;
 } BSBGED <name="BSBehaviorGraphExtraData">;
 
 typedef struct {
@@ -119,7 +119,7 @@ typedef struct {
 // BSConnectPoint::Children
 typedef struct {
     NiExtraData data;
-    byte isSkinned;
+    bool isSkinned;
     uint numPoints;
     if ( numPoints > 0 )
         SSTRING name[numPoints];

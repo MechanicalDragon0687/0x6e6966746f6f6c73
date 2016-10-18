@@ -74,7 +74,7 @@ typedef struct {
     ushort numVerts;
     byte keepFlags;
     byte compressFlags;
-    byte hasVerts;
+    bool hasVerts;
     
     if ( hasVerts == 1 ) {
        Vec3 vertices[numVerts] <open=suppress>;
@@ -85,7 +85,7 @@ typedef struct {
     if ( stream > 34 )
         uint unknown2;
     
-    byte hasNormals;
+    bool hasNormals;
     
     if ( hasNormals == 1 )
         Vec3 normals[numVerts] <open=suppress>;
@@ -97,7 +97,7 @@ typedef struct {
 
     Vec3 center;
     float radius;
-    byte hasVertColors;
+    bool hasVertColors;
 
     if ( hasVerts == 1 ) {
         if ( hasVertColors == 1 )
@@ -113,7 +113,7 @@ typedef struct {
     ushort numTris;
     ushort numPoints;
     ushort what;
-    byte hasTris;
+    bool hasTris;
     if ( hasTris == 1 ) {
         Triangle tris[numTris] <open=suppress>;
     }
@@ -165,7 +165,7 @@ typedef struct ( uint64 f ) {
 
     if ( vf & 1024 ) {
         hfloat weights[4];
-        byte indices[4];
+        ubyte indices[4];
     }
     
     if ( stream == 130 && (vf & 4096) ) // Needs testing for stream version 100
@@ -302,7 +302,7 @@ typedef struct {
 typedef struct {
     SkinTransform transform;
     uint numBones;
-    byte hasWeights;
+    bool hasWeights;
     SkinData bones(hasWeights)[numBones];
 } NiSkinData <name="NiSkinData">;
 

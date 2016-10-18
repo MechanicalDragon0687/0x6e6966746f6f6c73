@@ -69,7 +69,7 @@ typedef struct {
     float frustumBottom;
     float frustumNear;
     float frustumFar;
-    byte useOrtho;
+    bool useOrtho;
     float viewportLeft;
     float viewportRight;
     float viewportTop;
@@ -108,7 +108,7 @@ typedef struct {
 typedef struct {
     NiNode node <open=true>;
     Vec4 alphaSortBound;
-    byte isStaticBound;
+    bool isStaticBound;
 } BSOrderedNode <name="BSOrderedNode">;
 
 // BSMultiBoundNode

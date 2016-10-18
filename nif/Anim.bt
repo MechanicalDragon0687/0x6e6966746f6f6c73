@@ -85,7 +85,7 @@ typedef struct {
 
 typedef struct {
     NITIMECTLR controller;
-    byte isCumulative;
+    bool isCumulative;
     uint numCtrlSeq;
     if ( numCtrlSeq > 0 )
         Ref ctrlSeq[numCtrlSeq];

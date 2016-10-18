@@ -22,7 +22,7 @@ typedef struct {
     float weight;
 } SkinWeight <name="Weights", open=suppress>;
 
-typedef struct ( byte hasWeights )  {
+typedef struct ( bool hasWeights )  {
     SkinTransform transform;
     BVSphere bounds;
     ushort numVerts;
@@ -35,7 +35,7 @@ typedef struct ( ushort numWeights ) {
 } PartWeight;
 
 typedef struct ( ushort numWeights ) {
-    byte index[numWeights];
+    ubyte index[numWeights];
 } PartBone;
 
 typedef struct {
@@ -45,21 +45,21 @@ typedef struct {
     ushort numStrips;
     ushort numWeights;
     ushort bones[numBones];
-    byte hasMap;
     if (hasMap != 0)
+    bool hasMap;
         ushort map[numVerts];
-    byte hasWeights;
     if (hasWeights != 0)
+    bool hasWeights;
         struct {
             PartWeight weights(numWeights)[numVerts] <optimize=false>;
         } weights;
     if (numStrips > 0)
         ushort stripLengths[numStrips];
-    byte hasFaces;
     if (hasFaces != 0)
+    bool hasFaces;
         Triangle triangle[numTris];
-    byte hasBoneIndices;
     if (hasBoneIndices != 0)
+    bool hasBoneIndices;
         struct {
             PartBone boneIndices(numWeights)[numVerts] <optimize=false>;
         } indices;

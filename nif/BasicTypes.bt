@@ -15,6 +15,8 @@
 
 typedef uint64 VertexDesc <format=hex>;
 
+typedef ubyte bool;
+
 typedef struct {
     float X;
     float Y;

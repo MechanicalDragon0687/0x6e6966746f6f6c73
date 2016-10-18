@@ -34,9 +34,9 @@ typedef struct {
     ushort numVerts;
     byte keepFlags;
     byte compressFlags;
-    byte hasVerts;
+    bool hasVerts;
     ushort numUVSets;
-    byte hasNormals;
+    bool hasNormals;
     
     if ( hasNormals == 1 )
         Vec3 normals[numVerts] <open=suppress>;
@@ -48,7 +48,7 @@ typedef struct {
 
     Vec3 center;
     float radius;
-    byte hasVertColors;
+    bool hasVertColors;
 
     if ( hasVerts == 1 ) {
         if ( hasVertColors == 1 )
@@ -58,18 +58,18 @@ typedef struct {
         }
     }
 
-    byte hasRadii;
+    bool hasRadii;
     ushort numActive;
-    byte hasSizes;
-    byte hasRotations;
+    bool hasSizes;
+    bool hasRotations;
     byte unk1;
     Ref unkLink;
-    byte hasRotationAngles;
-    byte hasRotationAxes;
+    bool hasRotationAngles;
+    bool hasRotationAxes;
     byte unk2;
     ushort unk3;
     ushort unk4;
-    byte hasSubtexOffsetUVs;
+    bool hasSubtexOffsetUVs;
     uint numSubtexOffsetUVs;
     float aspectRatio;
     if ( hasSubtexOffsetUVs == 1 )
@@ -94,13 +94,13 @@ typedef struct {
     STRING name;
     uint order;
     Ref target;
-    byte isActive;
+    bool isActive;
 } NiPSysModifier <open=true>; // Abstract
 
 // NiPSysAgeDeathModifier
 typedef struct {
     NiPSysModifier base;
-    byte spawnOnDeath;
+    bool spawnOnDeath;
     Ref spawnModifier; // NiPSysSpawnModifier
 } NiPSAgeDeathMod <name="NiPSysAgeDeathModifier">;
 
@@ -136,8 +136,8 @@ typedef struct {
     float initialSpeedVariation;
     float initialAngle;
     float initialAngelVariation;
-    byte randomSpeedSign;
-    byte randomInitialAxis;
+    bool randomSpeedSign;
+    bool randomInitialAxis;
     Vec3 initialAxis;
 } NiPSRotationMod <name="NiPSysRotationModifier">;
 
@@ -278,8 +278,8 @@ typedef struct {
 // NiPSysCollider
 typedef struct {
     float bound;
-    byte spawnOnCollide;
-    byte dieOnCollide;
+    bool spawnOnCollide;
+    bool dieOnCollide;
     Ref spawnModifier; // NiPSysSpawnModifier
     Ref parent;
     Ref nextCollider;
