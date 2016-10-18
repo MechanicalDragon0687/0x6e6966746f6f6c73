@@ -85,6 +85,9 @@ struct BA2 {
 
 string FileRecordRead( FileRecord& f )
 {
+    if ( !exists(ba2.fileName[0]) )
+        return "";
+
     string s = ShortStringRead( ba2.fileName[f.index] );
     string filename, filepath;
 
