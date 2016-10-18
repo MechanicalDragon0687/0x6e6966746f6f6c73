@@ -185,28 +185,28 @@ struct FILE {
             "This NIF's stream version is not supported." );
 
     struct BLOCKS {
-        local int nin, bsfn, bson, nibbn, bsmbn, bsvn, bsbn, bsdmg, bsxf, nicam;
-        local int ts, tsd, bsts, bsdts, bssits, bslodts, bsmlodts;
-        local int bslsp, bsesp, bswsp, niap, bssts;
-        local int bsmb, bsmbobb;
-        local int nisi, bsdsi, nisd, nisp, bssi, bsbd;
+        local int nin = -1, bsfn = -1, bson = -1, nibbn = -1, bsmbn = -1, bsvn = -1, bsbn = -1, bsdmg = -1, bsxf = -1, nicam = -1;
+        local int ts = -1, tsd = -1, bsts = -1, bsdts = -1, bssits = -1, bslodts = -1, bsmlodts = -1;
+        local int bslsp = -1, bsesp = -1, bswsp = -1, niap = -1, bssts = -1;
+        local int bsmb = -1, bsmbobb = -1;
+        local int nisi = -1, bsdsi = -1, nisd = -1, nisp = -1, bssi = -1, bsbd = -1;
         // Havok
-        local int bhkrb, bhkrbt, bhkcms, bhkcmsd, bhkbox, bhksph, bhkcap, bhkps, bhkrs,
-                  bhklist, bhkssp, bhkcvs, bhkts, bhkcts, bhkco, bhkspco, bhknpco, bhkmoppbv;
-        local int bhkhc, bhklhc;
+        local int bhkrb = -1, bhkrbt = -1, bhkcms = -1, bhkcmsd = -1, bhkbox = -1, bhksph = -1, bhkcap = -1, bhkps = -1, bhkrs = -1,
+                  bhklist = -1, bhkssp = -1, bhkcvs = -1, bhkts = -1, bhkcts = -1, bhkco = -1, bhkspco = -1, bhknpco = -1, bhkmoppbv = -1;
+        local int bhkhc = -1, bhklhc;
         // Controllers, Sequence, Data
-        local int niavop, nicm, nics, nitc, nimtc, nivc, nifedc, bsffc,
-                  nifd, nibd, nikfd, nitd, nipd,
-                  bslsfc, bslscc, bsesfc, bsescc, bsniac,
-                  nipmac, nipec, nipuc, nipgsc, nilrc;
+        local int niavop = -1, nicm = -1, nics = -1, nitc = -1, nimtc = -1, nivc = -1, nifedc = -1, bsffc = -1,
+                  nifd = -1, nibd = -1, nikfd = -1, nitd = -1, nipd = -1,
+                  bslsfc = -1, bslscc = -1, bsesfc = -1, bsescc = -1, bsniac = -1,
+                  nipmac = -1, nipec = -1, nipuc = -1, nipgsc = -1, nilrc = -1;
         // Interpolators
-        local int niti, nifi, nibfi, nibi, nibti, nibbi,
-                  nilai, nip3i, nibp3i;
+        local int niti = -1, nifi = -1, nibfi = -1, nibi = -1, nibti = -1, nibbi = -1,
+                  nilai = -1, nip3i = -1, nibp3i = -1;
         // NiExtraData
-        local int nied, nibed, nifed, niied, nitked, nised, bsbged, bsim, bsfm, bscpp, bscpc, bseced, bspd;
+        local int nied = -1, nibed = -1, nifed = -1, niied = -1, nitked = -1, nised = -1, bsbged = -1, bsim = -1, bsfm = -1, bscpp = -1, bscpc = -1, bseced = -1, bspd = -1;
         // NiParticleSystem
-        local int nipsys, nipsd, psme, psse, psbe, psce;
-        local int psadm, pssm, bsscm, psrm, bssm, bslm, psgm, psdm, pspm, psbum, bsstm, pscm, pssc, pspc;
+        local int nipsys = -1, nipsd = -1, psme = -1, psse = -1, psbe = -1, psce;
+        local int psadm = -1, pssm = -1, bsscm = -1, psrm = -1, bssm = -1, bslm = -1, psgm = -1, psdm = -1, pspm = -1, psbum = -1, bsstm = -1, pscm = -1, pssc = -1, pspc = -1;
 
         local int j <hidden=true>;
         for ( j = 0; j < header.numblocktypes; j++ ) {
