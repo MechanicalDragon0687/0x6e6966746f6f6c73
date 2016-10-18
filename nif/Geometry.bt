@@ -137,22 +137,21 @@ typedef struct ( uint64 f ) {
         } else {
             HalfVec3 vertex; 
         }
+
+        if ( stream == 100 || (stream == 130 && (vf & 16384)) ) {
+            if ( vf & 256 )
+                float bitX;
+            else
+                uint unk;
+        } else if ( vf & 256 ) {
+            hfloat bitX;
+        } else {
+            ushort unkShort;
+        }
     }
 
-    if ( stream == 100 || (stream == 130 && (vf & 16384)) ) {
-        if ( vf & 256 )
-            float bitX;
-        else
-            uint unk;
-    } else if ( vf & 256 ) {
-        hfloat bitX;
-    } else {
-        ushort unkShort;
-    }
-
-    if ( (vf & 16) && (vf & 32) ) // & 16 seems necessary only on BSDynamicTriShape vertex data
-        HalfTexCoord uv;          // because of improper vertex flags
-        
+    if ( vf & 32 )
+        HalfTexCoord uv;
 
     if ( vf & 128 ) {
         ByteVec4 normal("BitY");
