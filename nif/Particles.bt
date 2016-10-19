@@ -29,6 +29,9 @@ typedef struct {
         Ref modifier[numModifiers]; // NiPSysModifier
 } NiParticleSys <name="NiParticleSystem">;
 
+typedef NiParticleSys NiMeshParticleSys <name="NiMeshParticleSystem">;
+typedef NiParticleSys BSStripParticleSys <name="BSStripParticleSystem">;
+
 typedef struct {
     uint unknown;
     ushort numVerts;
@@ -80,6 +83,26 @@ typedef struct {
     ushort unk8;
     byte unk9;
 } NiPSysData <name="NiPSysData">;
+
+// NiMeshPSysData
+typedef struct {
+    NiPSysData data;
+    uint numVerts; // This matches numVerts in base data
+    byte unkByte1;
+    uint numUnk; // Some kind of vert split
+    if ( numUnk > 0 )
+        uint unkInts[numUnk]; // If numUnk == 1, this == numVerts
+    Ref node; // NiNode
+} NiMeshPSysData <name="NiMeshPSysData">;
+
+// BSStripPSysData
+typedef struct {
+    NiPSysData psys;
+    ushort unkShort;
+    byte unkByte;
+    uint unkInt;
+    float unkFloat;
+} BSStripPSysData <name="BSStripPSysData">;
 
 
 // MODIFIERS
@@ -199,8 +222,56 @@ typedef struct {
     float frameCountVariation;
 } BSPSysSubTexMod <name="BSPSysSubTexModifier">;
 
-//BSWindModifier
-//BSPSysInheritVelocityModifier
+typedef enum <uint> { DECAY_NONE, DECAY_LINEAR, DECAY_EXPONENTIAL } DecayType;
+typedef enum <uint> { SPHERICAL_SYMMETRY, CYLINDRICAL_SYMMETRY, PLANAR_SYMMETRY } SymmetryType;
+
+// NiPSysBombModifier
+typedef struct {
+    NiPSysModifier base;
+    Ref bombNode; // NiNode
+    Vec3 bombAxis;
+    float decay;
+    float deltaV;
+    DecayType decayType;
+    SymmetryType symmetryType;
+} NiPSysBombMod <name="NiPSysBombModifier">;
+
+// BSWindModifier
+typedef struct {
+    NiPSysModifier base;
+    float strength;
+} BSWindModifier <name="BSWindModifier">;
+
+// BSPSysInheritVelocityModifier
+typedef struct {
+    NiPSysModifier base;
+    Ref targetNode; // NiNode
+    float unkFloat1;
+    float unkFloat2;
+    float unkFloat3;
+} BSPSInheritVelMod <name="BSPSysInheritVelocityModifier">;
+
+// BSPSysHavokUpdateModifier
+typedef struct {
+    NiPSysModifier base;
+    uint numNodes;
+    if ( numNodes > 0 )
+        Ref node[numNodes]; // NiNode
+    Ref modifier; // NiPSysModifier
+} BSPSHavokUpdateMod <name="BSPSysHavokUpdateModifier">;
+
+// BSPSysRecycleBoundModifier
+typedef struct {
+    NiPSysModifier base;
+    Vec3 unkVec[2] <open=true>;
+    uint unk;
+} BSPSRecycleBoundMod <name="BSPSysRecycleBoundModifier">;
+
+// BSPSysStripUpdateModifier
+typedef struct {
+    NiPSysModifier base;
+    float updateDeltaTime;
+} BSPSStripUpdateMod <name="BSPSysStripUpdateModifier">;
 
 // NiPSysColliderManager
 typedef struct {
@@ -313,6 +384,10 @@ typedef NIPSYSBOOLCTLR NiPSysActiveCtlr <name="NiPSysModifierActiveCtlr", open=f
 
 typedef NIPSYSMODCTLR NIPSYSMODFLOATCTRLTR <name="NiPSysModifierFloatCtlr", open=true>; // Abstract
 typedef NIPSYSMODFLOATCTRLTR NiPSysGravStrCtlr <name="NiPSysGravityStrengthCtlr", open=false>;
+typedef NIPSYSMODFLOATCTRLTR NiPSEmitSpeedCtlr <name="NiPSysEmitterSpeedCtlr", open=false>;
+typedef NIPSYSMODFLOATCTRLTR NiPSEmitLifeSpanCtlr <name="NiPSysEmitterLifeSpanCtlr", open=false>;
+typedef NIPSYSMODFLOATCTRLTR NiPSEmitIRadiusCtlr <name="NiPSysEmitterInitialRadiusCtlr", open=false>;
+
 
 typedef struct {
     NIPSYSMODCTLR controller;

@@ -44,6 +44,13 @@ typedef NISINGLEINTERPCTLR NIFLOATINTERPCTLR <open=true>; // Abstract
 typedef NISINGLEINTERPCTLR NIBOOLINTERPCTLR <open=true>; // Abstract
 typedef NISINGLEINTERPCTLR NIEXTRADATACTLR <open=true>; // Abstract
 
+typedef enum <ushort> { TC_AMBIENT, TC_DIFFUSE, TC_SPECULAR, TC_SELF_ILLUM } TargetColor;
+
+typedef struct {
+    NISINGLEINTERPCTLR controller;
+    TargetColor targetColor;
+} NiLightColorCtlr <name="NiLightColorController">;
+
 typedef NIBOOLINTERPCTLR NiVisCtlr <name="NiVisController", open=false>;
 
 typedef struct {
@@ -133,6 +140,40 @@ typedef NIFLOATINTERPCTLR NiAlphaCtlr <name="NiAlphaController", open=false>;
 typedef NiAlphaCtlr BSNiAlphaCtlr <name="BSNiAlphaPropertyTestRefController", open=false>;
 
 typedef NIFLOATINTERPCTLR NiLightRadiusCtlr <name="NiLightRadiusController", open=false>;
+typedef NIFLOATINTERPCTLR NiLightDimmerCtlr <name="NiLightDimmerController", open=false>;
+
+// BSLagBoneController
+typedef struct {
+    NITIMECTLR controller;
+    float linearVelocity;
+    float linearRotation;
+    float maxDistance;
+} BSLagBoneCtlr <name="BSLagBoneController">;
+
+// BSProceduralLightningController
+typedef struct {
+    NIFLOATINTERPCTLR controller;
+    Ref interpolator1; // Mutation
+    Ref interporator2;
+    Ref interporator3;
+    Ref interporator4;
+    Ref interporator5;
+    Ref interporator6;
+    Ref interporator7;
+    Ref interporator8; // Arc Offset
+    ushort unkShort1;
+    ushort unkShort2;
+    ushort unkShort3;
+    float distanceWeight;
+    float unkFloat;
+    float stripWidth;
+    float fork;
+    float unkFloat2;
+    byte unkByte1;
+    byte unkByte2;
+    byte unkByte3;
+    Ref interpolator9;
+} BSPLightningCtlr <name="BSProceduralLightningController">;
 
 // DATA
 

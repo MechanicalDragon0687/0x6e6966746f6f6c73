@@ -56,6 +56,34 @@ typedef struct {
     Ref NiCollisionObject;
 } NiAVObject <name="NiAVObject", open=true>;
 
+// NiDynamicEffect 
+typedef struct {
+    NiAVObject base;
+    if ( stream < 130 ) {
+        bool switchState;
+        uint numAffectedNodes;
+        if ( numAffectedNodes > 0 )
+            Ref affectedNodes;
+    }
+} NiDynamicEffect <name="NiDynamicEffect", open=true>;
+
+// NiLight
+typedef struct {
+    NiDynamicEffect base;
+    float dimmer;
+    Color3 ambient;
+    Color3 diffuse;
+    Color3 specular;
+} NiLight <name="NiLight", open=true>;
+
+// NiPointLight
+typedef struct {
+    NiLight light;
+    float constantAtten;
+    float linearAtten;
+    float quadraticAtten;
+} NiPointLight <name="NiPointLight">;
+
 #include "Geometry.bt"
 #include "Particles.bt"
 #include "Shader.bt"
@@ -93,11 +121,30 @@ typedef struct {
     if ( file.header.stream < 130 ) {
         uint numEffects;
         if ( numEffects > 0 ) 
-            Ref NiDynamicEffect[numEffects];
+            Ref effect[numEffects]; // NiDynamicEffect
     }
 } NiNode <name="NiNode">; // END
 
 typedef NiNode BSFadeNode <name="BSFadeNode">;
+typedef NiNode BSLeafAnimNode <name="BSLeafAnimNode">;
+
+// BSTreeNode
+typedef struct {
+    NiNode node <open=true>;
+    uint numBones1;
+    if ( numBones1 > 0 )
+        Ref bones1[numBones1];
+    uint numBones2;
+    if ( numBones2 > 0 )
+        Ref bones2[numBones2];
+} BSTreeNode <name="BSTreeNode">;
+
+// NiSwitchNode
+typedef struct {
+    NiNode node <open=true>;
+    ushort flags;
+    uint startIndex; // Unsure
+} NiSwitchNode <name="NiSwitchNode">;
 
 // NiBillboardNode
 typedef struct {
@@ -126,6 +173,7 @@ typedef struct {
     byte unk;
 } BSValueNode <name="BSValueNode">;
 
+// BSBlastNode
 typedef struct {
     NiNode node <open=true>;
     byte unk1;

@@ -37,6 +37,13 @@ typedef struct {
 
 typedef struct {
     NiExtraData data;
+    uint numStrings;
+    if ( numStrings > 0 )
+        SSTRING stringData[numStrings] <optimize=false>;
+} NiStringsED <name="NiStringsExtraData">;
+
+typedef struct {
+    NiExtraData data;
     uint numKeys;
     if ( numKeys > 0 )
         StringKey keys(1)[numKeys] <optimize=true>;
@@ -83,6 +90,17 @@ typedef struct {
     if ( numPos > 0 )
         FURNPOS pos[numPos];
 } BSFurnMarker <name="BSFurnitureMarkerNode">;
+
+// BSBoneLODExtraData
+typedef struct {
+    NiExtraData data;
+    uint numBoneLOD;
+    if ( numBoneLOD > 0 )
+        struct {
+            uint distance;
+            STRING bone;
+        } boneLOD[numBoneLOD] <optimize=true>;
+} BSBoneLODED <name="BSBoneLODExtraData">;
 
 // BSEyeCenterExtraData
 typedef struct {
