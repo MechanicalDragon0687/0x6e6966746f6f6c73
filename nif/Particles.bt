@@ -298,3 +298,26 @@ typedef struct {
     NiPSysCollider base;
     float radius;
 } NiPSysSphColl <name="NiPSysSphericalCollider">;
+
+
+// CONTROLLERS
+
+// NiPSysModifierCtlr
+typedef struct {
+    NISINGLEINTERPCTLR controller;
+    STRING modifier;
+} NIPSYSMODCTLR <open=true>; // Abstract
+
+typedef NIPSYSMODCTLR NIPSYSBOOLCTLR <name="NiPSysModifierCtlr", open=true>; // Abstract
+typedef NIPSYSBOOLCTLR NiPSysActiveCtlr <name="NiPSysModifierActiveCtlr", open=false>;
+
+typedef NIPSYSMODCTLR NIPSYSMODFLOATCTRLTR <name="NiPSysModifierFloatCtlr", open=true>; // Abstract
+typedef NIPSYSMODFLOATCTRLTR NiPSysGravStrCtlr <name="NiPSysGravityStrengthCtlr", open=false>;
+
+typedef struct {
+    NIPSYSMODCTLR controller;
+    Ref visInterpolator;
+} NiPSysEmitterCtlr <name="NiPSysEmitterCtlr">;
+
+typedef NITIMECTLR NiPSysUpdateCtlr <name="NiPSysUpdateCtlr", open=false>;
+
