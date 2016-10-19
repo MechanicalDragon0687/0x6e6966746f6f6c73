@@ -234,388 +234,428 @@ struct FILE {
             "This NIF's stream version is not supported." );
 
     struct BLOCKS {
-        local int nin = -1, bsfn = -1, bson = -1, nibbn = -1, bsmbn = -1, bsvn = -1, bsbn = -1, bsdmg = -1, bsxf = -1, nicam = -1;
-        local int ts = -1, tsd = -1, bsts = -1, bsdts = -1, bssits = -1, bslodts = -1, bsmlodts = -1;
-        local int bslsp = -1, bsesp = -1, bswsp = -1, niap = -1, bssts = -1;
-        local int bsmb = -1, bsmbobb = -1;
-        local int nisi = -1, bsdsi = -1, nisd = -1, nisp = -1, bssi = -1, bsbd = -1;
-        // Havok
-        local int bhkrb = -1, bhkrbt = -1, bhkcms = -1, bhkcmsd = -1, bhkbox = -1, bhksph = -1, bhkcap = -1, bhkps = -1, bhkrs = -1,
-                  bhklist = -1, bhkssp = -1, bhkcvs = -1, bhkts = -1, bhkcts = -1, bhkco = -1, bhkspco = -1, bhknpco = -1, bhkmoppbv = -1;
-        local int bhkhc = -1, bhklhc;
-        // Controllers, Sequence, Data
-        local int niavop = -1, nicm = -1, nics = -1, nitc = -1, nimtc = -1, nivc = -1, nifedc = -1, bsffc = -1,
-                  nifd = -1, nibd = -1, nikfd = -1, nitd = -1, nipd = -1,
-                  bslsfc = -1, bslscc = -1, bsesfc = -1, bsescc = -1, bsniac = -1,
-                  nipmac = -1, nipec = -1, nipuc = -1, nipgsc = -1, nilrc = -1;
-        // Interpolators
-        local int niti = -1, nifi = -1, nibfi = -1, nibi = -1, nibti = -1, nibbi = -1,
-                  nilai = -1, nip3i = -1, nibp3i = -1;
-        // NiExtraData
-        local int nied = -1, nibed = -1, nifed = -1, niied = -1, nitked = -1, nised = -1, bsbged = -1, bsim = -1, bsfm = -1, bscpp = -1, bscpc = -1, bseced = -1, bspd = -1;
-        // NiParticleSystem
-        local int nipsys = -1, nipsd = -1, psme = -1, psse = -1, psbe = -1, psce;
-        local int psadm = -1, pssm = -1, bsscm = -1, psrm = -1, bssm = -1, bslm = -1, psgm = -1, psdm = -1, pspm = -1, psbum = -1, bsstm = -1, pscm = -1, pssc = -1, pspc = -1;
-
-        local int j <hidden=true>;
-        for ( j = 0; j < header.numblocktypes; j++ ) {
-
-            switch ( header.btype[j].str )
-            {
-                case "BSFadeNode":
-                    bsfn = j;   break;
-                case "NiNode":
-                    nin = j;    break;
-                case "NiBillboardNode":
-                    nibbn = j;  break;
-                case "BSOrderedNode":
-                    bson = j;   break;
-                case "BSMultiBoundNode":
-                    bsmbn = j;  break;
-                case "BSValueNode":
-                    bsvn = j;   break;
-                case "BSXFlags":
-                    bsxf = j;   break;
-                case "NiTriShape":
-                    ts = j;   break;
-                case "BSTriShape":
-                    bsts = j;   break;
-                case "BSSubIndexTriShape":
-                    bssits = j; break;
-                case "BSDynamicTriShape":
-                    bsdts = j;  break;
-                case "BSLODTriShape":
-                    bslodts = j;    break;
-                case "BSMeshLODTriShape":
-                    bsmlodts = j;   break;
-                case "NiTriShapeData":
-                    tsd = j;   break;
-                case "NiSkinInstance":
-                    nisi = j;   break;
-                case "BSDismemberSkinInstance":
-                    bsdsi = j;  break;
-                case "BSSkin::Instance":
-                    bssi = j;   break;
-                case "NiSkinData":
-                    nisd = j;   break;
-                case "BSSkin::BoneData":
-                    bsbd = j;   break;
-                case "NiSkinPartition":
-                    nisp = j;   break;
-                case "NiParticleSystem":
-                    nipsys = j; break;
-                case "NiPSysData":
-                    nipsd = j;  break;
-                case "BSShaderTextureSet":
-                    bssts = j;  break;
-                case "BSLightingShaderProperty":
-                    bslsp = j;  break;
-                case "BSEffectShaderProperty":
-                    bsesp = j;  break;
-                case "NiAlphaProperty":
-                    niap = j;   break;
-                case "BSWaterShaderProperty":
-                    bswsp = j;  break;
-                case "bhkRigidBody":
-                    bhkrb = j;   break;
-                case "bhkRigidBodyT":
-                    bhkrbt = j;   break;
-                case "bhkCollisionObject":
-                    bhkco = j;  break;
-                case "bhkSPCollisionObject":
-                    bhkspco = j; break;
-                case "bhkNPCollisionObject":
-                    bhknpco = j;    break;
-                case "bhkMoppBvTreeShape":
-                    bhkmoppbv = j;  break;
-                case "bhkCompressedMeshShape":
-                    bhkcms = j; break;
-                case "bhkCompressedMeshShapeData":
-                    bhkcmsd = j;   break;
-                case "bhkSphereShape":
-                    bhksph = j; break;
-                case "bhkBoxShape":
-                    bhkbox = j; break;
-                case "bhkCapsuleShape":
-                    bhkcap = j; break;
-                case "bhkConvexVerticesShape":
-                    bhkcvs = j; break;
-                case "bhkTransformShape":
-                    bhkts = j;  break;
-                case "bhkConvexTransformShape":
-                    bhkcts = j; break;
-                case "bhkListShape":
-                    bhklist = j;    break;
-                case "bhkSimpleShapePhantom":
-                    bhkssp = j; break;
-                case "bhkPhysicsSystem":
-                    bhkps = j; break;
-                case "bhkRagdollSystem":
-                    bhkrs = j; break;
-                case "BSMultiBound":
-                    bsmb = j;   break;
-                case "BSMultiBoundOBB":
-                    bsmbobb = j;    break;
-                case "NiDefaultAVObjectPalette":
-                    niavop = j; break;
-                case "NiControllerManager":
-                    nicm = j;   break;
-                case "NiControllerSequence":
-                    nics = j;   break;
-                case "NiTransformController":
-                    nitc = j;   break;
-                case "NiMultiTargetTransformController":
-                    nimtc = j;  break;
-                case "NiVisController":
-                    nivc = j;   break;
-                case "NiFloatExtraDataController":
-                    nifedc = j; break;
-                case "BSLightingShaderPropertyFloatController":
-                    bslsfc = j; break;
-                case "BSLightingShaderPropertyColorController":
-                    bslscc = j; break;
-                case "BSEffectShaderPropertyFloatController":
-                    bsesfc = j; break;
-                case "BSEffectShaderPropertyColorController":
-                    bsescc = j; break;
-                case "BSNiAlphaPropertyTestRefController":
-                    bsniac = j; break;
-                case "NiLightRadiusController":
-                    nilrc = j;  break;
-                case "NiPSysModifierActiveCtlr":
-                    nipmac = j; break;
-                case "NiPSysEmitterCtlr":
-                    nipec = j;  break;
-                case "NiPSysUpdateCtlr":
-                    nipuc = j;  break;
-                case "NiPSysGravityStrengthCtlr":
-                    nipgsc = j; break;
-                case "NiTransformInterpolator":
-                    niti = j;   break;
-                case "NiPoint3Interpolator":
-                    nip3i = j;  break;
-                case "NiBlendPoint3Interpolator":
-                    nibp3i = j; break;
-                case "NiFloatInterpolator":
-                    nifi = j;   break;
-                case "NiBlendFloatInterpolator":
-                    nibfi = j;  break;
-                case "NiBoolInterpolator":
-                    nibi = j;   break;
-                case "NiBoolTimelineInterpolator":
-                    nibti = j;  break;
-                case "NiBlendBoolInterpolator":
-                    nibbi = j;  break;
-                case "NiLookAtInterpolator":
-                    nilai = j;  break;
-                case "NiFloatData":
-                    nifd = j;   break;
-                case "NiKeyFrameData":
-                    nikfd = j;   break;
-                case "NiTransformData":
-                    nitd = j;   break;
-                case "NiPosData":
-                    nipd = j;   break;
-                case "NiBoolData":
-                    nibd = j;   break;
-                case "NiExtraData":
-                    nied = j;   break;
-                case "NiBooleanExtraData":
-                    nibed = j;  break;
-                case "NiFloatExtraData":
-                    nifed = j;  break;
-                case "NiIntegerExtraData":
-                    niied = j;  break;
-                case "NiStringExtraData":
-                    nised = j;  break;
-                case "NiTextKeyExtraData":
-                    nitked = j; break;
-                case "BSConnectPoint::Parents":
-                    bscpp = j;  break;
-                case "BSConnectPoint::Children":
-                    bscpc = j;  break;
-                case "BSEyeCenterExtraData":
-                    bseced = j; break;
-                case "BSPositionData":
-                    bspd = j;   break;
-                case "BSInvMarker":
-                    bsim = j;   break;
-                case "BSFurnitureMarkerNode":
-                    bsfm = j;   break;
-                case "BSBehaviorGraphExtraData":
-                    bsbged = j; break;
-                case "BSBlastNode":
-                    bsbn = j;   break;
-                case "BSDamageStage":
-                    bsdmg = j;  break;
-                case "NiCamera":
-                    nicam = j;  break;
-                case "BSFrustumFOVController":
-                    bsffc = j;  break;
-                case "NiPSysAgeDeathModifier":
-                    psadm = j;  break;
-                case "NiPSysSpawnModifier":
-                    pssm = j;   break;
-                case "BSPSysSimpleColorModifier":
-                    bsscm = j;  break;
-                case "NiPSysRotationModifier":
-                    psrm = j;   break;
-                case "BSPSysScaleModifier":
-                    bssm = j;   break;
-                case "BSPSysLODModifier":
-                    bslm = j;   break;
-                case "NiPSysGravityModifier":
-                    psgm = j;   break;
-                case "NiPSysDragModifier":
-                    psdm = j;   break;
-                case "NiPSysPositionModifier":
-                    pspm = j;   break;
-                case "NiPSysBoundUpdateModifier":
-                    psbum = j;  break;
-                case "BSPSysSubTexModifier":
-                    bsstm = j;  break;
-                case "NiPSysColliderManager":
-                    pscm = j;   break;
-                case "NiPSysMeshEmitter":
-                    psme = j;   break;
-                case "NiPSysSphereEmitter":
-                    psse = j;   break;
-                case "NiPSysBoxEmitter":
-                    psbe = j;   break;
-                case "NiPSysCylinderEmitter":
-                    psce = j;   break;
-                case "NiPSysPlanarCollider":
-                    pspc = j;   break;
-                case "NiPSysSphericalCollider":
-                    pssc = j;   break;
-                case "bhkHingeConstraint":
-                    bhkhc = j;  break;
-                case "bhkLimitedHingeConstraint":
-                    bhklhc = j; break;
-            }
-        }
-
         local int i <hidden=true>;
         for ( i = 0 ; i < header.numblocks; i++ )
         {
-            switch( header.btypeindex[i].index )
+            switch( header.btype[header.btypeindex[i].index].str )
             {
-                case nin:       NiNode data;            break;
-                case bsfn:      BSFadeNode data;        break;
-                case ts:        NiTriShape data;        break;
-                case bsts:      BSTriShape data;        break;
-                case bssits:    BSSubIndexTriShape data; break;
-                case tsd:       NiTriShapeData data;    break;
-                case bslodts:   BSLODTriShape data;     break;
-                case bsmlodts:  BSMeshLODTriShape data; break;
-                case bsdts:     BSDynamicTriShape data; break;
-                case nipsys:    NiParticleSys data;     break;
-                case nipsd:     NiPSysData data;        break;
-                case bslsp:     BSLightingShaderProperty data; break;
-                case bsesp:     BSEffectShaderProperty data; break;
-                case bssts:     BSShaderTextureSet data;    break;
-                case niap:      NiAlphaProperty data;   break;
-                case bswsp:     BSWaterShaderProperty data; break;
-                case nisi:      NiSkinInstance data;    break;
-                case nisd:      NiSkinData data;        break;
-                case nisp:      NiSkinPartition data;   break;
-                case bsdsi:     BSDSkinInstance data;   break;
-                case bssi:      BSSkinInstance data;    break;
-                case bsbd:      BSSkinBoneData data;    break;
-                case nibbn:     NiBBNode data;          break;
-                case bson:      BSOrderedNode data;     break;
-                case bsmbn:     BSMultiBoundNode data;  break;
-                case bsvn:      BSValueNode data;       break;
-                case niavop:    NiAVObjPalette data;    break;
-                case nicm:      NiControllerMgr data;   break;
-                case nics:      NiCtlrSeq data;         break;
-                case nitc:      NiTransCtlr data;       break;
-                case nimtc:     NiMultiTransCtlr data;  break;
-                case nivc:      NiVisCtlr data;         break;
-                case nifedc:    NiFloatEDCtlr data;     break;
-                case nipmac:    NiPSysActiveCtlr data;  break;
-                case nipec:     NiPSysEmitterCtlr data; break;
-                case nipuc:     NiPSysUpdateCtlr data;  break;
-                case nipgsc:    NiPSysGravStrCtlr data; break;
-                case bslsfc:    BSLSPFloatCtlr data;    break;
-                case bslscc:    BSLSPColorCtlr data;    break;
-                case bsesfc:    BSESPFloatCtlr data;    break;
-                case bsescc:    BSESPColorCtlr data;    break;
-                case bsniac:    BSNiAlphaCtlr data;     break;
-                case nilrc:     NiLightRadiusCtlr data; break;
-                case niti:      NiTransformInterp data; break;
-                case nip3i:     NiPoint3Interp data;    break;
-                case nibp3i:    NiBlendPoint3 data;     break;
-                case nifi:      NiFloatInterp data;     break;
-                case nibfi:     NiBlendFloat data;      break;
-                case nibi:      NiBoolInterp data;      break;
-                case nibti:     NiBoolTimeInterp data;  break;
-                case nilai:     NiLookAtInterp data;    break;
-                case nibbi:     NiBlendBool data;       break;
-                case nifd:      NiFloatData data;       break;
-                case nibd:      NiBoolData data;        break;
-                case nikfd:     NiKFData data;          break;
-                case nitd:      NiTransformData data;   break;
-                case nipd:      NiPosData data;         break;
-                case bsxf:      BSXFlags data;          break;
-                case bhkrb:     bhkRigidBody data;      break;
-                case bhkrbt:    bhkRigidBodyT data;     break;
-                case bhkco:     bhkCollisionObj data;   break;
-                case bhkspco:   bhkSPCollObj data;      break;
-                case bhknpco:   bhkNPCollObj data;      break;
-                case bhkmoppbv: bhkMoppBVShape data;    break;
-                case bhkcms:    bhkCMS data;            break;
-                case bhkcmsd:   bhkCMSD data;           break;
-                case bhksph:    bhkSphereShape data;    break;
-                case bhkbox:    bhkBoxShape data;       break;
-                case bhkcap:    bhkCapsuleShape data;   break;
-                case bhkcvs:    bhkCVS data;            break;
-                case bhkts:     bhkTS data;             break;
-                case bhkcts:    bhkCTS data;            break;
-                case bhklist:   bhkListShape data;      break;
-                case bhkssp:    bhkSSPhantom data;      break;
-                case bhkps:     bhkPhysSystem data;     break;
-                case bhkrs:     bhkRagSystem data;      break;
-                case bsmb:      BSMultiBound data;      break;
-                case bsmbobb:   BSMultiBoundOBB data;   break;
-                case nied:      NiExtraData data;       break;
-                case nibed:     NiBoolED data;          break;
-                case nifed:     NiFloatED data;         break;
-                case niied:     NiIntegerED data;       break;
-                case nised:     NiStringED data;        break;
-                case nitked:    NiTextKeyED data;       break;
-                case bscpp:     BSConnectPtParents data; break;
-                case bscpc:     BSConnectPtChildren data; break;
-                case bseced:    BSEyeCenterED data;     break;
-                case bspd:      BSPositionData data;    break;
-                case bsim:      BSInvMarker data;       break;
-                case bsfm:      BSFurnMarker data;      break;
-                case bsbged:    BSBGED data;            break;
-                case bsbn:      BSBlastNode data;       break;
-                case bsdmg:     BSDamageStage data;     break;
-                case nicam:     NiCamera data;          break;
-                case bsffc:     BSFrustumCtlr data;     break;
-                case psadm:     NiPSAgeDeathMod data;   break;
-                case pssm:      NiPSSpawnMod data;      break;
-                case bsscm:     BSPSSimpleColorMod data; break;
-                case psrm:      NiPSRotationMod data;   break;
-                case bssm:      BSPSScaleMod data;      break;
-                case bslm:      BSPSLODMod data;        break;
-                case psgm:      NiPSGravityMod data;    break;
-                case psdm:      NiPSDragMod data;       break;
-                case pspm:      NiPSPositionMod data;   break;
-                case psbum:     NiPSBoundUpdateMod data; break;
-                case bsstm:     BSPSysSubTexMod data;   break;
-                case pscm:      NiPSysCollMgr data;     break;
-                case psme:      NiPSysMeshEmitter data; break;
-                case psse:      NiPSysSphEmitter data;  break;
-                case psbe:      NiPSysBoxEmitter data;  break;
-                case psce:      NiPSysCylEmitter data;  break;
-                case pspc:      NiPSysPlanarColl data;  break;
-                case pssc:      NiPSysSphColl data;     break;
-                case bhkhc:     bhkHingeConstraint data; break;
-                case bhklhc:    bhkLHConstraint data;   break;
-                default:        Block data(i) <open=suppress>; break;
+                case "NiNode":
+                    NiNode data;
+                    break;
+                case "BSFadeNode":
+                    BSFadeNode data;
+                    break;
+                case "NiTriShape":
+                    NiTriShape data;
+                    break;
+                case "BSTriShape":
+                    BSTriShape data;
+                    break;
+                case "BSSubIndexTriShape":
+                    BSSubIndexTriShape data;
+                    break;
+                case "NiTriShapeData":
+                    NiTriShapeData data;
+                    break;
+                case "BSLODTriShape":
+                    BSLODTriShape data;
+                    break;
+                case "BSMeshLODTriShape":
+                    BSMeshLODTriShape data;
+                    break;
+                case "BSDynamicTriShape":
+                    BSDynamicTriShape data;
+                    break;
+                case "NiParticleSystem":
+                    NiParticleSys data;
+                    break;
+                case "NiPSysData":
+                    NiPSysData data;
+                    break;
+                case "BSLightingShaderProperty":
+                    BSLightingShaderProperty data;
+                    break;
+                case "BSEffectShaderProperty":
+                    BSEffectShaderProperty data;
+                    break;
+                case "BSShaderTextureSet":
+                    BSShaderTextureSet data;
+                    break;
+                case "NiAlphaProperty":
+                    NiAlphaProperty data;
+                    break;
+                case "BSWaterShaderProperty":
+                    BSWaterShaderProperty data;
+                    break;
+                case "NiSkinInstance":
+                    NiSkinInstance data;
+                    break;
+                case "NiSkinData":
+                    NiSkinData data;
+                    break;
+                case "NiSkinPartition":
+                    NiSkinPartition data;
+                    break;
+                case "BSDismemberSkinInstance":
+                    BSDSkinInstance data;
+                    break;
+                case "BSSkin::Instance":
+                    BSSkinInstance data;
+                    break;
+                case "BSSkin::BoneData":
+                    BSSkinBoneData data;
+                    break;
+                case "BSLeafAnimNode":
+                    BSLeafAnimNode data;
+                    break;
+                case "BSTreeNode":
+                    BSTreeNode data;
+                    break;
+                case "NiSwitchNode":
+                    NiSwitchNode data;
+                    break;
+                case "NiBillboardNode":
+                    NiBBNode data;
+                    break;
+                case "BSOrderedNode":
+                    BSOrderedNode data;
+                    break;
+                case "BSMultiBoundNode":
+                    BSMultiBoundNode data;
+                    break;
+                case "BSValueNode":
+                    BSValueNode data;
+                    break;
+                case "NiDefaultAVObjectPalette":
+                    NiAVObjPalette data;
+                    break;
+                case "NiControllerManager":
+                    NiControllerMgr data;
+                    break;
+                case "NiControllerSequence":
+                    NiCtlrSeq data;
+                    break;
+                case "NiTransformController":
+                    NiTransCtlr data;
+                    break;
+                case "NiMultiTargetTransformController":
+                    NiMultiTransCtlr data;
+                    break;
+                case "NiVisController":
+                    NiVisCtlr data;
+                    break;
+                case "NiFloatExtraDataController":
+                    NiFloatEDCtlr data;
+                    break;
+                case "NiPSysModifierActiveCtlr":
+                    NiPSysActiveCtlr data;
+                    break;
+                case "NiPSysEmitterCtlr":
+                    NiPSysEmitterCtlr data;
+                    break;
+                case "NiPSysUpdateCtlr":
+                    NiPSysUpdateCtlr data;
+                    break;
+                case "NiPSysGravityStrengthCtlr":
+                    NiPSysGravStrCtlr data;
+                    break;
+                case "NiPSysEmitterLifeSpanCtlr":
+                    NiPSEmitLifeSpanCtlr data;
+                    break;
+                case "NiPSysEmitterSpeedCtlr":
+                    NiPSEmitSpeedCtlr data;
+                    break;
+                case "NiPSysEmitterInitialRadiusCtlr":
+                    NiPSEmitIRadiusCtlr data;
+                    break;
+                case "BSStripParticleSystem":
+                    BSStripParticleSys data;
+                    break;
+                case "BSStripPSysData":
+                    BSStripPSysData data;
+                    break;
+                case "BSLightingShaderPropertyFloatController":
+                    BSLSPFloatCtlr data;
+                    break;
+                case "BSLightingShaderPropertyColorController":
+                    BSLSPColorCtlr data;
+                    break;
+                case "BSEffectShaderPropertyFloatController":
+                    BSESPFloatCtlr data;
+                    break;
+                case "BSEffectShaderPropertyColorController":
+                    BSESPColorCtlr data;
+                    break;
+                case "BSNiAlphaPropertyTestRefController":
+                    BSNiAlphaCtlr data;
+                    break;
+                case "NiLightColorController":
+                    NiLightColorCtlr data;
+                    break;
+                case "NiLightRadiusController":
+                    NiLightRadiusCtlr data;
+                    break;
+                case "NiLightDimmerController":
+                    NiLightDimmerCtlr data;
+                    break;
+                case "BSLagBoneController":
+                    BSLagBoneCtlr data;
+                    break;
+                case "BSProceduralLightningController":
+                    BSPLightningCtlr data;
+                    break;
+                case "NiTransformInterpolator":
+                    NiTransformInterp data;
+                    break;
+                case "NiPoint3Interpolator":
+                    NiPoint3Interp data;
+                    break;
+                case "NiBlendPoint3Interpolator":
+                    NiBlendPoint3 data;
+                    break;
+                case "NiFloatInterpolator":
+                    NiFloatInterp data;
+                    break;
+                case "NiBlendFloatInterpolator":
+                    NiBlendFloat data;
+                    break;
+                case "NiBoolInterpolator":
+                    NiBoolInterp data;
+                    break;
+                case "NiBlendBoolInterpolator":
+                    NiBlendBool data;
+                    break;
+                case "NiBoolTimelineInterpolator":
+                    NiBoolTimeInterp data;
+                    break;
+                case "NiLookAtInterpolator":
+                    NiLookAtInterp data;
+                    break;
+                case "NiFloatData":
+                    NiFloatData data;
+                    break;
+                case "NiBoolData":
+                    NiBoolData data;
+                    break;
+                case "NiKeyFrameData":
+                    NiKFData data;
+                    break;
+                case "NiTransformData":
+                    NiTransformData data;
+                    break;
+                case "NiPosData":
+                    NiPosData data;
+                    break;
+                case "BSXFlags":
+                    BSXFlags data;
+                    break;
+                case "bhkRigidBody":
+                    bhkRigidBody data;
+                    break;
+                case "bhkRigidBodyT":
+                    bhkRigidBodyT data;
+                    break;
+                case "bhkCollisionObject":
+                    bhkCollisionObj data;
+                    break;
+                case "bhkSPCollisionObject":
+                    bhkSPCollObj data;
+                    break;
+                case "bhkNPCollisionObject":
+                    bhkNPCollObj data;
+                    break;
+                case "bhkMoppBvTreeShape":
+                    bhkMoppBVShape data;
+                    break;
+                case "bhkCompressedMeshShape":
+                    bhkCMS data;
+                    break;
+                case "bhkCompressedMeshShapeData":
+                    bhkCMSD data;
+                    break;
+                case "bhkSphereShape":
+                    bhkSphereShape data;
+                    break;
+                case "bhkBoxShape":
+                    bhkBoxShape data;
+                    break;
+                case "bhkCapsuleShape":
+                    bhkCapsuleShape data;
+                    break;
+                case "bhkConvexVerticesShape":
+                    bhkCVS data;
+                    break;
+                case "bhkTransformShape":
+                    bhkTS data;
+                    break;
+                case "bhkConvexTransformShape":
+                    bhkCTS data;
+                    break;
+                case "bhkListShape":
+                    bhkListShape data;
+                    break;
+                case "bhkSimpleShapePhantom":
+                    bhkSSPhantom data;
+                    break;
+                case "bhkPhysicsSystem":
+                    bhkPhysSystem data;
+                    break;
+                case "bhkRagdollSystem":
+                    bhkRagSystem data;
+                    break;
+                case "BSMultiBound":
+                    BSMultiBound data;
+                    break;
+                case "BSMultiBoundOBB":
+                    BSMultiBoundOBB data;
+                    break;
+                case "NiExtraData":
+                    NiExtraData data;
+                    break;
+                case "NiBooleanExtraData":
+                    NiBoolED data;
+                    break;
+                case "NiFloatExtraData":
+                    NiFloatED data;
+                    break;
+                case "NiIntegerExtraData":
+                    NiIntegerED data;
+                    break;
+                case "NiStringExtraData":
+                    NiStringED data;
+                    break;
+                case "NiStringsExtraData":
+                    NiStringsED data;
+                    break;
+                case "NiTextKeyExtraData":
+                    NiTextKeyED data;
+                    break;
+                case "BSBoneLODExtraData":
+                    BSBoneLODED data;
+                    break;
+                case "BSConnectPoint::Parents":
+                    BSConnectPtParents data;
+                    break;
+                case "BSConnectPoint::Children":
+                    BSConnectPtChildren data;
+                    break;
+                case "BSEyeCenterExtraData":
+                    BSEyeCenterED data;
+                    break;
+                case "BSPositionData":
+                    BSPositionData data;
+                    break;
+                case "BSInvMarker":
+                    BSInvMarker data;
+                    break;
+                case "BSFurnitureMarkerNode":
+                    BSFurnMarker data;
+                    break;
+                case "BSBehaviorGraphExtraData":
+                    BSBGED data;
+                    break;
+                case "BSBlastNode":
+                    BSBlastNode data;
+                    break;
+                case "BSDamageStage":
+                    BSDamageStage data;
+                    break;
+                case "NiPointLight":
+                    NiPointLight data;
+                    break;
+                case "NiCamera":
+                    NiCamera data;
+                    break;
+                case "BSFrustumFOVController":
+                    BSFrustumCtlr data;
+                    break;
+                case "NiPSysAgeDeathModifier":
+                    NiPSAgeDeathMod data;
+                    break;
+                case "NiPSysSpawnModifier":
+                    NiPSSpawnMod data;
+                    break;
+                case "BSPSysSimpleColorModifier":
+                    BSPSSimpleColorMod data;
+                    break;
+                case "NiPSysRotationModifier":
+                    NiPSRotationMod data;
+                    break;
+                case "BSPSysScaleModifier":
+                    BSPSScaleMod data;
+                    break;
+                case "BSPSysLODModifier":
+                    BSPSLODMod data;
+                    break;
+                case "NiPSysGravityModifier":
+                    NiPSGravityMod data;
+                    break;
+                case "NiPSysDragModifier":
+                    NiPSDragMod data;
+                    break;
+                case "NiPSysPositionModifier":
+                    NiPSPositionMod data;
+                    break;
+                case "NiPSysBoundUpdateModifier":
+                    NiPSBoundUpdateMod data;
+                    break;
+                case "BSPSysSubTexModifier":
+                    BSPSysSubTexMod data;
+                    break;
+                case "NiPSysBombModifier":
+                    NiPSysBombMod data;
+                    break;
+                case "BSWindModifier":
+                    BSWindModifier data;
+                    break;
+                case "BSPSysInheritVelocityModifier":
+                    BSPSInheritVelMod data;
+                    break;
+                case "BSPSysHavokUpdateModifier":
+                    BSPSHavokUpdateMod data;
+                    break;
+                case "BSPSysRecycleBoundModifier":
+                    BSPSRecycleBoundMod data;
+                    break;
+                case "BSPSysStripUpdateModifier":
+                    BSPSStripUpdateMod data;
+                    break;
+                case "NiPSysColliderManager":
+                    NiPSysCollMgr data;
+                    break;
+                case "NiPSysMeshEmitter":
+                    NiPSysMeshEmitter data;
+                    break;
+                case "NiPSysSphereEmitter":
+                    NiPSysSphEmitter data;
+                    break;
+                case "NiPSysBoxEmitter":
+                    NiPSysBoxEmitter data;
+                    break;
+                case "NiPSysCylinderEmitter":
+                    NiPSysCylEmitter data;
+                    break;
+                case "NiPSysPlanarCollider":
+                    NiPSysPlanarColl data;
+                    break;
+                case "NiPSysSphericalCollider":
+                    NiPSysSphColl data;
+                    break;
+                case "bhkHingeConstraint":
+                    bhkHingeConstraint data;
+                    break;
+                case "bhkLimitedHingeConstraint":
+                    bhkLHConstraint data;
+                    break;
+                case "NiMeshParticleSystem":
+                    NiMeshParticleSys data;
+                    break;
+                case "NiMeshPSysData":
+                    NiMeshPSysData data;
+                    break;
+                default:
+                    Block data(i) <open=suppress>;
+                    break;
             }
         }
         
