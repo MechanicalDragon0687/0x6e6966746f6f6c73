@@ -133,7 +133,8 @@ typedef struct {
 
 typedef struct {
     ushort numverts;
-    ushort indices[numverts];
+    if ( numverts > 0 )
+        ushort indices[numverts];
 } MatchGroup;
 
 // STRING 

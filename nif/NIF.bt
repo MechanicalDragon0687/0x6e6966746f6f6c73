@@ -50,7 +50,8 @@ typedef struct {
     float scale;
     if ( file.header.userversion < 12 ) {
         uint numProperties;
-        Ref properties[numProperties] <optimize=false>;
+        if ( numProperties > 0 )
+            Ref properties[numProperties] <optimize=false>;
     }
     Ref NiCollisionObject;
 } NiAVObject <name="NiAVObject", open=true>;

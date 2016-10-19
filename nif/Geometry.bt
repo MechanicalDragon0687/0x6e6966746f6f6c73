@@ -120,7 +120,7 @@ typedef struct {
 
     ushort numGroups;
     if ( numGroups > 0 ) {
-        MatchGroup groups[numGroups] <open=suppress>;
+        MatchGroup groups[numGroups] <open=suppress, optimize=false>;
     }
 } NiTriShapeData <name="NiTriShapeData">; // END
 
@@ -302,7 +302,8 @@ typedef struct {
     SkinTransform transform;
     uint numBones;
     bool hasWeights;
-    SkinData bones(hasWeights)[numBones];
+    if ( numBones > 0 )
+        SkinData boneData(hasWeights)[numBones];
 } NiSkinData <name="NiSkinData">;
 
 // BSSkin::BoneData
