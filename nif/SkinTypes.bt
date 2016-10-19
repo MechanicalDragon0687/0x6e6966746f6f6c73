@@ -12,31 +12,17 @@
 //------------------------------------------------
 
 typedef struct {
-    Matrix33 rotation;
-    Vec3 translation;
-    float scale;
-} SkinTransform <name="Transform", open=true>;
-
-typedef struct {
     ushort index;
     float weight;
 } SkinWeight <name="Weights", open=suppress>;
 
 typedef struct ( bool hasWeights )  {
-    SkinTransform transform;
+    TransformMat transform;
     BVSphere bounds;
     ushort numVerts;
-    if ( hasWeights != 0 )
+    if ( hasWeights && numVerts )
         SkinWeight weights[numVerts];
 } SkinData <optimize=false>;
-
-typedef struct ( ushort numWeights ) {
-    float weight[numWeights];
-} PartWeight;
-
-typedef struct ( ushort numWeights ) {
-    ubyte index[numWeights];
-} PartBone;
 
 typedef struct {
     ushort numVerts;
@@ -45,36 +31,45 @@ typedef struct {
     ushort numStrips;
     ushort numWeights;
     ushort bones[numBones];
-    if (hasMap != 0)
+
     bool hasMap;
+    if ( hasMap && numVerts )
         ushort map[numVerts];
-    if (hasWeights != 0)
+
     bool hasWeights;
-        struct {
-            PartWeight weights(numWeights)[numVerts] <optimize=false>;
-        } weights;
-    if (numStrips > 0)
-        ushort stripLengths[numStrips];
-    if (hasFaces != 0)
-    bool hasFaces;
-        Triangle triangle[numTris];
-    if (hasBoneIndices != 0)
+    if ( hasWeights && numWeights && numVerts )
+        FloatArray weights(numWeights, "Weight")[numVerts] <name="Bone Weights", optimize=true>;
+    
+    if ( numStrips ) {
+        ushort stripLength[numStrips] <optimize=true>;
+    
+        bool hasFaces;
+        if ( hasFaces ) {
+            local int j = 0;
+            for ( j; j < numStrips; j++ ) {
+                if ( stripLength[j] > 0 )
+                    ushort strip[stripLength[j]] <optimize=false>;
+            }
+        }
+    } else {
+        bool hasFaces;
+        if ( hasFaces && numTris )
+            Triangle triangle[numTris];
+    }
+
     bool hasBoneIndices;
-        struct {
-            PartBone boneIndices(numWeights)[numVerts] <optimize=false>;
-        } indices;
-    ushort unk;
+    if ( hasBoneIndices && numWeights && numVerts )
+        UByteArray boneIndices(numWeights, "Index")[numVerts] <name="Bone Indices", optimize=true>;
+
+    if ( file.stream > 34 )
+        ushort unk;
+
     if ( file.stream == 100 )
     {
         VertexDesc vertexDesc;
         Triangle tris[numTris];
     }
 } SkinPartition <optimize=false>;
-
-
-typedef struct {
-    SkinPartition part;
-} BSSkinPart <optimize=false>;
 
 typedef struct {
     ushort partFlag;
@@ -85,7 +80,5 @@ typedef struct {
 
 typedef struct {
     BVSphere boundingSphere;
-    Matrix33 rotation;
-    Vec3 translation;
-    float scale;
+    TransformMat transform;
 } BSSkinBoneTrans <open=true>;

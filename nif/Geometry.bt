@@ -299,7 +299,7 @@ typedef struct {
 
 // NiSkinData
 typedef struct {
-    SkinTransform transform;
+    TransformMat transform;
     uint numBones;
     bool hasWeights;
     if ( numBones > 0 )

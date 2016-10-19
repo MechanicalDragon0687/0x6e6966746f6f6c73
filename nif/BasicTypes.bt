@@ -121,6 +121,12 @@ typedef struct {
 } TBC;
 
 typedef struct {
+    Matrix33 rotation;
+    Vec3 translation;
+    float scale;
+} TransformMat <open=true, name="Transform">;
+
+typedef struct {
     Vec3 center;
     float radius;
 } BVSphere;
