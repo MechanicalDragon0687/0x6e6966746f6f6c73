@@ -305,5 +305,5 @@ typedef struct {
 
 // SYSTEMS
 
-typedef ByteArray bhkPhysSystem <name="bhkPhysicsSystem">;
-typedef ByteArray bhkRagSystem <name="bhkRagdollSystem">;
+typedef BinaryData bhkPhysSystem <name="bhkPhysicsSystem">;
+typedef BinaryData bhkRagSystem <name="bhkRagdollSystem">;

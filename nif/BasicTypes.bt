@@ -99,12 +99,6 @@ typedef struct {
 } Matrix44;
 
 typedef struct {
-    uint size;
-    if ( size > 0 )
-        byte data[size] <open=suppress>;
-} ByteArray <open=suppress>;
-
-typedef struct {
     float U;
     float V;
 } TexCoord <name="UV", read=ReadTexCoord>;
@@ -136,6 +130,12 @@ typedef struct {
     if ( numverts > 0 )
         ushort indices[numverts];
 } MatchGroup;
+
+typedef struct {
+    uint size;
+    if ( size > 0 )
+        byte data[size] <open=suppress>;
+} BinaryData <open=suppress>;
 
 // STRING 
 typedef uint STRING <read=ReadSTRINGIndex>;
