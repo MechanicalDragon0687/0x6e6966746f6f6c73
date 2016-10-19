@@ -102,7 +102,7 @@ typedef struct {
     if ( hasVerts == 1 ) {
         if ( hasVertColors == 1 )
             Color4 vertColors[numVerts] <open=suppress>;
-        if ( numUVSets & 4096 ) {
+        if ( numUVSets & 1 ) {
             TexCoord UVSets[numVerts] <open=suppress>;
         }
     }
