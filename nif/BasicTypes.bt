@@ -137,6 +137,92 @@ typedef struct {
         byte data[size] <open=suppress>;
 } BinaryData <open=suppress>;
 
+
+// ubyte wrapper for UByteArray
+typedef struct ( string str ) {
+    local string name = str;
+    ubyte item;
+} _ubyte <name=UByteName, read=UByteRead>;
+
+string UByteName ( _ubyte& b ) { return b.name; }
+string UByteRead ( _ubyte& b )
+{
+    string s;
+    SPrintf(s, "%u", b.item);
+    return s;
+}
+
+// ushort wrapper for UShortArray
+typedef struct ( string str ) {
+    local string name = str;
+    ushort item;
+} _ushort <name=UShortName, read=UShortRead>;
+
+string UShortName ( _ushort& b ) { return b.name; }
+string UShortRead ( _ushort& b )
+{
+    string s;
+    SPrintf(s, "%u", b.item);
+    return s;
+}
+
+// uint wrapper for UIntArray
+typedef struct ( string str ) {
+    local string name = str;
+    uint item;
+} _uint <name=UIntName, read=UIntRead>;
+
+string UIntName ( _uint& b ) { return b.name; }
+string UIntRead ( _uint& b )
+{
+    string s;
+    SPrintf(s, "%u", b.item);
+    return s;
+}
+
+// float wrapper for FloatArray
+typedef struct ( string str ) {
+    local string name = str;
+    float item;
+} _float <name=FloatName, read=FloatRead>;
+
+string FloatName ( _float& f ) { return f.name; }
+string FloatRead ( _float& f )
+{
+    string s;
+    SPrintf(s, "%f", f.item);
+    return s;
+}
+
+// For Multi-dimensional ubyte arrays whose member names can be supplied
+typedef struct ( uint n, string str ) {
+    _ubyte item(str)[n] <name=UByteArrayItemRead, optimize=true>;
+} UByteArray <open=suppress, optimize=false>;
+
+string UByteArrayItemRead ( _ubyte& i ) { return i.name; }
+
+// For Multi-dimensional ubyte arrays whose member names can be supplied
+typedef struct ( uint n, string str ) {
+    _ushort item(str)[n] <name=UShortArrayItemRead, optimize=true>;
+} UShortArray <open=suppress, optimize=false>;
+
+string UShortArrayItemRead ( _ushort& i ) { return i.name; }
+
+// For Multi-dimensional uint arrays whose member names can be supplied
+typedef struct ( uint n, string str ) {
+    _uint item(str)[n] <name=UIntArrayItemRead, optimize=true>;
+} UIntArray <open=suppress, optimize=false>;
+
+string UIntArrayItemRead ( _uint& i ) { return i.name; }
+
+// For Multi-dimensional float arrays whose member names can be supplied
+typedef struct ( uint n, string str ) {
+    _float item(str)[n] <name=FloatArrayItemRead, optimize=true>;
+} FloatArray <open=suppress, optimize=false>;
+
+string FloatArrayItemRead ( _float& i ) { return i.name; }
+
+
 // STRING 
 typedef uint STRING <read=ReadSTRINGIndex>;
 
