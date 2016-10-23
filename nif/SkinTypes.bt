@@ -18,7 +18,7 @@ typedef struct {
 
 typedef struct ( bool hasWeights )  {
     TransformMat transform;
-    BVSphere bounds;
+    NiBound boundingSphere;
     ushort numVerts;
     if ( hasWeights && numVerts )
         SkinWeight weights[numVerts];
@@ -79,6 +79,6 @@ typedef struct {
 // Stream 130
 
 typedef struct {
-    BVSphere boundingSphere;
+    NiBound boundingSphere;
     TransformMat transform;
 } BSSkinBoneTrans <open=true>;

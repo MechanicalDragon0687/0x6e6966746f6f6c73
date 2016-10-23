@@ -103,6 +103,10 @@ typedef struct {
     float V;
 } TexCoord <name="UV", read=ReadTexCoord>;
 
+typedef struct ( uint numVerts ) {
+    TexCoord uv[numVerts];
+} TexCoordArray <name="UVs">;
+
 typedef struct {
     hfloat U;
     hfloat V;
@@ -129,7 +133,7 @@ typedef struct {
 typedef struct {
     Vec3 center;
     float radius;
-} BVSphere;
+} NiBound;
 
 typedef struct {
     ushort numverts;
@@ -202,28 +206,28 @@ string FloatRead ( _float& f )
 
 // For Multi-dimensional ubyte arrays whose member names can be supplied
 typedef struct ( uint n, string str ) {
-    _ubyte item(str)[n] <name=UByteArrayItemRead, optimize=true>;
+    _ubyte item(str)[n] <name=UByteArrayItemRead, optimize=false>; // Optimize true hides the values
 } UByteArray <open=suppress, optimize=false>;
 
 string UByteArrayItemRead ( _ubyte& i ) { return i.name; }
 
 // For Multi-dimensional ubyte arrays whose member names can be supplied
 typedef struct ( uint n, string str ) {
-    _ushort item(str)[n] <name=UShortArrayItemRead, optimize=true>;
+    _ushort item(str)[n] <name=UShortArrayItemRead, optimize=false>;
 } UShortArray <open=suppress, optimize=false>;
 
 string UShortArrayItemRead ( _ushort& i ) { return i.name; }
 
 // For Multi-dimensional uint arrays whose member names can be supplied
 typedef struct ( uint n, string str ) {
-    _uint item(str)[n] <name=UIntArrayItemRead, optimize=true>;
+    _uint item(str)[n] <name=UIntArrayItemRead, optimize=false>;
 } UIntArray <open=suppress, optimize=false>;
 
 string UIntArrayItemRead ( _uint& i ) { return i.name; }
 
 // For Multi-dimensional float arrays whose member names can be supplied
 typedef struct ( uint n, string str ) {
-    _float item(str)[n] <name=FloatArrayItemRead, optimize=true>;
+    _float item(str)[n] <name=FloatArrayItemRead, optimize=false>;
 } FloatArray <open=suppress, optimize=false>;
 
 string FloatArrayItemRead ( _float& i ) { return i.name; }

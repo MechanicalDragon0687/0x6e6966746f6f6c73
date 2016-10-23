@@ -198,17 +198,17 @@ struct FILE {
         int numblocks;
         int stream;
 
-        byte creatorlength <hidden=true>;
+        ubyte creatorlength <hidden=true>;
         char creator[creatorlength] <open=suppress>;
 
-        byte export1length <hidden=true>;
+        ubyte export1length <hidden=true>;
         char export1[export1length] <open=suppress>;
 
-        byte export2length <hidden=true>;
+        ubyte export2length <hidden=true>;
         char export2[export2length] <open=suppress>;
 
         if ( stream == 130 ) {
-            byte export3length <hidden=true>;
+            ubyte export3length <hidden=true>;
             char export3[export3length] <open=suppress>;
         }
 

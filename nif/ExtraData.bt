@@ -140,7 +140,7 @@ typedef struct {
     bool isSkinned;
     uint numPoints;
     if ( numPoints > 0 )
-        SSTRING name[numPoints];
+        SSTRING name[numPoints] <optimize=false>;
 } BSConnectPtChildren <name="BSConnectPoint::Children">;
 
 

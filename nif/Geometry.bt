@@ -30,7 +30,7 @@ typedef struct {
         Ref bsprop2;
     }
 
-} NiGeometry <name="NiGeometry">; // Abstract
+} NiGeometry <name="NiGeometry", open=true>; // Abstract
 
 typedef struct {
     NiAVObject base;
@@ -58,7 +58,7 @@ typedef struct {
 } NiGeometryPSys <name="NiGeometry">; // Abstract
 
 // NiTriShape
-typedef NiGeometry NiTriShape <name="NiTriShape">;
+typedef NiGeometry NiTriShape <name="NiTriShape", open=false>;
 
 // BSLODTriShape
 typedef struct {
@@ -175,7 +175,7 @@ typedef struct ( uint64 f ) {
 // BSTriShape
 typedef struct {
     NiAVObject base;
-    BVSphere bounds;
+    NiBound boundingSphere;
     Ref NiSkinInstance;
     Ref bsprop1;
     Ref bsprop2;
