@@ -29,8 +29,8 @@ typedef _SizedString SizedString <read=SizedStringRead, open=suppress>;
 typedef struct FileRecord( string & p, uint32 i ) {
     local string path = p;
     local uint32 index = i;
-	uint64 hash <format=hex>;   // Hash of the filename
-	uint32 size;                // Size of the data, possibly with a compress flag set
+    uint64 hash <format=hex>;   // Hash of the filename
+    uint32 size;                // Size of the data, possibly with a compress flag set
     uint32 offset;              // Offset to raw file data
 };
 
@@ -76,14 +76,14 @@ typedef struct FileData(uint pfx, uint sz) {
 
 struct BSA {
     struct HEADER {
-		char	sig[4] <hidden=true>;				                // 00 - BSA\0
-		uint32	version <name="Version">;			                // 04 
-		uint32  FolderRecordOffset <name="Folder Record Offset">;   // 08 - Offset of beginning of folder records
-		ArchiveFlags  archiveFlags <name="Archive Flags", read=ArchiveFlagsRead>;   // 0C - Archive flags
-		uint32  FolderCount <name="Folder Count">;                  // 10 - Total number of folder records
-		uint32  FileCount <name="File Count">;                      // 14 - Total number of file records
-		uint32  FolderNameLength <name="Folder Name Length">;       // 18 - Total length of folder names
-		uint32  FileNameLength <name="File Name Length">;           // 1C - Total length of file names
+        char    sig[4] <hidden=true>;                               // 00 - BSA\0
+        uint32  version <name="Version">;                           // 04 
+        uint32  FolderRecordOffset <name="Folder Record Offset">;   // 08 - Offset of beginning of folder records
+        ArchiveFlags  archiveFlags <name="Archive Flags", read=ArchiveFlagsRead>;   // 0C - Archive flags
+        uint32  FolderCount <name="Folder Count">;                  // 10 - Total number of folder records
+        uint32  FileCount <name="File Count">;                      // 14 - Total number of file records
+        uint32  FolderNameLength <name="Folder Name Length">;       // 18 - Total length of folder names
+        uint32  FileNameLength <name="File Name Length">;           // 1C - Total length of file names
         FileFlags fileFlags <name="File Flags", read=FileFlagsRead>;
     } header <bgcolor=0xffb399, open=true>;
 

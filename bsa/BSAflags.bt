@@ -15,7 +15,7 @@ union ArchiveFlags
 {
     uint flags;
     struct ArchiveBit {
-	    int NamedDirectories : 1;
+        int NamedDirectories : 1;
         int NamedFiles : 1;
         int Compressed : 1;
         int RetainDirNames : 1;
@@ -37,7 +37,7 @@ union FileFlags
 {
     uint flags;
     struct FileBit {
-	    int NIF : 1; // Meshes
+        int NIF : 1; // Meshes
         int DDS : 1; // Textures
         int XML : 1; // Menus
         int WAV : 1; // Sounds
@@ -73,7 +73,7 @@ union FileFlags
         int aud6 : 1; // Fallout - MenuVoices
         int aud7 : 1; // Oblivion - Voices2
 
-	    int aud8 : 1; // PointLookout - Sounds
+        int aud8 : 1; // PointLookout - Sounds
         int aud9 : 1; // Fallout - MenuVoices
         int aud10 : 1; // Fallout - MenuVoices
         int aud11 : 1; // Anchorage - Sounds

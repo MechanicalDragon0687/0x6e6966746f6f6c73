@@ -146,7 +146,7 @@ string FolderRecordRead64( FolderRecord64& f )
 {
     int64 offset = f.offset;
     int64 filesPos = 36 + 16 * ReadUInt( 16 ); // 16 = header.FolderCount
-    offset -= filesPos + ReadUInt( 28 );     // 28 = header.FileNameLength
+    offset -= filesPos + ReadUInt( 28 );       // 28 = header.FileNameLength
 
     string s = ReadString( filesPos + offset + 1 );
 
@@ -203,9 +203,6 @@ string FileRead( FileRecord& f )
         
         Assert( false, "Unexpected hash value. Expected: " + h2 + ", Actual: " + h1 + " for " + file + "|" + ext );
     }
-    //string h;
-    //SPrintf( h, "%LX", hash);
-    //s += " " + h;
 
     return s;
 }
