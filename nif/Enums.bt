@@ -11,6 +11,103 @@
 //   History: 
 //------------------------------------------------
 
+
+// NiAVObject Flags
+//  These bits appear to have the same function across all supported NIFs (34, 83, 100, 130),
+//  though these values were obtained from version 130.
+//  For Oblivion these values may differ.
+//  For Morrowind the flags are completely different.
+typedef union {
+    int value;
+    struct {
+        int hidden                  : 1;
+        int selectiveUpdate         : 1; // Always set at runtime
+        int selectiveUpdateTrans    : 1; // Always set at runtime
+        int selectiveUpdateCtlr     : 1; // Always set at runtime
+        int selectiveUpdateRigid    : 1; // Always unset at runtime
+        int displayObject           : 1;
+        int disableSorting          : 1;
+        int selUpdTransOverride     : 1;
+        int UNUSED                  : 1;
+        int saveExternalGeomData    : 1;
+        int noDecals                : 1;
+        int alwaysDraw              : 1;
+        int meshLOD                 : 1; // Always unset at runtime when stream < 83
+        int fixedBound              : 1;
+        int topFadeNode             : 1;
+        int ignoreFade              : 1;
+        int noAnimSyncX             : 1;
+        int noAnimSyncY             : 1;
+        int noAnimSyncZ             : 1;
+        int noAnimSyncS             : 1;
+        int noDismember             : 1;
+        int noDismemberValid        : 1;
+        int renderUse               : 1;
+        int materialsApplied        : 1;
+        int _unused                 : 8 <hidden=true>;
+        // Only the first 24 bits are read from the file
+        Assert ( _unused == 0, "Last 8 bits of NiAVObjectFlags are set" );
+    } bitflags;
+} NiAVObjectFlags <name="Flags", read=NiAVFlagsRead, open=true>;
+
+string NiAVFlagsRead( NiAVObjectFlags& f )
+{
+    string s;
+    
+    if ( f.value & 0x1 )
+        s += "hidden | ";
+    if ( f.value & 0x2 )
+        s += "selectiveUpdate | ";
+    if ( f.value & 0x4 )
+        s += "selectiveUpdateTrans | ";
+    if ( f.value & 0x8 )
+        s += "selectiveUpdateCtlr | ";
+    if ( f.value & 0x10 )
+        s += "selectiveUpdateRigid | ";
+    if ( f.value & 0x20 )
+        s += "displayObject | ";
+    if ( f.value & 0x40 )
+        s += "disableSorting | ";
+    if ( f.value & 0x80 )
+        s += "selUpdTransOverride | ";
+    if ( f.value & 0x100 )
+        s += "UNUSED | ";
+    if ( f.value & 0x200 )
+        s += "saveExternalGeomData | ";
+    if ( f.value & 0x400 )
+        s += "noDecals | ";
+    if ( f.value & 0x800 )
+        s += "alwaysDraw | ";
+    if ( f.value & 0x1000 )
+        s += "isMeshLOD | ";
+    if ( f.value & 0x2000 )
+        s += "fixedBound | ";
+    if ( f.value & 0x4000 )
+        s += "topFadeNode | ";
+    if ( f.value & 0x8000 )
+        s += "ignoreFade | ";
+    if ( f.value & 0x10000 )
+        s += "noAnimSyncX | ";
+    if ( f.value & 0x20000 )
+        s += "noAnimSyncY | ";
+    if ( f.value & 0x40000 )
+        s += "noAnimSyncZ | ";
+    if ( f.value & 0x80000 )
+        s += "noAnimSyncS | ";
+    if ( f.value & 0x100000 )
+        s += "noDismember | ";
+    if ( f.value & 0x200000 )
+        s += "noDismemberValid | ";
+    if ( f.value & 0x400000 )
+        s += "renderUse | ";
+    if ( f.value & 0x800000 )
+        s += "materialsApplied | ";
+
+    SPrintf(s, "%s (%u)", s, f.value );
+    
+    return s;
+}
+
 // General
 
 typedef enum <ushort> {

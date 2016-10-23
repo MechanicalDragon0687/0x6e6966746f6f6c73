@@ -43,8 +43,7 @@ typedef struct {
     if ( numExtraData > 0)
         Ref extraData[numExtraData] <optimize=false>;
     Ref NiTimeController;
-    ushort flags;
-    ushort unknown;
+    NiAVObjectFlags flags;
     Vec3 translation;
     Matrix33 rotation;
     float scale;
