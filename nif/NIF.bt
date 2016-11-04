@@ -473,6 +473,9 @@ struct FILE {
                 case "bhkCompressedMeshShapeData":
                     bhkCMSD data;
                     break;
+                case "bhkPlaneShape":
+                    bhkPlaneShape data;
+                    break;
                 case "bhkSphereShape":
                     bhkSphereShape data;
                     break;

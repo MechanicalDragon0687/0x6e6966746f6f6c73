@@ -17,7 +17,7 @@ typedef struct {
 } NIAVOBJ <name="AV Object", open=true>;
 
 typedef struct {
-    uint unk;
+    Ref scene;
     uint numObjs;
     if ( numObjs > 0 )
         NIAVOBJ object[numObjs] <optimize=false>;
@@ -65,9 +65,11 @@ typedef struct {
     STRING nodeName;
     STRING propType;
     STRING ctrlType;
-    STRING var1;
-    STRING var2;
+    STRING ctrlID;
+    STRING interpID;
 } CTRLLINK <name="Controlled Block">;
+
+typedef enum <uint> { LOOP, REVERSE, CLAMP, MAX_CYCLE_TYPES } CycleType;
 
 typedef struct {
     STRING name;
@@ -75,19 +77,15 @@ typedef struct {
     uint unk1;
     if ( numBlocks > 0 )
         CTRLLINK block[numBlocks];
-} NISEQ <name="NiSequence">;
-
-typedef struct {
-    NISEQ sequence;
     float weight;
     Ref textKey;
-    uint CycleType; // enum
+    CycleType cycleType;
     float frequency;
     float startTime;
     float stopTime;
-    Ref manager;
-    STRING targetName;
-    ushort unk;
+    Ref manager; // Owner
+    STRING accumRootName;
+    ushort flags;
 } NiCtlrSeq <name="NiControllerSequence">;
 
 typedef struct {
@@ -152,27 +150,32 @@ typedef struct {
 
 // BSProceduralLightningController
 typedef struct {
-    NIFLOATINTERPCTLR controller;
-    Ref interpolator1; // Mutation
-    Ref interporator2;
-    Ref interporator3;
-    Ref interporator4;
-    Ref interporator5;
-    Ref interporator6;
-    Ref interporator7;
-    Ref interporator8; // Arc Offset
-    ushort unkShort1;
-    ushort unkShort2;
-    ushort unkShort3;
-    float distanceWeight;
-    float unkFloat;
-    float stripWidth;
-    float fork;
-    float unkFloat2;
-    byte unkByte1;
-    byte unkByte2;
-    byte unkByte3;
-    Ref interpolator9;
+    NITIMECTLR controller;
+    Ref generationInterp;
+    Ref mutationInterp;
+    // Generation
+    Ref subdivisionInterp;
+    Ref numBranchesInterp;
+    Ref numBranchesVarInterp;
+    // Process
+    Ref lengthInterp;
+    Ref lengthVarInterp;
+    Ref widthInterp;
+    Ref arcOffsetInterp;
+    // Generation Params
+    ushort subdivisions;
+    ushort numBranches;
+    ushort numBranchesVariation;
+    // Process Params
+    float length;
+    float lengthVariation;
+    float width;
+    float childWidthMult;
+    float arcOffset;
+    bool fadeMainBolt;
+    bool fadeChildBolts;
+    bool animateArcOffset;
+    Ref shaderProperty;
 } BSPLightningCtlr <name="BSProceduralLightningController">;
 
 // DATA
@@ -315,12 +318,13 @@ typedef struct {
 // INTERPOLATORS
 
 typedef struct {
-    ushort unk1;
-    uint unk2;
-} NIBLENDINTERP; // Abstract
+    ushort flags; // Default: 513
+    uint unk2; // Array size, only non-zero when not manager controlled?
+    Assert( unk2 == 0, "NiBlendInterpolator unk2 is non-zero\r\n" );
+} NIBLENDINTERP <open=true>; // Abstract
 
 typedef struct {
-    byte value;
+    byte value; // NiBool value of 2 means Invalid, basically the "undefined" value like uint/float
     Ref data; // NiBoolData
 } NiBoolInterp <name="NiBoolInterpolator">;
 
@@ -359,13 +363,15 @@ typedef struct {
 } NiBlendPoint3 <name="NiBlendPoint3Interpolator">;
 
 typedef struct {
-    ushort unk1;
+    ushort flags;
     Ref lookAt;
     STRING target;
     Vec3 translation;
     Quat rotation;
     float scale;
-    Ref unkLink1;
-    Ref unkLink2;
-    Ref unkLink3;
+    Ref interpolator1;
+    Ref interpolator2;
+    Ref interpolator3;
 } NiLookAtInterp <name="NiLookAtInterpolator">;
+
+// NiPathInterpolator

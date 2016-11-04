@@ -122,18 +122,26 @@ typedef struct {
     float radius;
 } bhkConvexShape <open=true>; // Abstract
 
+typedef struct {
+    uint HavokMaterial;
+    float radius;
+    float unkFloats[14];
+} bhkPlaneShape <name="bhkPlaneShape">;
+
 typedef bhkConvexShape bhkSphereShape <name="bhkSphereShape", open=false>;
 
 typedef struct {
     bhkConvexShape shape;
-    byte unk[8];
+    uint unkInt1;
+    uint unkInt2;
     Vec3 dimensions;
-    float minSize;
+    float radius;
 } bhkBoxShape <name="bhkBoxShape">;
 
 typedef struct {
     bhkConvexShape shape;
-    byte unk[8];
+    uint unkInt1;
+    uint unkInt2;
     Vec3 point1;
     float radius1;
     Vec3 point2;
@@ -160,8 +168,9 @@ typedef struct {
 typedef struct {
     Ref shape;
     uint HavokMaterial; // Enum
-    float unk1;
-    byte unk[8];
+    float radius;
+    uint unkInt1;
+    uint unkInt2;
     Matrix44 transform;
 } bhkTS <name="bhkTransformShape">;
 
@@ -170,7 +179,8 @@ typedef bhkTS bhkCTS <name="bhkConvexTransformShape">;
 typedef struct {
     Ref shape;
     uint unkInt1;
-    byte unkBytes[8];
+    uint unkInt2;
+    uint unkInt3;
     float unkFloat1;
     uint dataSize;
     Vec3 origin;
@@ -183,9 +193,9 @@ typedef struct {
 
 typedef struct {
     Ref target;
-    uint unkInt1;
-    float unkFloat1;
-    byte unkBytes[4];
+    uint unk; // either "userData" or "pObject"
+    float radius;
+    float unkFloat;
     Vec4 unkVec4;
     float radius;
     float scale;
@@ -204,26 +214,30 @@ typedef struct {
 } bhkCMSDTrans;
 
 typedef struct {
-    ushort tri1;
-    ushort tri2;
-    ushort tri3;
-    uint unknownInt1;
-    ushort unknownShort1;
+    ushort triA;
+    ushort triB;
+    ushort triC;
+    uint material;
+    ushort weldingInfo;
 } bhkCMSDBT;
 
 typedef struct {
     Vec4 translation;
-    uint matIndex;
-    ushort unknownShort1;
+    uint matIndex; // m_materialInfo
+    ushort reference;
     ushort transformIndex;
     uint numVerts;
-    ushort verts[numVerts] <optimize=false>;
+    if ( numVerts > 0 )
+        ushort verts[numVerts] <optimize=false>;
     uint numIndices;
-    ushort indices[numIndices] <optimize=false>;
+    if ( numIndices > 0 )
+        ushort indices[numIndices] <optimize=false>;
     uint numStrips;
-    ushort strips[numStrips] <optimize=false>;
-    uint numIndices2;
-    ushort indices2[numIndices2] <optimize=false>;
+    if ( numStrips > 0 )
+        ushort strips[numStrips] <optimize=false>;
+    uint numWeldingInfo;
+    if ( numWeldingInfo > 0 )
+        ushort weldingInfo[numWeldingInfo] <optimize=false>;
     
 } bhkCMSDChunk;
 
@@ -235,25 +249,45 @@ typedef struct {
     float error;
     Vec4 boundsMin;
     Vec4 boundsMax;
-    byte unknownByte1;
-    uint unknownInt1;
-    uint unknownInt2;
-    uint unknownInt3;
-    byte unknownByte2;
+    byte weldingType;
+    byte materialType;
+    // Mat32A, Mat16A, and Mat8A do not appear to ever be used
+    uint numMat32;
+    if ( numMat32 > 0 )
+        uint mat32[numMat32] <optimize=true>;
+    uint numMat16;
+    if ( numMat16 > 0 )
+        uint mat16[numMat16] <optimize=true>;
+    uint numMat8;
+    if ( numMat8 > 0 )
+        uint mat8[numMat8] <optimize=true>;
+
     uint numMaterials;
     bhkCMSDMat materials[numMaterials] <optimize=false>;
-    uint unknownInt4;
+
+    // NamedMat does not appear to ever be used
+    uint numNamedMat;
+    // Needs Array
+
     uint numTransforms;
-    bhkCMSDTrans transforms[numTransforms] <optimize=false>;
+    if ( numTransforms > 0 )
+        bhkCMSDTrans transforms[numTransforms] <optimize=false>;
+
     uint numBigVerts;
     if ( numBigVerts > 0 )
         Vec4 bigVerts[numBigVerts] <optimize=false>;
+
     uint numBigTris;
     if ( numBigTris > 0 )
         bhkCMSDBT bigTris[numBigTris] <optimize=false>;
+
     uint numChunks;
     bhkCMSDChunk chunks[numChunks] <optimize=false>;
-    uint unknownInt5;
+
+    // ConvexPiece does not appear to ever be used
+    uint numConvexPieceA;
+    // Needs Array
+
 } bhkCMSD <name="bhkCompressedMeshShapeData">;
 
 
