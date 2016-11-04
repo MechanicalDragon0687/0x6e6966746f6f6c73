@@ -46,7 +46,9 @@ typedef union {
         int materialsApplied        : 1;
         int _unused                 : 8 <hidden=true>;
         // Only the first 24 bits are read from the file
-        Assert ( _unused == 0, "Last 8 bits of NiAVObjectFlags are set" );
+        // Note: This may only apply to FO4, as some NIFs have the last 8 bits set
+        if ( _unused > 0 )
+            Printf( "Last 8 NiAVObject flag bits set at offset %u\r\n", FTell() );
     } bitflags;
 } NiAVObjectFlags <name="Flags", read=NiAVFlagsRead, open=true>;
 
