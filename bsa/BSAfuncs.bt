@@ -179,6 +179,15 @@ string RevStr( string& s )
     return t;
 }
 
+string lower( string s )
+{
+    uint i;
+    for ( i = 0; i < Strlen(s); i++ )
+        s[i] = ToLower(s[i]);
+
+    return s;
+}
+
 string FileRead( FileRecord& f )
 {
     string s;
@@ -194,14 +203,15 @@ string FileRead( FileRecord& f )
     string file = SubStr( s, 0, Strlen(s) - dot );
     string ext = SubStr( s, Strlen(s) - dot, dot );
     
-    uint64 hash = CreateHash( file, ext, Strlen( file ) );
+    uint64 hash = CreateHash( lower(file), lower(ext), Strlen( file ) );
     if ( hash != f.hash ) {
         string h1;
         SPrintf( h1, "%LX", hash );
         string h2;
         SPrintf( h2, "%LX", f.hash );
         
-        Assert( false, "Unexpected hash value. Expected: " + h2 + ", Actual: " + h1 + " for " + file + "|" + ext );
+        Assert( false, "Unexpected hash value. Expected: " + h2 + ", Actual: " + h1 + " for " + file + " | " + ext );
+        //Printf( "Unexpected hash value. Expected: %LX, Actual: %LX for %s%s\r\n", f.hash, hash, file, ext );
     }
 
     return s;
@@ -234,11 +244,13 @@ uint64 CreateHash(string fname, string ext, uint length)
     uint i;
     if (length > 3)
         for (i = 1; i < length - 2; i++)
-            hash2 = fname[i] + (hash2 << 6) + (hash2 << 16) - hash2;
+            hash2 = (unsigned char)fname[i] + (hash2 << 6) + (hash2 << 16) - hash2;
+
     hash += (hash2 << 32);
 
     for (i = 0; i < Strlen(ext); i++)
         hash3 = ext[i] + (hash3 << 6) + (hash3 << 16) - hash3;
+
     hash += (hash3 << 32);
 
     return hash;
