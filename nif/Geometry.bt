@@ -23,7 +23,7 @@ typedef struct {
     }
 
     uint activematerial;
-    byte dirtyflag;
+    byte defaultMatNeedsUpdateFlag;
 
     if ( stream > 34 ) {
         Ref bsprop1;
@@ -35,27 +35,13 @@ typedef struct {
 typedef struct {
     NiAVObject base;
     local STRING name = base.name;
-    Ref data; // NiGeometryData
-    Ref skin; // NiSkinInstance
-    uint nummaterials;
-    if ( nummaterials > 0 ) {
-        uint materialstring;
-        uint material[nummaterials];
-    }
+    NiBound bound;
+    Ref skin;
+    Ref shaderProperty;
+    Ref alphaProperty;
+    VertexDesc vertexDesc;
+} BSGeometry <name="BSGeometry", open=true>; // Abstract
 
-    uint activematerial;
-    if ( stream < 100 )
-        byte dirtyFlag;
-    else {
-        uint dirtyFlag;
-        // Try to find non-null values
-        Assert( dirtyFlag == 4294967295, "Flag is not 0xFFFF" );
-        Printf("PSYS flag value: %u\n", dirtyFlag);
-    }
-        
-    Ref bsprop1;
-    Ref bsprop2;
-} NiGeometryPSys <name="NiGeometry">; // Abstract
 
 // NiTriShape
 typedef NiGeometry NiTriShape <name="NiTriShape", open=false>;
@@ -68,107 +54,143 @@ typedef struct {
     uint lvl2;
 } BSLODTriShape <name="BSLODTriShape">;
 
-// NiTriShapeData
-typedef struct {
-    uint unknown;
-    ushort numVerts;
-    byte keepFlags;
-    byte compressFlags;
-    bool hasVerts;
-    
-    if ( hasVerts == 1 ) {
-       Vec3 vertices[numVerts] <open=suppress>;
-    }
 
-    ushort numUVSets;
-    
+// NiGeometryData
+typedef struct {
+    // IS_PSYS is defined when used in NiParticleSystemData
+    // Technically, Bethesda broke inheritance between NiGeometryData > NiParticlesData
+    // and NiParticlesData now inherits directly from NiObject with much of the same
+    // layout as NiGeometryData. 
+    local bool isPSys = exists(parentof(this).IS_PSYS);
+
+    uint groupID;
+    ushort numVerts;
+    byte keepFlags; // KEEP_XYZ = 0x1 | KEEP_NORM | KEEP_COLOR | KEEP_UV | KEEP_INDICES | KEEP_BONEDATA
+    byte compressFlags; // COMPRESS_NORM = 0x1 | COMPRESS_COLOR | COMPRESS_UV | COMPRESS_WEIGHT | COMPRESS_POSITION
+
+    bool hasVerts;
+    if ( hasVerts == 1 && !isPSys )
+       Vec3 vertices[numVerts] <open=suppress>;
+
+    // NBT Method is uppermost 4 bits, Num UV Sets is lowest 4 bits
+    ushort dataFlags;
+
+    local ushort nbtMethod = dataFlags & 0xF000;
+    Assert( (nbtMethod >> 12) <= 1, "Unsupported NBT method" );
+
+    local ubyte numTextureSets = dataFlags & 0x3F; // The max UV Sets is 63
+    if ( stream >= 83 )
+        numTextureSets = dataFlags & 0x1; // There is only ever 1 UV Set in stream 83 and higher
+
     if ( stream > 34 )
-        uint unknown2;
+        uint materialCRC;
     
     bool hasNormals;
-    
-    if ( hasNormals == 1 )
+    if ( hasNormals == 1 && !isPSys )
         Vec3 normals[numVerts] <open=suppress>;
     
-    if ( hasNormals == 1 && (numUVSets & 4096) ) {
+    if ( hasNormals == 1 && nbtMethod && !isPSys ) {
         Vec3 tangents[numVerts] <open=suppress>;
         Vec3 bitangents[numVerts] <open=suppress>;
     }
 
-    Vec3 center;
-    float radius;
-    bool hasVertColors;
+    NiBound boundingSphere;
 
-    if ( hasVerts == 1 ) {
+    bool hasVertColors;
+    if ( numVerts > 0 && !isPSys ) {
         if ( hasVertColors == 1 )
             Color4 vertColors[numVerts] <open=suppress>;
-        if ( numUVSets & 1 ) {
-            TexCoord UVSets[numVerts] <open=suppress>;
-        }
-    }
     
-    ConsistencyType ct;
-    Ref additionalData;
+        if ( numTextureSets > 0 )
+            TexCoordArray UVSets(numVerts)[numTextureSets] <open=suppress, optimize=true>;
+    }
 
+    // Consistency Type is only the upper 4 bits (& 0xF000)
+    // Dirty mask is the lower 12 (0x0FFF) but irrelevant as only used at runtime
+    enum <ushort> { CT_MUTABLE = 0, CT_STATIC = 0x4000, CT_VOLATILE = 0x8000 } consistencyType;
+    
+    local ushort CONSISTENCY_MASK = 0xF000;
+    if ( stream >= 83 )
+        CONSISTENCY_MASK = 0x7000;
+
+    Assert( consistencyType == (consistencyType & CONSISTENCY_MASK), "Consistency Type is invalid for this NIF version." );
+
+    Ref additionalGeomData;
+} NiGeometryData <open=true>; // Abstract
+
+// NiTriShapeData
+typedef struct {
+    NiGeometryData base;
     ushort numTris;
-    ushort numPoints;
-    ushort what;
+    uint numPoints;
+    Assert( numPoints == numTris * 3, "Unexpected triangle info" );
+
     bool hasTris;
-    if ( hasTris == 1 ) {
+    if ( hasTris == 1 )
         Triangle tris[numTris] <open=suppress>;
+
+    ushort numSharedNormals;
+    if ( numSharedNormals > 0 ) {
+        if ( stream >= 83 )
+            Assert( false, "Shared Normals are not expected for this NIF version" );
+
+        struct {
+            IndexArray16 normal[numSharedNormals] <open=suppress, optimize=false>;
+        } sharedNormalsArray <open=suppress>;
     }
 
-    ushort numGroups;
-    if ( numGroups > 0 ) {
-        MatchGroup groups[numGroups] <open=suppress, optimize=false>;
-    }
 } NiTriShapeData <name="NiTriShapeData">; // END
 
 
+typedef enum <ushort> { 
+    VF_VERTEX = 0x1, VF_UV = 0x2, VF_NORMAL = 0x8, 
+    VF_TANGENT = 0x10, VF_COLORS = 0x20, VF_SKINNED = 0x40,
+    VF_EYEDATA = 0x100, VF_FULLPREC = 0x400
+} VertexComponent;
+
 // BSVertexData
 typedef struct ( uint64 f ) {
-    local uint64 vf = (f & 0xffff0000000000) >> 40;
+    local uint64 vf = (f & 0xffff0000000000) >> 44;
 
-    if ( vf & 16 ) {
-        if ( stream == 100 ) {
+    if ( vf & VF_VERTEX ) {
+        if ( stream == 100 )
             Vec3 vertex;
-        } else if ( vf & 16384 ) {
+        else if ( vf & VF_FULLPREC )
             Vec3 vertex;
-        } else {
-            HalfVec3 vertex; 
-        }
+        else
+            HalfVec3 vertex;
 
-        if ( stream == 100 || (stream == 130 && (vf & 16384)) ) {
-            if ( vf & 256 )
+        if ( stream == 100 || (stream == 130 && (vf & VF_FULLPREC)) ) {
+            if ( vf & VF_TANGENT )
                 float bitX;
             else
                 uint unk;
-        } else if ( vf & 256 ) {
+        } else if ( vf & VF_TANGENT ) {
             hfloat bitX;
         } else {
             ushort unkShort;
         }
     }
 
-    if ( vf & 32 )
+    if ( vf & VF_UV )
         HalfTexCoord uv;
 
-    if ( vf & 128 ) {
+    if ( vf & VF_NORMAL ) {
         ByteVec4 normal("BitY");
-        if ( vf & 256 )
+        if ( vf & VF_TANGENT )
             ByteVec4 tangent("BitZ");
     }
 
-    if ( vf & 512 )
+    if ( vf & VF_COLORS )
         ByteColor4 vertexColors;
 
-    if ( vf & 1024 ) {
+    if ( vf & VF_SKINNED ) {
         hfloat weights[4];
         ubyte indices[4];
     }
     
-    if ( stream == 130 && (vf & 4096) ) // Needs testing for stream version 100
-        uint unkInt;
+    if ( vf & VF_EYEDATA )
+        uint eyeData;
 
 } BSVertexData;
 
@@ -193,9 +215,10 @@ typedef struct {
         Triangle triangles[numTris];
 
     if ( stream == 100 ) {
-        uint someDataSize;
-        if ( someDataSize > 0 ) {
-            Vec3 verts[numVerts];
+        uint particleDataSize;
+        if ( particleDataSize > 0 ) {
+            // Second half of verts unknown
+            HalfVec3 verts[numVerts*2];
             Triangle tris[numTris];
         }
     }
@@ -204,55 +227,64 @@ typedef struct {
 // BSSubIndexTriShape
 typedef struct {
     BSTriShape base <open=true>;
-    if ( base.dataSize > 0 ) {
-        uint numPrimitives;
-        uint numSegments;
-        uint totalSegments;
-        if ( numSegments > 0 ) {
-            struct {
+    struct {
+        if ( base.dataSize > 0 && stream == 130 ) {
+            uint numPrimitives;
+            uint numSegments;
+            uint totalSegments;
+            if ( numSegments > 0 ) {
                 struct {
-                    uint startIndex;
-                    uint numPrimitives;
-                    uint parentArrayIndex;
-                    uint numSubSegments;
-                    if ( numSubSegments > 0 ) {
-                        struct {
-                            uint startIndex;
-                            uint numPrimitives;
-                            uint parentArrayIndex;
-                            uint unk;
-                        } BSSITSSubSegment[numSubSegments] <optimize=true>;
-                    }
-                } BSSITSSegment[numSegments] <optimize=false>;
-            } BSSITSSegments <name="Segments">;
-        }
-
-        if ( totalSegments > numSegments ) {
-            struct {
-                uint numSegments;
-                uint totalSegments;
-                if ( numSegments > 0 )
-                    uint arrayIndex[numSegments];
-                if ( totalSegments > 0 )
                     struct {
-                        uint segmentOrUser;
-                        uint unk;
-                        uint numUnkData;
-                        if ( numUnkData > 0 )
-                            float unkData[numUnkData];
-                    } BSSITSSubSegmentRecord[totalSegments] <optimize=false>;
-                SSTRING16 ssfFile;
-            } BSSITSSubSegmentData <name="Sub Segment Data">;
-        }
-    }
+                        uint startIndex;
+                        uint numPrimitives;
+                        uint parentArrayIndex;
+                        uint numSubSegments;
+                        if ( numSubSegments > 0 ) {
+                            struct {
+                                uint startIndex;
+                                uint numPrimitives;
+                                uint parentArrayIndex;
+                                uint unk;
+                            } BSSITSSubSegment[numSubSegments] <optimize=true>;
+                        }
+                    } BSSITSSegment[numSegments] <optimize=false>;
+                } BSSITSSegments <name="Segments">;
+            }
     
+            if ( totalSegments > numSegments ) {
+                struct {
+                    uint numSegments;
+                    uint totalSegments;
+                    if ( numSegments > 0 )
+                        uint arrayIndex[numSegments];
+                    if ( totalSegments > 0 )
+                        struct {
+                            uint segmentOrUser;
+                            uint unk;
+                            uint numUnkData;
+                            if ( numUnkData > 0 )
+                                float unkData[numUnkData];
+                        } BSSITSSubSegmentRecord[totalSegments] <optimize=false>;
+                    SSTRING16 ssfFile;
+                } BSSITSSubSegmentData <name="Sub Segment Data">;
+            }
+        } else {
+            uint numSegments;
+            struct {
+                byte unk;
+                uint index;
+                uint flags;
+            } segments[numSegments];        
+        }
+    } BSGeometrySegmentData <open=true>;
 } BSSubIndexTriShape <name="BSSubIndexTriShape">;
 
 // BSDynamicTriShape
 typedef struct {
-    BSTriShape base;
-    uint dataSize;
-    Vec4 wut[base.numVerts];
+    BSTriShape base <open=true>;
+    uint dynamicDataSize;
+    if ( dynamicDataSize > 0 )
+        Vec4 dynamicData[base.numVerts];
 } BSDynamicTriShape <optimize=false, name="BSDynamicTriShape">;
 
 // BSMeshLODTriShape
@@ -303,7 +335,10 @@ typedef struct {
     uint numBones;
     bool hasWeights;
     if ( numBones > 0 )
-        SkinData boneData(hasWeights)[numBones];
+        struct {
+            SkinData boneData(hasWeights)[numBones];
+        } BoneData <name="Bone Data">;
+
 } NiSkinData <name="NiSkinData">;
 
 // BSSkin::BoneData

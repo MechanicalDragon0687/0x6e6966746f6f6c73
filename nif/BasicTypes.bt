@@ -27,7 +27,7 @@ typedef struct {
     hfloat X;
     hfloat Y;
     hfloat Z;
-} HalfVec3;
+} HalfVec3 <read=ReadHalfVec3, open=suppress>;
 
 typedef struct {
     byte X;
@@ -136,10 +136,10 @@ typedef struct {
 } NiBound;
 
 typedef struct {
-    ushort numverts;
-    if ( numverts > 0 )
-        ushort indices[numverts];
-} MatchGroup;
+    ushort size;
+    if ( size > 0 )
+        ushort index[size];
+} IndexArray16;
 
 typedef struct {
     uint size;
@@ -369,6 +369,13 @@ string ReadVec4( Vec4& vec )
     SPrintf(s, "X %s Y %s Z %s W %s", ParseFloat(vec.X), ParseFloat(vec.Y), 
                                       ParseFloat(vec.Z), ParseFloat(vec.W)
     );
+    return s;
+}
+
+string ReadHalfVec3( HalfVec3& vec )
+{
+    string s;
+    SPrintf(s, "X %f Y %f Z %f", vec.X, vec.Y, vec.Z);
     return s;
 }
 

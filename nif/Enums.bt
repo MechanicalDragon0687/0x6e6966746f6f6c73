@@ -144,8 +144,6 @@ typedef enum <uint> {
 
 // Collision
 
-typedef enum <ushort> { CT_MUTABLE = 0, CT_VOLATILE = 32768, CT_STATIC = 16384 } ConsistencyType;
-
 typedef enum <byte> {
     OL_UNIDENTIFIED,
     OL_STATIC,    

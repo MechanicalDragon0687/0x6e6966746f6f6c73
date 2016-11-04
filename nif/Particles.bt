@@ -12,18 +12,22 @@
 //------------------------------------------------
 
 typedef struct {
-    //NiAVObject base;
-    NiGeometryPSys base;
-    ushort unk1;
-    ushort unk2;
-    uint unk3;
-    if ( stream >= 100 ) {
-        uint unk4;
-        uint unk5;
-        Ref data; // NiPSysData
+    if ( stream >= 100 )
+        BSGeometry base;
+    else
+        NiGeometry base;
+
+    if ( stream >= 83 ) {
+        ushort farBegin;
+        ushort farEnd;
+        ushort nearBegin;
+        ushort nearEnd;
+
+        if ( stream > 83 )
+            Ref data; // NiPSysData
     }
 
-    byte worldSpace;
+    bool isWorldSpace;
     uint numModifiers;
     if ( numModifiers > 0 )
         Ref modifier[numModifiers]; // NiPSysModifier
@@ -33,75 +37,63 @@ typedef NiParticleSys NiMeshParticleSys <name="NiMeshParticleSystem">;
 typedef NiParticleSys BSStripParticleSys <name="BSStripParticleSystem">;
 
 typedef struct {
-    uint unknown;
-    ushort numVerts;
-    byte keepFlags;
-    byte compressFlags;
-    bool hasVerts;
-    ushort numUVSets;
-    bool hasNormals;
-    
-    if ( hasNormals == 1 )
-        Vec3 normals[numVerts] <open=suppress>;
-    
-    if ( hasNormals == 1 && (numUVSets & 4096) ) {
-        Vec3 tangents[numVerts] <open=suppress>;
-        Vec3 bitangents[numVerts] <open=suppress>;
-    }
-
-    Vec3 center;
-    float radius;
-    bool hasVertColors;
-
-    if ( hasVerts == 1 ) {
-        if ( hasVertColors == 1 )
-            Color4 vertColors[numVerts] <open=suppress>;
-        if ( numUVSets & 4096 ) {
-            TexCoord UVSets[numVerts] <open=suppress>;
-        }
-    }
+    local bool IS_PSYS = true;
+    NiGeometryData base;
 
     bool hasRadii;
-    ushort numActive;
+    ushort numActiveVerts;
     bool hasSizes;
     bool hasRotations;
-    byte unk1;
-    Ref unkLink;
     bool hasRotationAngles;
     bool hasRotationAxes;
-    byte unk2;
-    ushort unk3;
-    ushort unk4;
-    bool hasSubtexOffsetUVs;
-    uint numSubtexOffsetUVs;
-    float aspectRatio;
-    if ( hasSubtexOffsetUVs == 1 )
-        Vec4 subtexOffsetUVs[numSubtexOffsetUVs];
-    uint unk5;
-    uint unk6;
-    uint unk7;
-    ushort unk8;
-    byte unk9;
+    bool hasTextureIndices; // NOT the bool for subtexoffsets
+    
+    local uint numOffsets = 0;
+    if ( stream > 34 ) {
+        uint numSubtexOffsets;
+        numOffsets = numSubtexOffsets;
+    } else {
+        ubyte numSubtexOffsets;
+        numOffsets = numSubtexOffsets;
+    }
+
+    if ( numOffsets > 0 )
+        Vec4 subtexOffsets[numOffsets];
+
+    if ( stream > 34 ) {
+        float aspectRatio;
+        // 0x1 = VelocityOrientation, 0x2 = InitialRotationFromVelocity, 0x100 = SpeedToAspectEnabled
+        ushort aspectFlags;
+        float speedToAspectAspect2;
+        float speedToAspectSpeed1;
+        float speedToAspectSpeed2;
+    }
+} NiParticlesData <open=true>;
+
+
+typedef struct {
+    NiParticlesData data;
+    bool hasRotationSpeeds;
 } NiPSysData <name="NiPSysData">;
 
 // NiMeshPSysData
 typedef struct {
-    NiPSysData data;
-    uint numVerts; // This matches numVerts in base data
-    byte unkByte1;
-    uint numUnk; // Some kind of vert split
-    if ( numUnk > 0 )
-        uint unkInts[numUnk]; // If numUnk == 1, this == numVerts
+    NiPSysData data <open=true>;
+    uint defaultPoolSize; // Generally equal to data.numVerts
+    bool fillPoolsOnLoad;
+    uint numGenerations;
+    if ( numGenerations > 0 )
+        uint generationPoolSize[numGenerations];
     Ref node; // NiNode
 } NiMeshPSysData <name="NiMeshPSysData">;
 
 // BSStripPSysData
 typedef struct {
-    NiPSysData psys;
-    ushort unkShort;
-    byte unkByte;
-    uint unkInt;
-    float unkFloat;
+    NiPSysData data;
+    ushort maxPointCount;
+    uint startCapSize;
+    uint endCapSize;
+    bool doZPrepass;
 } BSStripPSysData <name="BSStripPSysData">;
 
 
@@ -146,9 +138,9 @@ typedef struct {
     float fadeInPercent;
     float fadeOutPercent;
     float color1EndPercent;
-    float color1StartPercent;
-    float color2EndPercent;
     float color2StartPercent;
+    float color2EndPercent;
+    float color3StartPercent;
     Color4 color[3];   
 } BSPSSimpleColorMod <name="BSPSysSimpleColorModifier">;
 

@@ -42,7 +42,7 @@ typedef struct {
     uint numExtraData;
     if ( numExtraData > 0)
         Ref extraData[numExtraData] <optimize=false>;
-    Ref NiTimeController;
+    Ref controller; // NiTimeController
     NiAVObjectFlags flags;
     Vec3 translation;
     Matrix33 rotation;
@@ -90,7 +90,7 @@ typedef struct {
 // NiCamera
 typedef struct {
     NiAVObject base;
-    ushort unk1;
+    ushort obsoleteFlags;
     float frustumLeft;
     float frustumRight;
     float frustumTop;
@@ -103,9 +103,9 @@ typedef struct {
     float viewportTop;
     float viewportBottom;
     float lodAdjust;
-    Ref unkLink;
-    Ref unkLink2; // Probably Ref as XML comments say changing it crashes and null REFs do this
-    Ref unkLink3; // ^
+    Ref scene;
+    Ref screenPolygons;
+    Ref screenTextures;
 } NiCamera <name="NiCamera">;
 
 // NiNode/BSFadeNode
@@ -162,7 +162,8 @@ typedef struct {
 typedef struct {
     NiNode node <open=true>;
     Ref multiBound;
-    uint unk;
+    if ( stream >= 83 )
+        uint cullingMode;
 } BSMultiBoundNode <name="BSMultiBoundNode">;
 
 // BSValueNode
