@@ -650,6 +650,24 @@ struct FILE {
                 case "bhkLimitedHingeConstraint":
                     bhkLHConstraint data;
                     break;
+                case "bhkRagdollConstraint":
+                    bhkRagConstraint data;
+                    break;
+                case "bhkBreakableConstraint":
+                    bhkBreakConstraint data;
+                    break;
+                case "bhkStiffSpringConstraint":
+                    bhkSSpringConstraint data;
+                    break;
+                case "bhkBallAndSocketConstraint":
+                    bhkBASConstraint data;
+                    break;
+                case "bhkPrismaticConstraint":
+                    bhkPrismaticConstraint data;
+                    break;
+                case "bhkBallSocketConstraintChain":
+                    bhkBASConstraintChain data;
+                    break;
                 case "NiMeshParticleSystem":
                     NiMeshParticleSys data;
                     break;

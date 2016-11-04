@@ -291,7 +291,12 @@ typedef struct {
 } bhkCMSD <name="bhkCompressedMeshShapeData">;
 
 
-// CONSTRAINTS
+// CONSTRAINT DESCRIPTORS
+
+typedef struct {
+    float unk[6];
+    byte unkByte;
+} MotorDesc;
 
 typedef struct {
     Vec4 axleA;
@@ -302,22 +307,106 @@ typedef struct {
     Vec4 axleInB1;
     Vec4 axleInB2;
     Vec4 pivotB;
-} bhkHinge <open=true>; // Abstract
+} HingeDesc <open=true>;
 
 typedef struct {
-    float unk[6];
-    byte unkByte;
-} bhkMotor;
-
-typedef struct {
-    bhkHinge hinge <open=true>;
+    HingeDesc hinge <open=true>;
     float minAngle;
     float maxAngle;
     float maxFriction;
     bool enableMotor;
     if ( enableMotor == 1 )
-        bhkMotor motor;
-} bhkLimitedHinge <open=true>; // Abstract
+        MotorDesc motor;
+} LimitedHingeDesc <open=true>;
+
+typedef struct {
+    Vec4 twistA;
+    Vec4 planeA;
+    Vec4 motorA;
+    Vec4 pivotA;
+    Vec4 twistB;
+    Vec4 planeB;
+    Vec4 motorB;
+    Vec4 pivotB;
+    float coneMaxAngle;
+    float planeMinAngle;
+    float planeMaxAngle;
+    float twistMinAngle;
+    float twistMaxAngle;
+    float maxFriction;
+    bool enableMotor;
+    if ( enableMotor )
+        MotorDesc motor;
+} RagdollDesc <open=true>;
+
+typedef struct {
+    Vec4 pivotA;
+    Vec4 pivotB;
+    float length;
+} StiffSpringDesc <open=true>;
+
+typedef struct {
+    byte unk[4];
+    Vec3 unkVec1;
+    Vec3 unkVec2;
+    uint unkInt1;
+} BallAndSocketDesc <open=true>;
+
+typedef struct {
+    Vec4 slidingA;
+    Vec4 rotationA;
+    Vec4 planeA;
+    Vec4 pivotA;
+    Vec4 slidingB;
+    Vec4 rotationB;
+    Vec4 planeB;
+    Vec4 pivotB;
+    float minDistance;
+    float maxDistance;
+    float friction;
+    byte unkByte;
+} PrismaticDesc <open=true>;
+
+typedef enum <uint> {
+    BallAndSocket = 0,
+    Hinge = 1,
+    LimitedHinge = 2,
+    Prismatic = 6,
+    Ragdoll = 7,
+    StiffSpring = 8
+} hkConstraintType;
+
+typedef struct {
+    hkConstraintType type;
+    uint numEntities;
+    if ( numEntities > 0 )
+       Ref entity[numEntities];
+    uint priority;
+    
+    switch ( type ) {
+        case BallAndSocket:
+            BallAndSocketDesc desc;
+            break;
+        case Hinge:
+            HingeDesc desc;
+            break;
+        case LimitedHinge:
+            LimitedHingeDesc desc;
+            break;
+        case Prismatic:
+            PrismaticDesc desc;
+            break;
+        case Ragdoll:
+            RagdollDesc desc;
+            break;
+        case StiffSpring:
+            StiffSpringDesc desc;
+            break;
+    }
+
+} SubConstraintDesc <open=true>;
+
+// CONSTRAINTS
 
 typedef struct {
     uint numEntities;
@@ -328,13 +417,57 @@ typedef struct {
 
 typedef struct {
     bhkConstraint base;
-    bhkHinge hinge;
+    HingeDesc desc;
 } bhkHingeConstraint <name="bhkHingeConstraint">;
 
 typedef struct {
     bhkConstraint base;
-    bhkLimitedHinge hinge;
+    LimitedHingeDesc desc;
 } bhkLHConstraint <name="bhkLimitedHingeConstraint">;
+
+typedef struct {
+    bhkConstraint base;
+    RagdollDesc desc;
+} bhkRagConstraint <name="bhkRagdollConstraint">;
+
+typedef struct {
+    bhkConstraint base;
+    SubConstraintDesc subconstraint;
+    float threshold;
+    bool removeIfBroken;
+} bhkBreakConstraint <name="bhkBreakableConstraint">;
+
+typedef struct {
+    bhkConstraint base;
+    StiffSpringDesc desc;
+} bhkSSpringConstraint <name="bhkStiffSpringConstraint">;
+
+typedef struct {
+    bhkConstraint base;
+    BallAndSocketDesc hinge;
+} bhkBASConstraint <name="bhkBallAndSocketConstraint">;
+
+typedef struct {
+    bhkConstraint base;
+    StiffSpringDesc desc;
+} bhkPrismaticConstraint <name="bhkPrismaticConstraint">;
+
+typedef struct {
+    uint numFloats;
+    if ( numFloats > 0 )
+        Vec4 floats[numFloats];
+    float unkFloat1;
+    float unkFloat2;
+    uint unkInt1;
+    uint unkInt2;
+    uint numLinks;
+    if ( numLinks > 0 )
+        Ref links[numLinks];
+    uint numLinks2;
+    if ( numLinks2 > 0 )
+        Ref links2[numLinks2];
+    uint unkInt3;
+} bhkBASConstraintChain <name="bhkBallSocketConstraintChain">;
 
 
 // SYSTEMS
