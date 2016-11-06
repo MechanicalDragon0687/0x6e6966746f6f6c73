@@ -467,6 +467,9 @@ struct FILE {
                 case "bhkNPCollisionObject":
                     bhkNPCollObj data;
                     break;
+                case "bhkBlendCollisionObject":
+                    bhkBlendCollisionObj data;
+                    break;
                 case "bhkMoppBvTreeShape":
                     bhkMoppBVShape data;
                     break;
@@ -502,6 +505,9 @@ struct FILE {
                     break;
                 case "bhkSimpleShapePhantom":
                     bhkSSPhantom data;
+                    break;
+                case "bhkNiTriStripsShape":
+                    bhkNiTriStripsShape data;
                     break;
                 case "bhkPhysicsSystem":
                     bhkPhysSystem data;

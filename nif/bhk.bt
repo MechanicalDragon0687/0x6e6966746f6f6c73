@@ -12,82 +12,118 @@
 //------------------------------------------------
 
 typedef struct {
-    byte data;
-} FlagPart <name="Flags and Part Number">;
-
-typedef struct {
-    Ref shape;
+    // layer, flags, and group are all packed into one int in-engine
+    // filter = layer | ((part | (group << 8)) << 8);
+    // layer = filter & 0x7F
     if ( stream < 83 )
         FO3Layer layer;
     else if ( stream == 83 || stream == 100 )
         SkyrimLayer layer;
     else
         OblivionLayer layer;
-    FlagPart flags;
-    ushort unk;
+    BipedPart flags;
+    ushort group;
+} HavokFilter <name="Filter", open=true>;
+
+typedef struct {
+    Ref shape;
+    HavokFilter filter;
 } bhkWorldOBJ <open=true>;
 
 typedef struct {
+    uint data;
+    uint size;
+    uint capacityAndFlags; // capacity = n & 0x3FFFFFFF
+} hkWorldObjCinfoProperty;
+
+typedef struct {
+    // hkWorldObjectCinfo
     bhkWorldOBJ obj;
-    int unknownInt1;
-    int unknownInt2;
-    int unknown3Ints[3];
+    int unkInt1;
+    BroadPhaseType broadPhaseType;
+    byte unkBytes[3];
+    hkWorldObjCinfoProperty prop;
+    // end hkWorldObjectCinfo 
     hkResponseType collisionResponse;
     ubyte unknownByte;
-    ushort callbackDelay;
-    ushort unknown2shorts[2];
-    if ( stream < 83 )
-        FO3Layer layerCopy;
-    else if ( stream == 83 || stream == 100 )
-        SkyrimLayer layerCopy;
-    else
-        OblivionLayer layerCopy;
-    byte colFilterCopy;
-    ushort unknown7shorts[7];
-    Vec4 translation;
+    ushort contactPointCallbackDelay;
+    // end hkEntityCinfo
+    uint unkInt2;
+    HavokFilter filter;
+    uint unkInt3;
+    uint unkInt4;
+    if ( stream > 34 ) {
+        Assert( unkInt4 == 0, "bhkRigidBody unkInt4 is non-zero" );
+        hkResponseType collisionResponse;
+        ubyte unknownByte;
+        ushort contactPointCallbackDelay;
+    } else {
+        uint unkInt;
+    }
+
+    Vec4 position;
     QuatXYZW rotation;
-    Vec4 linearVel;
-    Vec4 angularVel;
-    Matrix43 inertia;
-    Vec4 center;
+    Vec4 linearVelocity;
+    Vec4 angularVelocity;
+    Matrix43 inertiaTensor;
+    Vec4 centerOfMass;
     float mass;
     float linearDamping;
     float angularDamping;
 
     if ( stream > 34 ) {
-        float unknownTimeFactor;
-        float unknownTimeFactor2;
+        float timeFactor;
+        float gravityFactor;
     }
 
     float friction;
     if ( stream > 34 )
         float rollingFrictionMult;
     float restitution;
-    float maxLinearVel;
-    float maxAngularVel;
-    float penDepth;
-    byte motionSystem;
-    byte deactivatorType;
-    byte solverDeactivation;
-    byte qualityType;
-    uint unknownInt6;
-    uint unknownInt7;
-    uint unknownInt8;
+    float maxLinearVelocity;
+    float maxAngularVelocity;
+    float allowedPenetrationDepth;
+    MotionType motionSystem;
     if ( stream > 34 )
-        uint unknownInt81;
+        bool enableDeactivation;
+    else
+        byte deactivatorType;
+    SolverDeactivation solverDeactivation;
+    byte qualityType;
+    byte autoRemoveLevel;
+    byte responseModifierFlags;
+    byte numShapeKeysInContactPointProps;
+    bool forceCollideOntoPpu;
+    uint unkInt5;
+    uint unkInt6;
+    if ( stream > 34 )
+        uint unkInt7;
+    // end bhkSerializable
     uint numConstraints;
     if ( numConstraints > 0 )
         Ref constraints[numConstraints] <optimize=false>;
     
-    if ( stream <= 34 )
-        uint wind;
+    if ( stream >= 76 )
+        ushort flags;
     else
-        ushort wind;
+        uint flags;
 } bhkRigidBody <name="bhkRigidBody">;
 
 typedef bhkRigidBody bhkRigidBodyT <name="bhkRigidBodyT">;
 
 // OBJECTS
+
+/*
+    active = 0x1,
+    notify = 0x4,
+    setLocal = 0x8,
+    debugDisplay = 0x10,
+    useVel = 0x20,
+    reset = 0x40,
+    syncOnUpdate = 0x80,
+    animTargeted = 0x400,
+    dismemberedLimb = 0x800
+*/
 
 typedef struct {
     Ref target;
@@ -104,6 +140,13 @@ typedef struct {
 
 typedef bhkCollisionObj bhkSPCollObj <name="bhkSPCollisionObject">;
 
+typedef struct {
+    bhkCollisionObj base <open=true>;
+    float heirGain;
+    float velGain;
+} bhkBlendCollisionObj <name="bhkBlendCollisionObject">;
+
+
 // SHAPES
 
 typedef struct {
@@ -111,10 +154,12 @@ typedef struct {
     if ( numShapes > 0 )
         Ref shape[numShapes];
     uint HavokMaterial; // enum
-    float unkFloats[6];
-    uint numUnk;
-    if ( numUnk > 0 )
-        uint unkInts[numUnk];
+    hkWorldObjCinfoProperty childShapeProp;
+    hkWorldObjCinfoProperty childFilterProp;
+    uint numUnkInt;
+    if ( numUnkInt > 0 )
+        uint unkInt[numUnkInt];
+    Assert( numShapes == numUnkInt, "numShapes != numUnkInt" );
 } bhkListShape <name="bhkListShape">;
 
 typedef struct {
@@ -124,24 +169,25 @@ typedef struct {
 
 typedef struct {
     uint HavokMaterial;
-    float radius;
-    float unkFloats[14];
+    Vec3 unkVec;
+    Vec3 direction;
+    float constant;
+    Vec4 halfExtents;
+    Vec4 center;
 } bhkPlaneShape <name="bhkPlaneShape">;
 
 typedef bhkConvexShape bhkSphereShape <name="bhkSphereShape", open=false>;
 
 typedef struct {
     bhkConvexShape shape;
-    uint unkInt1;
-    uint unkInt2;
+    uint64 padding; // The following hkVector4 wants to be aligned at 16 bytes
     Vec3 dimensions;
     float radius;
 } bhkBoxShape <name="bhkBoxShape">;
 
 typedef struct {
     bhkConvexShape shape;
-    uint unkInt1;
-    uint unkInt2;
+    uint64 padding; // The following hkVector4 wants to be aligned at 16 bytes
     Vec3 point1;
     float radius1;
     Vec3 point2;
@@ -150,16 +196,24 @@ typedef struct {
 
 typedef struct {
     bhkWorldOBJ obj;
-    float unkData[23];
+    uint shape;
+    BroadPhaseType broadPhaseType;
+    byte unkBytes[3];
+    hkWorldObjCinfoProperty prop;
+    uint64 padding;
+    Matrix44 transform;
 } bhkSSPhantom <name="bhkSimpleShapePhantom">;
 
 typedef struct {
     uint mat;
     float radius;
-    float unknown[6];
+    hkWorldObjCinfoProperty vertsProp;
+    hkWorldObjCinfoProperty normalsProp;
+    // hkArray<hkFourTransposedPointsf,hkContainerHeapAllocator> m_rotatedVertices;
     uint numVerts;
     if ( numVerts > 0 )
         Vec4 verts[numVerts] <optimize=true>;
+    // hkArray<hkVector4f,hkContainerHeapAllocator> m_planeEquations;
     uint numNormals;
     if ( numNormals > 0 )
         Vec4 normals[numNormals] <optimize=true>;
@@ -169,22 +223,41 @@ typedef struct {
     Ref shape;
     uint HavokMaterial; // Enum
     float radius;
-    uint unkInt1;
-    uint unkInt2;
+    uint64 padding;
     Matrix44 transform;
 } bhkTS <name="bhkTransformShape">;
 
 typedef bhkTS bhkCTS <name="bhkConvexTransformShape">;
 
 typedef struct {
+    // Cinfo size 48
+    uint HavokMaterial; // Enum
+    float radius;
+    uint unused1;
+    uint unused2;
+    uint unused3; // maxSize;
+    uint unused4; // size;
+    uint unused5; // eSize;
+    uint growBy;
+    Vec4 scale; // End Cinfo
+    uint numParts;
+    if ( numParts > 0 )
+        Ref part[numParts];
+    uint numFilters;
+    if ( numFilters > 0 )
+        uint Filter[numFilters]; // Enum 
+} bhkNiTriStripsShape <name="bhkNiTriStripsShape">;
+
+
+typedef struct {
     Ref shape;
-    uint unkInt1;
-    uint unkInt2;
-    uint unkInt3;
-    float unkFloat1;
+    // Cinfo size 16
+    uint userData;
+    uint shapeCollection;
+    uint code;
+    float scale;  // End Cinfo
     uint dataSize;
-    Vec3 origin;
-    float scale;
+    Vec4 offset;
     if ( stream > 34 )
         byte buildType;
     if ( dataSize > 0 )
@@ -193,20 +266,21 @@ typedef struct {
 
 typedef struct {
     Ref target;
-    uint unk; // either "userData" or "pObject"
+    // hkpCompressedMeshShapeCinfo
+    uint userData;
     float radius;
     float unkFloat;
-    Vec4 unkVec4;
+    Vec4 scaling;
+    // end Cinfo
     float radius;
-    float scale;
-    float unkFloats[3];
+    Vec4 scaling;
     Ref data;
 } bhkCMS <name="bhkCompressedMeshShape">;
 
 typedef struct {
-    uint skyrimMat;
-    uint unknown;
-} bhkCMSDMat;
+    uint material;
+    HavokFilter filter;
+} bhkBSMaterial;
 
 typedef struct {
     Vec4 translation;
@@ -247,8 +321,8 @@ typedef struct {
     uint maskWIndex;
     uint maskIndex;
     float error;
-    Vec4 boundsMin;
-    Vec4 boundsMax;
+    Vec4 AABBBoundMin;
+    Vec4 AABBBoundMax;
     byte weldingType;
     byte materialType;
     // Mat32A, Mat16A, and Mat8A do not appear to ever be used
@@ -263,7 +337,7 @@ typedef struct {
         uint mat8[numMat8] <optimize=true>;
 
     uint numMaterials;
-    bhkCMSDMat materials[numMaterials] <optimize=false>;
+    bhkBSMaterial materials[numMaterials] <optimize=false>;
 
     // NamedMat does not appear to ever be used
     uint numNamedMat;
@@ -346,10 +420,8 @@ typedef struct {
 } StiffSpringDesc <open=true>;
 
 typedef struct {
-    byte unk[4];
-    Vec3 unkVec1;
-    Vec3 unkVec2;
-    uint unkInt1;
+    Vec4 translationA;
+    Vec4 translationB;
 } BallAndSocketDesc <open=true>;
 
 typedef struct {
@@ -453,20 +525,29 @@ typedef struct {
 } bhkPrismaticConstraint <name="bhkPrismaticConstraint">;
 
 typedef struct {
-    uint numFloats;
-    if ( numFloats > 0 )
-        Vec4 floats[numFloats];
-    float unkFloat1;
-    float unkFloat2;
-    uint unkInt1;
-    uint unkInt2;
-    uint numLinks;
-    if ( numLinks > 0 )
-        Ref links[numLinks];
-    uint numLinks2;
-    if ( numLinks2 > 0 )
-        Ref links2[numLinks2];
-    uint unkInt3;
+    uint numPivots;
+    Assert( numPivots % 2 == 0, "numPivots is not even" );
+    if ( numPivots > 0 ) {
+        struct {
+            Vec4 pivotInA;
+            Vec4 pivotInB;
+        } pivots[numPivots / 2];
+    }
+    // hkpBallSocketChainData
+    float tau;
+    float damping;
+    float cfm;
+    float maxErrorDistance;
+    // hkConstraintChainCinfo
+    uint numEntitiesA;
+    if ( numEntitiesA > 0 )
+        Ref entitiesA[numEntitiesA];
+    // hkConstraintCinfo
+    uint numEntities; // Hardcoded to 2, EntityA + EntityB
+    Assert( numEntities == 2, "numEntities != 2" );
+    Ref entityA;
+    Ref entityB;
+    uint priority;
 } bhkBASConstraintChain <name="bhkBallSocketConstraintChain">;
 
 
