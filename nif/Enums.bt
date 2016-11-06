@@ -110,12 +110,64 @@ string NiAVFlagsRead( NiAVObjectFlags& f )
     return s;
 }
 
+// NiSwitchNode Flags
+typedef union {
+    ushort value;
+    struct {
+        ushort UpdateOnlyActiveChild : 1;
+        ushort UpdateControllers     : 1;
+        ushort                       : 14;
+    } bitflags;
+} NiSwitchFlags <name="Flags", read=NiSwitchFlagsRead, open=true>;
+
+string NiSwitchFlagsRead( NiSwitchFlags& f )
+{
+    string s;
+    if ( f.value & 0x1 )
+        s += "UpdateOnlyActiveChild | ";
+    if ( f.value & 0x2 )
+        s += "UpdateControllers | ";
+
+    SPrintf(s, "%s (%u)", s, f.value );
+    return s;
+}
+
+// BSValueNode Flags
+typedef union {
+    byte value;
+    struct {
+        byte BillboardWorldZ : 1;
+        byte UsePlayerAdjust : 1;
+        byte                 : 6;
+    } bitflags;
+} BSValueNodeFlags <name="Flags", read=BSValueNodeFlagsRead, open=true>;
+
+string BSValueNodeFlagsRead( BSValueNodeFlags& f )
+{
+    string s;
+    if ( f.value & 0x1 )
+        s += "BillboardWorldZ | ";
+    if ( f.value & 0x2 )
+        s += "UsePlayerAdjust | ";
+
+    SPrintf(s, "%s (%u)", s, f.value );
+    return s;
+}
+
 // General
 
 typedef enum <ushort> {
     ALWAYS_FACE_CAMERA, ROTATE_ABOUT_UP, RIGID_FACE_CAMERA, ALWAYS_FACE_CENTER,
     RIGID_FACE_CENTER, BSROTATE_ABOUT_UP, ROTATE_ABOUT_UP2 = 9
 } BillboardMode <name="Billboard Mode">;
+
+typedef enum <uint> {
+    BSCP_CULL_NORMAL = 0x0,
+    BSCP_CULL_ALLPASS = 0x1,
+    BSCP_CULL_ALLFAIL = 0x2,
+    BSCP_CULL_IGNOREMULTIBOUNDS = 0x3,
+    BSCP_CULL_FORCEMULTIBOUNDSNOUPDATE = 0x4
+} BSCPCullingType <name="Culling Mode">;
 
 // Shaders
 

@@ -141,8 +141,8 @@ typedef struct {
 // NiSwitchNode
 typedef struct {
     NiNode node <open=true>;
-    ushort flags;
-    uint startIndex; // Unsure
+    NiSwitchFlags flags;
+    uint index;
 } NiSwitchNode <name="NiSwitchNode">;
 
 // NiBillboardNode
@@ -163,23 +163,25 @@ typedef struct {
     NiNode node <open=true>;
     Ref multiBound;
     if ( stream >= 83 )
-        uint cullingMode;
+        BSCPCullingType cullingMode;
 } BSMultiBoundNode <name="BSMultiBoundNode">;
 
 // BSValueNode
 typedef struct {
     NiNode node <open=true>;
     uint value;
-    byte unk;
+    BSValueNodeFlags flags;
 } BSValueNode <name="BSValueNode">;
 
-// BSBlastNode
+// BSBlastNode / BSDamageStage
 typedef struct {
     NiNode node <open=true>;
-    byte unk1;
-    ushort unk2;
-} BSBlastNode <name="BSBlastNode">;
+    byte min;
+    byte max;
+    byte current;
+} BSRangeNode <name="BSRangeNode">;
 
+typedef BSRangeNode BSBlastNode <name="BSBlastNode">;
 typedef BSBlastNode BSDamageStage <name="BSDamageStage">;
 
 
