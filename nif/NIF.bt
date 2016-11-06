@@ -83,10 +83,6 @@ typedef struct {
     float quadraticAtten;
 } NiPointLight <name="NiPointLight">;
 
-#include "Geometry.bt"
-#include "Particles.bt"
-#include "Shader.bt"
-
 // NiCamera
 typedef struct {
     NiAVObject base;
@@ -123,6 +119,10 @@ typedef struct {
             Ref effect[numEffects]; // NiDynamicEffect
     }
 } NiNode <name="NiNode">; // END
+
+#include "Geometry.bt"
+#include "Particles.bt"
+#include "Shader.bt"
 
 typedef NiNode BSFadeNode <name="BSFadeNode">;
 typedef NiNode BSLeafAnimNode <name="BSLeafAnimNode">;
@@ -269,6 +269,9 @@ struct FILE {
                 case "BSDynamicTriShape":
                     BSDynamicTriShape data;
                     break;
+                case "BSSegmentedTriShape":
+                    BSSegmentedTriShape data;
+                    break;
                 case "NiParticleSystem":
                     NiParticleSys data;
                     break;
@@ -356,6 +359,9 @@ struct FILE {
                 case "NiPSysEmitterCtlr":
                     NiPSysEmitterCtlr data;
                     break;
+                case "BSPSysMultiTargetEmitterCtlr":
+                    BSPSysMultiTargetEmitterCtlr data;
+                    break;
                 case "NiPSysUpdateCtlr":
                     NiPSysUpdateCtlr data;
                     break;
@@ -371,8 +377,17 @@ struct FILE {
                 case "NiPSysEmitterInitialRadiusCtlr":
                     NiPSEmitIRadiusCtlr data;
                     break;
+                case "NiPSysEmitterPlanarAngleCtlr":
+                    NiPSEmitPlanarAngleCtlr data;
+                    break;
+                case "NiPSysEmitterDeclinationCtlr":
+                    NiPSEmitDeclinationCtlr data;
+                    break;
                 case "BSStripParticleSystem":
                     BSStripParticleSys data;
+                    break;
+                case "BSMasterParticleSystem":
+                    BSMasterParticleSystem data;
                     break;
                 case "BSStripPSysData":
                     BSStripPSysData data;
@@ -400,6 +415,9 @@ struct FILE {
                     break;
                 case "NiLightDimmerController":
                     NiLightDimmerCtlr data;
+                    break;
+                case "NiBSBoneLODController":
+                    NiBSBoneLODCtlr data;
                     break;
                 case "BSLagBoneController":
                     BSLagBoneCtlr data;
@@ -433,6 +451,9 @@ struct FILE {
                     break;
                 case "NiLookAtInterpolator":
                     NiLookAtInterp data;
+                    break;
+                case "NiPathInterpolator":
+                    NiPathInterp data;
                     break;
                 case "NiFloatData":
                     NiFloatData data;
@@ -521,6 +542,9 @@ struct FILE {
                 case "BSMultiBoundOBB":
                     BSMultiBoundOBB data;
                     break;
+                case "BSMultiBoundAABB":
+                    BSMultiBoundAABB data;
+                    break;
                 case "NiExtraData":
                     NiExtraData data;
                     break;
@@ -544,6 +568,15 @@ struct FILE {
                     break;
                 case "BSBoneLODExtraData":
                     BSBoneLODED data;
+                    break;
+                case "BSBound":
+                    BSBound data;
+                    break;
+                case "BSDecalPlacementVectorExtraData":
+                    BSDecalPlacementVectorED data;
+                    break;
+                case "BSDistantObjectLargeRefExtraData":
+                    BSDistantObjectLargeRefED data;
                     break;
                 case "BSConnectPoint::Parents":
                     BSConnectPtParents data;

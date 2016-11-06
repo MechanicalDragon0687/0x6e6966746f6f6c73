@@ -165,6 +165,20 @@ typedef struct {
 
 } NiTriStripsData <name="NiTriStripsData">;
 
+typedef struct {
+    NiTriShape base <open=true>;
+    struct {
+        uint numSegments;
+        if ( numSegments > 0 )
+            struct {
+                byte unk;
+                // Index = previous Index + previous numTrisInSegment * 3
+                uint index;
+                uint numTrisInSegment;
+            } segments[numSegments];
+    } BSGeometrySegmentData <open=true>;
+} BSSegmentedTriShape <name="BSSegmentedTriShape">;
+
 typedef enum <ushort> { 
     VF_VERTEX = 0x1, VF_UV = 0x2, VF_NORMAL = 0x8, 
     VF_TANGENT = 0x10, VF_COLORS = 0x20, VF_SKINNED = 0x40,
@@ -293,11 +307,13 @@ typedef struct {
             }
         } else {
             uint numSegments;
-            struct {
-                byte unk;
-                uint index;
-                uint flags;
-            } segments[numSegments];        
+            if ( numSegments > 0 )
+                struct {
+                    byte unk;
+                    // Index = previous Index + previous numTrisInSegment * 3
+                    uint index;
+                    uint numTrisInSegment;
+                } segments[numSegments];
         }
     } BSGeometrySegmentData <open=true>;
 } BSSubIndexTriShape <name="BSSubIndexTriShape">;
@@ -400,3 +416,8 @@ typedef struct {
     Vec3 size;
     Matrix33 rotation;
 } BSMultiBoundOBB <name="BSMultiBoundOBB">;
+
+typedef struct {
+    Vec3 center;
+    Vec3 halfExtents;
+} BSMultiBoundAABB <name="BSMultiBoundAABB">;

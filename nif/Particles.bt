@@ -37,6 +37,14 @@ typedef NiParticleSys NiMeshParticleSys <name="NiMeshParticleSystem">;
 typedef NiParticleSys BSStripParticleSys <name="BSStripParticleSystem">;
 
 typedef struct {
+    NiNode node <open=true>;
+    ushort maxEmitterObjs;
+    uint numParticleSys;
+    if ( numParticleSys > 0 )
+        Ref particleSys[numParticleSys];
+} BSMasterParticleSystem <name="BSMasterParticleSystem">;
+
+typedef struct {
     local bool IS_PSYS = true;
     NiGeometryData base;
 
@@ -376,15 +384,24 @@ typedef NIPSYSBOOLCTLR NiPSysActiveCtlr <name="NiPSysModifierActiveCtlr", open=f
 
 typedef NIPSYSMODCTLR NIPSYSMODFLOATCTRLTR <name="NiPSysModifierFloatCtlr", open=true>; // Abstract
 typedef NIPSYSMODFLOATCTRLTR NiPSysGravStrCtlr <name="NiPSysGravityStrengthCtlr", open=false>;
+typedef NIPSYSMODFLOATCTRLTR NiPSysInitRotSpeedCtlr <name="NiPSysInitialRotSpeedCtlr", open=false>;
 typedef NIPSYSMODFLOATCTRLTR NiPSEmitSpeedCtlr <name="NiPSysEmitterSpeedCtlr", open=false>;
 typedef NIPSYSMODFLOATCTRLTR NiPSEmitLifeSpanCtlr <name="NiPSysEmitterLifeSpanCtlr", open=false>;
 typedef NIPSYSMODFLOATCTRLTR NiPSEmitIRadiusCtlr <name="NiPSysEmitterInitialRadiusCtlr", open=false>;
-
+typedef NIPSYSMODFLOATCTRLTR NiPSEmitPlanarAngleCtlr <name="NiPSysEmitterPlanarAngleCtlr", open=false>;
+typedef NIPSYSMODFLOATCTRLTR NiPSEmitDeclinationCtlr <name="NiPSysEmitterDeclinationCtlr", open=false>;
 
 typedef struct {
     NIPSYSMODCTLR controller;
     Ref visInterpolator;
 } NiPSysEmitterCtlr <name="NiPSysEmitterCtlr">;
+
+// BSPSysMultiTargetEmitterCtlr
+typedef struct {
+    NiPSysEmitterCtlr controller <open=true>;
+    ushort maxEmitters;
+    Ref masterParticleSystem; // BSMasterParticleSystem
+} BSPSysMultiTargetEmitterCtlr <name="BSPSysMultiTargetEmitterCtlr">;
 
 typedef NITIMECTLR NiPSysUpdateCtlr <name="NiPSysUpdateCtlr", open=false>;
 

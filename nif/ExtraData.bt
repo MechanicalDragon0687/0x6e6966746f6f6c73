@@ -102,6 +102,33 @@ typedef struct {
         } boneLOD[numBoneLOD] <optimize=true>;
 } BSBoneLODED <name="BSBoneLODExtraData">;
 
+// BSBound
+typedef struct {
+    NiExtraData data;
+    Vec3 center;
+    Vec3 halfExtents;
+} BSBound <name="BSBound">;
+
+// BSDecalPlacementVectorExtraData
+typedef struct {
+    NiFloatED data <open=true>;
+    ushort numVectorArrays;
+    if ( numVectorArrays > 0 )
+        struct {
+            ushort numVectors;
+            if ( numVectors > 0 ) {
+                Vec3 points[numVectors];
+                Vec3 normals[numVectors];
+            }
+        } vectorArray[numVectorArrays];
+} BSDecalPlacementVectorED <name="BSDecalPlacementVectorExtraData">;
+
+// BSDistantObjectLargeRefExtraData
+typedef struct {
+    NiExtraData data;
+    bool isLargeRef;
+} BSDistantObjectLargeRefED <name="BSDistantObjectLargeRefExtraData">;
+
 // BSEyeCenterExtraData
 typedef struct {
     NiExtraData data;

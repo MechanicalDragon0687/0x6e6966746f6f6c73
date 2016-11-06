@@ -140,6 +140,23 @@ typedef NiAlphaCtlr BSNiAlphaCtlr <name="BSNiAlphaPropertyTestRefController", op
 typedef NIFLOATINTERPCTLR NiLightRadiusCtlr <name="NiLightRadiusController", open=false>;
 typedef NIFLOATINTERPCTLR NiLightDimmerCtlr <name="NiLightDimmerController", open=false>;
 
+// NiBoneLODController
+typedef struct {
+    NITIMECTLR controller;
+    uint unk1;
+    uint numNodeGroups;
+    uint numNodeGroups2;
+    if ( numNodeGroups > 0 ) {
+        struct {
+            uint numNodes;
+            if ( numNodes > 0 )
+                Ref node[numNodes];
+        } nodeGroup[numNodeGroups] <optimize=false>;
+    }
+} NiBoneLODCtlr <name="NiBoneLODController">;
+
+typedef NiBoneLODCtlr NiBSBoneLODCtlr <name="NiBSBoneLODController">;
+
 // BSLagBoneController
 typedef struct {
     NITIMECTLR controller;
@@ -374,4 +391,24 @@ typedef struct {
     Ref interpolator3;
 } NiLookAtInterp <name="NiLookAtInterpolator">;
 
+// TODO: Needs to be changed to bitfield
+typedef enum <ushort> {
+    CVDataNeedsUpdate = 0x1,
+    CurveTypeOpen = 0x2,
+    AllowFlip = 0x4,
+    Bank = 0x8,
+    ConstantVelocity = 0x10,
+    Follow = 0x20,
+    Flip = 0x40
+} PathFlags;
+
 // NiPathInterpolator
+typedef struct {
+    PathFlags flags;
+    uint bankDir;
+    float maxBankAngle;
+    float smoothing;
+    ushort followAxis;
+    Ref pathData; // NiPosData
+    Ref percentData; // NiFloatData
+} NiPathInterp <name="NiPathInterpolator">;
