@@ -139,8 +139,31 @@ typedef struct {
         } sharedNormalsArray <open=suppress>;
     }
 
-} NiTriShapeData <name="NiTriShapeData">; // END
+} NiTriShapeData <name="NiTriShapeData">;
 
+// NiTriStripsData
+typedef struct {
+    NiGeometryData base;
+    ushort numTris;
+    ushort numStrips;
+    if ( numStrips ) {
+        ushort stripLength[numStrips] <optimize=true>;
+        bool hasFaces;
+        if ( hasFaces ) {
+            struct {
+                local int j = 0;
+                for ( j; j < numStrips; j++ ) {
+                    if ( stripLength[j] > 0 ) {
+                        struct {
+                            ushort strip[stripLength[j]] <optimize=false>;
+                        } strip <optimize=false>;
+                    }
+                }
+            } strips;
+        }
+    }
+
+} NiTriStripsData <name="NiTriStripsData">;
 
 typedef enum <ushort> { 
     VF_VERTEX = 0x1, VF_UV = 0x2, VF_NORMAL = 0x8, 

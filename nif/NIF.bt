@@ -257,6 +257,9 @@ struct FILE {
                 case "NiTriShapeData":
                     NiTriShapeData data;
                     break;
+                case "NiTriStripsData":
+                    NiTriStripsData data;
+                    break;
                 case "BSLODTriShape":
                     BSLODTriShape data;
                     break;

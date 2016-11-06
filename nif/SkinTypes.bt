@@ -42,14 +42,18 @@ typedef struct {
     
     if ( numStrips ) {
         ushort stripLength[numStrips] <optimize=true>;
-    
         bool hasFaces;
         if ( hasFaces ) {
-            local int j = 0;
-            for ( j; j < numStrips; j++ ) {
-                if ( stripLength[j] > 0 )
-                    ushort strip[stripLength[j]] <optimize=false>;
-            }
+            struct {
+                local int j = 0;
+                for ( j; j < numStrips; j++ ) {
+                    if ( stripLength[j] > 0 ) {
+                        struct {
+                            ushort strip[stripLength[j]] <optimize=false>;
+                        } strip <optimize=false>;
+                    }
+                }
+            } strips;
         }
     } else {
         bool hasFaces;
