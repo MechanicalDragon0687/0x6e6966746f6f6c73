@@ -555,6 +555,41 @@ typedef enum <uint> {
     CONST_KEY
 } KeyType <name="Key Type">;
 
+typedef enum <uint> {
+    LSP_RefractionStrength = 0,
+    LSP_EnvironmentMapScale = 8,
+    LSP_Glossiness,
+    LSP_SpecularStrength,
+    LSP_EmissiveMultiple,
+    LSP_Alpha,
+    LSP_UOffset = 20,
+    LSP_UScale,
+    LSP_VOffset,
+    LSP_VScale
+} BSLSPControlledVariable <name="Controlled Variable">;
+
+typedef enum <uint> {
+    LSP_SpecularColor = 0,
+    LSP_EmissiveColor
+} BSLSPControlledColor <name="Controlled Color">;
+
+typedef enum <uint> {
+    ESP_EmissiveMultiple = 0,
+    ESP_FalloffStartAngle,
+    ESP_FalloffStopAngle,
+    ESP_FalloffStartOpacity,
+    ESP_FalloffStopOpacity,
+    ESP_AlphaTransparency,
+    ESP_UOffset,
+    ESP_UScale,
+    ESP_VOffset,
+    ESP_VScale
+} BSESPControlledVariable <name="Controlled Variable">;
+
+typedef enum <uint> {
+    ESP_EmissiveColor = 0
+} BSESPControlledColor <name="Controlled Color">;
+
 
 // Legacy Enums
 

@@ -117,22 +117,22 @@ typedef struct {
 
 typedef struct {
     NIFLOATINTERPCTLR controller;
-    uint controlledVariable; // Enum
+    BSLSPControlledVariable controlledVariable;
 } BSLSPFloatCtlr <name="BSLightingShaderPropertyFloatController">;
 
 typedef struct {
     NIFLOATINTERPCTLR controller;
-    uint controlledColor; // Enum
+    BSLSPControlledColor controlledColor;
 } BSLSPColorCtlr <name="BSLightingShaderPropertyColorController">;
 
 typedef struct {
     NIFLOATINTERPCTLR controller;
-    uint controlledVariable; // Enum
+    BSESPControlledVariable controlledVariable;
 } BSESPFloatCtlr <name="BSEffectShaderPropertyFloatController">;
 
 typedef struct {
     NIFLOATINTERPCTLR controller;
-    uint controlledColor; // Enum
+    BSESPControlledColor controlledColor;
 } BSESPColorCtlr <name="BSEffectShaderPropertyColorController">;
 
 typedef NIFLOATINTERPCTLR NiAlphaCtlr <name="NiAlphaController", open=false>;
