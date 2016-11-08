@@ -114,12 +114,17 @@ typedef struct {
     }
 } BSEffectShaderProperty <name="BSEffectShaderProperty">;
 
+// BSSkyShaderProperty
+typedef struct {
+    BSShaderProperty prop;
+    SSTRING baseTexture;
+    uint skyFlags;
+} BSSkyShaderProperty <name="BSSkyShaderProperty">;
+
 // BSWaterShaderProperty
 typedef struct {
     BSShaderProperty prop;
-    ubyte waterShaderFlags; // Bitflag
-    byte waterDirection;
-    ushort unk; 
+    uint waterFlags; // Bitflag + masked data
 } BSWaterShaderProperty <name="BSWaterShaderProperty">;
 
 typedef struct {
@@ -127,3 +132,46 @@ typedef struct {
     ushort flags;
     ubyte threshold;
 } NiAlphaProperty <name="NiAlphaProperty">;
+
+
+// Legacy Shader Properties
+
+// BSShaderLightingProperty
+typedef struct {
+    NiProperty prop;
+    ushort flags;
+    uint shaderType;
+    uint shaderFlags1;
+    uint shaderFlags2;
+    float envMapScale;
+    uint texClampMode;
+} BSShaderLightingProperty <open=true>; // Abstract
+
+// BSShaderNoLightingProperty
+typedef struct {
+    BSShaderLightingProperty prop;
+    SSTRING baseTexture;
+    float falloffStartAngle;
+    float falloffStopAngle;
+    float falloffStartOpacity;
+    float falloffStopOpacity;
+} BSShaderNoLightingProperty <name="BSShaderNoLightingProperty">;
+
+// BSShaderPPLightingProperty
+typedef struct {
+    BSShaderLightingProperty prop;
+    Ref textureSet;
+    float refractionStrength;
+    float refractionPeriod;
+    float unkFloat1;
+    float unkFloat2;
+    if ( stream > 34 )
+        Color4 emissiveColor;
+} BSShaderPPLightingProperty <name="BSShaderPPLightingProperty">;
+
+// SkyShaderProperty
+typedef struct {
+    BSShaderLightingProperty prop;
+    SSTRING baseTexture;
+    uint skyFlags;
+} SkyShaderProperty <name="SkyShaderProperty">;

@@ -32,6 +32,13 @@ typedef struct {
 
 typedef struct {
     NiExtraData data;
+    uint dataSize;
+    if ( dataSize > 0 )
+        uint integerData[dataSize] <optimize=true>;
+} NiIntegersED <name="NiIntegersExtraData">;
+
+typedef struct {
+    NiExtraData data;
     STRING stringData;
 } NiStringED <name="NiStringExtraData", read=ReadStringED>;
 
@@ -79,17 +86,25 @@ typedef enum <ushort> {
 
 typedef struct {
     Vec3 offset;
-    float heading;
-    FurnAnimType animationType;
-    FurnEntryPoints entryPoints;
-} FURNPOS;
+    if ( stream > 34 ) {
+        float heading;
+        FurnAnimType animationType;
+        FurnEntryPoints entryPoints;
+    } else {
+        ushort orientation; // 3141 = 3.141 (radians)
+        byte positionRef1;
+        byte positionRef2;
+    }
+} FurnPos;
 
 typedef struct {
     NiExtraData data;
     uint numPos;
     if ( numPos > 0 )
-        FURNPOS pos[numPos];
-} BSFurnMarker <name="BSFurnitureMarkerNode">;
+        FurnPos pos[numPos] <optimize=true>;
+} BSFurnitureMarker <name="BSFurnitureMarker">;
+
+typedef BSFurnitureMarker BSFurnitureMarkerNode <name="BSFurnitureMarkerNode">;
 
 // BSBoneLODExtraData
 typedef struct {
@@ -120,7 +135,7 @@ typedef struct {
                 Vec3 points[numVectors];
                 Vec3 normals[numVectors];
             }
-        } vectorArray[numVectorArrays];
+        } vectorArray[numVectorArrays] <optimize=false>;
 } BSDecalPlacementVectorED <name="BSDecalPlacementVectorExtraData">;
 
 // BSDistantObjectLargeRefExtraData
@@ -128,6 +143,8 @@ typedef struct {
     NiExtraData data;
     bool isLargeRef;
 } BSDistantObjectLargeRefED <name="BSDistantObjectLargeRefExtraData">;
+
+typedef NiIntegersED BSWArray <name="BSWArray">;
 
 // BSEyeCenterExtraData
 typedef struct {

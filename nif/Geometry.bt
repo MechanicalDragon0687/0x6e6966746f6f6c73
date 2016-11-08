@@ -45,6 +45,8 @@ typedef struct {
 
 // NiTriShape
 typedef NiGeometry NiTriShape <name="NiTriShape", open=false>;
+// NiTriStrips
+typedef NiGeometry NiTriStrips <name="NiTriStrips", open=false>;
 
 // BSLODTriShape
 typedef struct {
@@ -117,6 +119,37 @@ typedef struct {
 
     Ref additionalGeomData;
 } NiGeometryData <open=true>; // Abstract
+
+// NiAdditionalGeometryData
+typedef struct {
+    ushort numVertices;
+    uint dataStreamCount;
+    if ( dataStreamCount > 0 )
+        struct {
+            uint type;
+            uint unitSize;
+            uint totalSize;
+            uint stride;
+            uint blockIndex;
+            uint blockOffset;
+            byte flags;
+        } NiAGDDataStream[dataStreamCount];
+    uint dataBlockCount;
+    if ( dataBlockCount > 0 )
+        struct {
+            bool hasData;
+            if ( hasData ) {
+                uint blockSize;
+                uint numBlocks;
+                if ( numBlocks > 0 )
+                    uint blockOffsets[numBlocks];
+                uint numData;
+                if ( numData > 0 )
+                    uint dataSize[numData];
+                UByteArray data(blockSize, "Data")[numData];
+            }
+        } NiAGDDataBlock[dataBlockCount];
+} NiAdditionalGeometryData <name="NiAdditionalGeometryData">;
 
 // NiTriShapeData
 typedef struct {

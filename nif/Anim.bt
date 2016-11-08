@@ -412,3 +412,50 @@ typedef struct {
     Ref pathData; // NiPosData
     Ref percentData; // NiFloatData
 } NiPathInterp <name="NiPathInterpolator">;
+
+
+// Legacy Anim
+
+typedef NIFLOATINTERPCTLR NiAlphaController <name="NiAlphaController", open=false>;
+typedef NIFLOATINTERPCTLR BSMatEmitMultCtlr <name="BSMaterialEmittanceMultController", open=false>;
+typedef NIFLOATINTERPCTLR BSRefractionStrCtlr <name="BSRefractionStrengthController", open=false>;
+typedef NiLightColorCtlr NiMaterialColorCtlr <name="NiMaterialColorController">;
+
+typedef struct {
+    NIFLOATINTERPCTLR controller;
+    byte unkByte;
+    uint texType;
+    uint texTransType;
+} NiTextureTransformCtlr <name="NiTextureTransformController">;
+
+typedef struct ( uint numVerts ) {
+    STRING frameName;
+    if ( numVerts > 0 )
+        Vec3 vector[numVerts];
+} Morph;
+
+typedef struct {
+    uint numMorphs;
+    uint numVertices;
+    bool relativeTargets;
+    if ( numMorphs > 0 )
+        Morph morph(numVertices)[numMorphs] <optimize=true>;
+} NiMorphData <name="NiMorphData">;
+
+typedef struct {
+    NIINTERPCTLR controller;
+    ushort flags;
+    Ref data; // NiMorphData
+    bool alwaysUpdate;
+    uint numInterp;
+    if ( numInterp > 0 )
+        struct {
+            Ref interpolator;
+            float weight;
+        } interp[numInterp];
+} NiGeomMorpherCtlr <name="NiGeomMorpherController">;
+
+typedef struct {
+    NITIMECTLR controller;
+    uint unk;
+} bhkBlendController <name="bhkBlendController">;

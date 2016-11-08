@@ -525,6 +525,12 @@ typedef struct {
 } bhkPrismaticConstraint <name="bhkPrismaticConstraint">;
 
 typedef struct {
+    bhkConstraint base;
+    SubConstraintDesc subconstraint;
+    float strength;
+} bhkMalleableConstraint <name="bhkMalleableConstraint">;
+
+typedef struct {
     uint numPivots;
     Assert( numPivots % 2 == 0, "numPivots is not even" );
     if ( numPivots > 0 ) {
@@ -555,3 +561,67 @@ typedef struct {
 
 typedef BinaryData bhkPhysSystem <name="bhkPhysicsSystem">;
 typedef BinaryData bhkRagSystem <name="bhkRagdollSystem">;
+
+
+// Legacy
+
+typedef struct {
+    uint numShapes;
+    if ( numShapes > 0 )
+        Ref shape[numShapes];
+    uint material;
+    float radius;
+    uint unkInt1;
+    float unkFloat1;
+    hkWorldObjCinfoProperty childShapeProp;
+    byte unkByte1;
+    float unkFloat2;
+} bhkConvexListShape <name="bhkConvexListShape">;
+
+typedef struct {
+    uint userData;
+    // hkActionCinfo
+    uint unkInt2;
+    // hkUnaryActionCinfo
+    uint unkInt1;
+    float initialStickForce;
+    float stickStrength;
+    float neighborDistance;
+    float neighborStrength;
+} bhkLiquidAction <name="bhkLiquidAction">;
+
+
+typedef struct {
+    HavokFilter filter;
+    uint numVerts;
+    uint material;
+} hkSubPartData;
+
+typedef struct {
+    Triangle tri;
+    ushort weldingInfo;
+} hkTriangleData;
+
+typedef struct {
+    uint userData;
+    uint unused1; // Pointer/garbage
+    float radius;
+    uint unused2; // Pointer/garbage
+    Vec4 scaling;
+    float radius;
+    Vec4 scaling;
+    Ref data;
+} bhkPackedNiTriStripsShape <name="bhkPackedNiTriStripsShape">;
+
+typedef struct {
+    uint keyCount;
+    if ( keyCount > 0 )
+        hkTriangleData triData[keyCount];
+    uint numVerts;
+    byte unkByte;
+    if ( numVerts > 0 )
+        Vec3 compressedVertData[numVerts];
+    ushort partCount;
+    if ( partCount > 0 )
+        hkSubPartData data[partCount] <optimize=true>;
+} hkPackedNiTriStripsData <name="hkPackedNiTriStripsData">;

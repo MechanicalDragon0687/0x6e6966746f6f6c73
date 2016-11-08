@@ -131,6 +131,7 @@ typedef struct {
 #include "Geometry.bt"
 #include "Particles.bt"
 #include "Shader.bt"
+#include "Property.bt"
 
 typedef NiNode BSFadeNode <name="BSFadeNode">;
 typedef NiNode BSLeafAnimNode <name="BSLeafAnimNode">;
@@ -264,11 +265,17 @@ struct FILE {
                 case "BSSubIndexTriShape":
                     BSSubIndexTriShape data;
                     break;
+                case "NiTriStrips":
+                    NiTriStrips data;
+                    break;
                 case "NiTriShapeData":
                     NiTriShapeData data;
                     break;
                 case "NiTriStripsData":
                     NiTriStripsData data;
+                    break;
+                case "NiAdditionalGeometryData":
+                    NiAdditionalGeometryData data;
                     break;
                 case "BSLODTriShape":
                     BSLODTriShape data;
@@ -588,6 +595,9 @@ struct FILE {
                 case "BSDistantObjectLargeRefExtraData":
                     BSDistantObjectLargeRefED data;
                     break;
+                case "BSWArray":
+                    BSWArray data;
+                    break;
                 case "BSConnectPoint::Parents":
                     BSConnectPtParents data;
                     break;
@@ -604,7 +614,10 @@ struct FILE {
                     BSInvMarker data;
                     break;
                 case "BSFurnitureMarkerNode":
-                    BSFurnMarker data;
+                    BSFurnitureMarkerNode data;
+                    break;
+                case "BSFurnitureMarker":
+                    BSFurnitureMarker data;
                     break;
                 case "BSBehaviorGraphExtraData":
                     BSBGED data;
@@ -717,6 +730,9 @@ struct FILE {
                 case "bhkPrismaticConstraint":
                     bhkPrismaticConstraint data;
                     break;
+                case "bhkMalleableConstraint":
+                    bhkMalleableConstraint data;
+                    break;
                 case "bhkBallSocketConstraintChain":
                     bhkBASConstraintChain data;
                     break;
@@ -725,6 +741,66 @@ struct FILE {
                     break;
                 case "NiMeshPSysData":
                     NiMeshPSysData data;
+                    break;
+                case "BSShaderNoLightingProperty":
+                    BSShaderNoLightingProperty data;
+                    break;
+                case "BSShaderPPLightingProperty":
+                    BSShaderPPLightingProperty data;
+                    break;
+                case "SkyShaderProperty":
+                    SkyShaderProperty data;
+                    break;
+                case "NiMaterialProperty":
+                    NiMaterialProperty data;
+                    break;
+                case "NiStencilProperty":
+                    NiStencilProperty data;
+                    break;
+                case "NiTexturingProperty":
+                    NiTexturingProperty data;
+                    break;
+                case "NiSourceTexture":
+                    NiSourceTexture data;
+                    break;
+                case "NiMorphData":
+                    NiMorphData data;
+                    break;
+                case "NiGeomMorpherController":
+                    NiGeomMorpherCtlr data;
+                    break;
+                case "bhkBlendController":
+                    bhkBlendController data;
+                    break;
+                case "NiAlphaController":
+                    NiAlphaController data;
+                    break;
+                case "NiMaterialColorController":
+                    NiMaterialColorCtlr data;
+                    break;
+                case "NiTextureTransformController":
+                    NiTextureTransformCtlr data;
+                    break;
+                case "BSMaterialEmittanceMultController":
+                    BSMatEmitMultCtlr data;
+                    break;
+                case "BSRefractionStrengthController":
+                    BSRefractionStrCtlr data;
+                    break;
+                case "NiPSysGrowFadeModifier":
+                    NiPSysGrowFadeMod data;
+                    break;
+                case "bhkConvexListShape":
+                    bhkConvexListShape data;
+                    break;
+                case "bhkLiquidAction":
+                    bhkLiquidAction data;
+                    break;
+                case "bhkPackedNiTriStripsShape":
+                    bhkPackedNiTriStripsShape data;
+                    break;
+                case "hkPackedNiTriStripsData":
+                    hkPackedNiTriStripsData data;
                     break;
                 default:
                     Block data(i) <open=suppress>;

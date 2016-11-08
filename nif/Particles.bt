@@ -405,3 +405,18 @@ typedef struct {
 
 typedef NITIMECTLR NiPSysUpdateCtlr <name="NiPSysUpdateCtlr", open=false>;
 
+
+// Legacy Particles
+
+// MODIFIERS
+
+// NiPSysGrowFadeModifier
+typedef struct {
+    NiPSysModifier base;
+    float growTime;
+    ushort growGeneration;
+    float fadeTime;
+    ushort fadeGeneration;
+    if ( stream >= 34 )
+        float baseScale;
+} NiPSysGrowFadeMod <name="NiPSysGrowFadeModifier">;

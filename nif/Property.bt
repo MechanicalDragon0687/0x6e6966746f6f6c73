@@ -1,0 +1,129 @@
+//------------------------------------------------
+//--- 010 Editor v7.0.2 Binary Template
+//
+//      File: Property.bt
+//   Authors: jonwd7
+//   Version: 
+//   Purpose: 
+//  Category: 
+// File Mask: 
+//  ID Bytes: 
+//   History: 
+//------------------------------------------------
+
+typedef NiObjectNET NiTexture <name="NiTexture">;
+
+typedef struct {
+    NiProperty prop;
+    Color3 specular;
+    Color3 emissive;
+    float glossiness;
+    float alpha;
+    float emissiveMult;
+} NiMaterialProperty <name="NiMaterialProperty">;
+
+typedef struct {
+    NiProperty prop;
+    ushort flags;
+    uint ref;
+    uint mask;
+} NiStencilProperty <name="NiStencilProperty">;
+
+typedef struct {
+    NiTexture tex;
+    bool useExternal;
+    STRING filename;
+    Ref unkLink;
+    PixelLayout pixelLayout;
+    MipMapFormat mipMapFormat;
+    AlphaFormat alphaFormat;
+    bool isStatic;
+    bool directRender;
+    bool persistentRenderData;
+} NiSourceTexture <name="NiSourceTexture">;
+
+
+typedef struct {
+    TexCoord translation <name="Translation?">;
+    TexCoord tiling <name="Tiling?">;
+    float wRotation;
+    uint transformType;
+    TexCoord offset <name="Offset?">;
+} TexTransform;
+
+typedef struct {
+    Ref source;
+    ushort flags;
+    bool hasTexTransform;
+    if ( hasTexTransform )
+        TexTransform transform;
+} Tex;
+
+typedef struct {
+    bool isUsed;
+    if ( isUsed ) {
+        Tex data;
+        uint mapIndex;
+    }
+} ShaderTex;
+
+typedef struct {
+    NiProperty prop;
+    ushort flags;
+    uint textureCount;
+    bool hasBaseTex;
+    if ( hasBaseTex )
+        Tex baseTex;
+    bool hasDarkTex;
+    if ( hasDarkTex )
+        Tex darkTex;
+    bool hasDetailTex;
+    if ( hasDetailTex )
+        Tex detailTex;
+    bool hasGlossTex;
+    if ( hasGlossTex )
+        Tex glossTex;
+    bool hasGlowTex;
+    if ( hasGlowTex )
+        Tex glowTex;
+    bool hasBumpTex;
+    if ( hasBumpTex ) {
+        Tex bumpTex;
+        float lumaScale;
+        float lumaOffset;
+        Vec4 bumpMatrix;
+    }
+    bool hasNormalTex;
+    if ( hasNormalTex )
+        Tex normalTex;
+    bool hasUnkTex;
+    if ( hasUnkTex ) {
+        Tex unkTex;
+        float unkFloat;
+    }
+    
+    bool hasDecalTex0;
+    if ( hasDecalTex0 )
+        Tex decalTex0;
+    
+    if ( textureCount > 9 ) {
+        bool hasDecalTex1;
+        if ( hasDecalTex1 )
+            Tex decalTex1;
+    }
+    if ( textureCount > 10 ) {
+        bool hasDecalTex2;
+        if ( hasDecalTex2 )
+            Tex decalTex2;
+    }
+    if ( textureCount > 11 ) {
+        bool hasDecalTex3;
+        if ( hasDecalTex3 )
+            Tex decalTex3;
+    }
+    
+    uint numShaderTex;
+    if ( numShaderTex > 0 ) {
+        ShaderTex shaderTex[numShaderTex];
+    }
+} NiTexturingProperty <name="NiTexturingProperty">;

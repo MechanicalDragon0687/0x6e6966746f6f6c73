@@ -554,3 +554,40 @@ typedef enum <uint> {
     XYZ_ROTATION_KEY,
     CONST_KEY
 } KeyType <name="Key Type">;
+
+
+// Legacy Enums
+
+// NiProperty
+
+typedef enum <uint> {
+    PIX_LAY_PALETTISED,
+    PIX_LAY_HIGH_COLOR_16,
+    PIX_LAY_TRUE_COLOR_32,
+    PIX_LAY_COMPRESSED,
+    PIX_LAY_BUMPMAP,
+    PIX_LAY_PALETTISED_4,
+    PIX_LAY_DEFAULT
+} PixelLayout <name="Pixel Layout">;
+
+typedef enum <uint> {
+    MIP_FMT_NO,
+    MIP_FMT_YES,
+    MIP_FMT_DEFAULT
+} MipMapFormat <name="Mipmap Format">;
+
+typedef enum <uint> {
+    ALPHA_NONE,
+    ALPHA_BINARY,
+    ALPHA_SMOOTH,
+    ALPHA_DEFAULT
+} AlphaFormat <name="Alpha Format">;
+
+typedef enum <uint> {
+    PX_FMT_RGB8,
+    PX_FMT_RGBA8,
+    PX_FMT_PAL8,
+    PX_FMT_DXT1,
+    PX_FMT_DXT5,
+    PX_FMT_DXT5_ALT
+} PixelFormat <name="Pixel Format">;
