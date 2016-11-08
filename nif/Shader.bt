@@ -11,6 +11,8 @@
 //   History: 
 //------------------------------------------------
 
+typedef NiObjectNET NiProperty <name="NiProperty">;
+
 // BSShaderTextureSet
 typedef struct {
     int numTextures;
@@ -18,11 +20,8 @@ typedef struct {
 } BSShaderTextureSet <name="BSShaderTextureSet">;
 
 typedef struct {
-    STRING name;
-    uint numExtraData;
-    if ( numExtraData > 0)
-        Ref extraData[numExtraData];
-    Ref controller; // NiTimeController
+    NiProperty prop;
+    local STRING name = prop.name;
     uint SLSF1;
     uint SLSF2;
     TexCoord UVOffset <open=suppress>;
@@ -124,11 +123,7 @@ typedef struct {
 } BSWaterShaderProperty <name="BSWaterShaderProperty">;
 
 typedef struct {
-    STRING name;
-    uint numData;
-    if ( numData > 0 )
-        Ref data[numData];
-    Ref controller;
+    NiProperty prop;
     ushort flags;
     ubyte threshold;
 } NiAlphaProperty <name="NiAlphaProperty">;

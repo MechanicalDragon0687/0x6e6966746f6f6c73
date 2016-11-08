@@ -38,13 +38,19 @@ string BlockComment( Block& b )
 
 // DECODED BLOCKS
 
-// NiAVObject 
+// NiObjectNET
 typedef struct {
     STRING name;
     uint numExtraData;
     if ( numExtraData > 0)
         Ref extraData[numExtraData] <optimize=false>;
     Ref controller; // NiTimeController
+} NiObjectNET <name="NiObjectNET", open=true>; // Abstract
+
+// NiAVObject 
+typedef struct {
+    NiObjectNET base;
+    local STRING name = base.name;
     NiAVObjectFlags flags;
     Vec3 translation;
     Matrix33 rotation;
