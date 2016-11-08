@@ -13,14 +13,14 @@
 
 typedef struct {
     SSTRING name;
-   Ref object;
-} NIAVOBJ <name="AV Object", open=true>;
+    Ref object;
+} AVOBJ <name="AV Object", open=true>;
 
 typedef struct {
     Ref scene;
     uint numObjs;
     if ( numObjs > 0 )
-        NIAVOBJ object[numObjs] <optimize=false>;
+        AVOBJ object[numObjs] <optimize=false>;
 } NiAVObjPalette <name="NiDefaultAVObjectPalette">;
 
 typedef struct {
@@ -59,43 +59,48 @@ typedef struct {
 } NiFloatEDCtlr <name="NiFloatExtraDataController">;
 
 typedef struct {
+    // NiControllerSequence::InterpArrayItem
     Ref interpolator;
     Ref controller;
     byte priority;
-    STRING nodeName;
-    STRING propType;
-    STRING ctrlType;
-    STRING ctrlID;
-    STRING interpID;
-} CTRLLINK <name="Controlled Block">;
+    // NiControllerSequence::IDTag
+    STRING AVObjectName;
+    STRING propertyType;
+    STRING controllerType;
+    STRING controllerID;
+    STRING interpolatorID;
+} ControlledBlock <name="Controlled Block">;
 
 typedef enum <uint> { LOOP, REVERSE, CLAMP, MAX_CYCLE_TYPES } CycleType;
 
 typedef struct {
     STRING name;
     uint numBlocks;
-    uint unk1;
+    uint arrayGrowBy;
     if ( numBlocks > 0 )
-        CTRLLINK block[numBlocks];
+        ControlledBlock block[numBlocks];
     float weight;
     Ref textKey;
     CycleType cycleType;
     float frequency;
-    float startTime;
-    float stopTime;
-    Ref manager; // Owner
+    float beginKeyTime;
+    float endKeyTime;
+    Ref owner; // NiControllerManager
     STRING accumRootName;
-    if ( stream >= 34 )
-        ushort flags;
-} NiCtlrSeq <name="NiControllerSequence">;
+    if ( stream >= 34 ) {
+        ushort numAnimNotes;
+        if ( numAnimNotes > 0 )
+            Ref animNotes[numAnimNotes]; // BSAnimNotes
+    }
+} NiControllerSequence <name="NiControllerSequence">;
 
 typedef struct {
     NITIMECTLR controller;
-    bool isCumulative;
-    uint numCtrlSeq;
-    if ( numCtrlSeq > 0 )
-        Ref ctrlSeq[numCtrlSeq];
-    Ref objPalette;
+    bool cumulativeAnim;
+    uint sequenceCount;
+    if ( sequenceCount > 0 )
+        Ref sequence[sequenceCount];
+    Ref objectPalette;
 } NiControllerMgr <name="NiControllerManager">;
 
 typedef struct {
@@ -144,15 +149,17 @@ typedef NIFLOATINTERPCTLR NiLightDimmerCtlr <name="NiLightDimmerController", ope
 // NiBoneLODController
 typedef struct {
     NITIMECTLR controller;
-    uint unk1;
-    uint numNodeGroups;
-    uint numNodeGroups2;
-    if ( numNodeGroups > 0 ) {
+    uint LOD;
+    uint numLODs;
+    uint boneArraySize;
+    if ( boneArraySize > 0 ) {
         struct {
-            uint numNodes;
-            if ( numNodes > 0 )
-                Ref node[numNodes];
-        } nodeGroup[numNodeGroups] <optimize=false>;
+            struct {
+                uint nodeSetSize;
+                if ( nodeSetSize > 0 )
+                    Ref node[nodeSetSize];
+            } nodeSet[boneArraySize] <optimize=false>;
+        } boneArray;
     }
 } NiBoneLODCtlr <name="NiBoneLODController">;
 
@@ -336,9 +343,28 @@ typedef struct {
 // INTERPOLATORS
 
 typedef struct {
-    ushort flags; // Default: 513
-    uint unk2; // Array size, only non-zero when not manager controlled?
-    Assert( unk2 == 0, "NiBlendInterpolator unk2 is non-zero\r\n" );
+    enum <byte> { MANAGER_CONTROLLED = 1 } flags;
+    byte arraySize;
+    float weightThreshold;
+    if ( !(flags & 1) ) {
+        byte interpCount;
+        byte singleIndex;
+        char highPriority;
+        char nextHighPriority;
+        float singleTime;
+        float highSumOfWeights;
+        float nextHighSumOfWeights;
+        float highEaseSpinner;
+        if ( arraySize ) {
+            struct {
+                Ref interpolator;
+                float weight;
+                float normalizedWeight;
+                byte priority;
+                float easeSpinner;
+            } interpArrayItem[arraySize] <optimize=true>;
+        }
+    }
 } NIBLENDINTERP <open=true>; // Abstract
 
 typedef struct {
@@ -364,9 +390,7 @@ typedef struct {
 } NiBlendFloat <name="NiBlendFloatInterpolator">;
 
 typedef struct {
-    Vec3  translation;
-    Quat rotation;
-    float scale;
+    NiQuatTransform transform;
     Ref data; // NiTransformData
 } NiTransformInterp <name="NiTransformInterpolator">;
 
@@ -381,15 +405,18 @@ typedef struct {
 } NiBlendPoint3 <name="NiBlendPoint3Interpolator">;
 
 typedef struct {
-    ushort flags;
+    enum <ushort> {
+        LOOK_X_AXIS = 0,
+        LOOK_FLIP = 1,
+        LOOK_Y_AXIS = 2,
+        LOOK_Z_AXIS = 4
+    } flags; // Should be a bitfield for flip toggle
     Ref lookAt;
-    STRING target;
-    Vec3 translation;
-    Quat rotation;
-    float scale;
-    Ref interpolator1;
-    Ref interpolator2;
-    Ref interpolator3;
+    STRING lookAtName;
+    NiQuatTransform transform;
+    Ref translateInterp;
+    Ref rollInterp;
+    Ref scaleInterp;
 } NiLookAtInterp <name="NiLookAtInterpolator">;
 
 // TODO: Needs to be changed to bitfield
@@ -445,18 +472,18 @@ typedef struct {
 
 typedef struct {
     NIINTERPCTLR controller;
-    ushort flags;
+    ushort flags; // flags & 1 == updateNormals
     Ref data; // NiMorphData
     bool alwaysUpdate;
-    uint numInterp;
-    if ( numInterp > 0 )
+    uint numTargets;
+    if ( numTargets > 0 )
         struct {
             Ref interpolator;
             float weight;
-        } interp[numInterp];
+        } interpItem[numTargets];
 } NiGeomMorpherCtlr <name="NiGeomMorpherController">;
 
 typedef struct {
     NITIMECTLR controller;
-    uint unk;
+    uint keys;
 } bhkBlendController <name="bhkBlendController">;

@@ -362,7 +362,7 @@ struct FILE {
                     NiControllerMgr data;
                     break;
                 case "NiControllerSequence":
-                    NiCtlrSeq data;
+                    NiControllerSequence data;
                     break;
                 case "NiTransformController":
                     NiTransCtlr data;
