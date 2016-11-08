@@ -25,10 +25,6 @@ typedef struct {
     ushort group;
 } HavokFilter <name="Filter", open=true>;
 
-typedef struct {
-    Ref shape;
-    HavokFilter filter;
-} bhkWorldOBJ <open=true>;
 
 typedef struct {
     uint data;
@@ -37,17 +33,23 @@ typedef struct {
 } hkWorldObjCinfoProperty;
 
 typedef struct {
+    Ref shape;
     // hkWorldObjectCinfo
-    bhkWorldOBJ obj;
+    HavokFilter filter;
     int unkInt1;
     BroadPhaseType broadPhaseType;
     byte unkBytes[3];
     hkWorldObjCinfoProperty prop;
-    // end hkWorldObjectCinfo 
+    // end hkWorldObjectCinfo
+} bhkWorldObject <open=true>;
+
+typedef struct {
+    bhkWorldObject obj;
+    // hkEntityCinfo
     hkResponseType collisionResponse;
     ubyte unknownByte;
-    ushort contactPointCallbackDelay;
-    // end hkEntityCinfo
+    ushort processContactCallbackDelay;
+    // bhkRigidBodyCinfo
     uint unkInt2;
     HavokFilter filter;
     uint unkInt3;
@@ -195,11 +197,7 @@ typedef struct {
 } bhkCapsuleShape <name="bhkCapsuleShape">;
 
 typedef struct {
-    bhkWorldOBJ obj;
-    uint shape;
-    BroadPhaseType broadPhaseType;
-    byte unkBytes[3];
-    hkWorldObjCinfoProperty prop;
+    bhkWorldObject obj;
     uint64 padding;
     Matrix44 transform;
 } bhkSSPhantom <name="bhkSimpleShapePhantom">;
