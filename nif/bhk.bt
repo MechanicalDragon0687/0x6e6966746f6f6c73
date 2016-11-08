@@ -520,7 +520,7 @@ typedef struct {
 
 typedef struct {
     bhkConstraint base;
-    StiffSpringDesc desc;
+    PrismaticDesc desc;
 } bhkPrismaticConstraint <name="bhkPrismaticConstraint">;
 
 typedef struct {
