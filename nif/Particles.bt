@@ -246,9 +246,9 @@ typedef struct {
 typedef struct {
     NiPSysModifier base;
     Ref targetNode; // NiNode
-    float unkFloat1;
-    float unkFloat2;
-    float unkFloat3;
+    float chanceToInherit;
+    float velocityMult;
+    float velocityVar;
 } BSPSInheritVelMod <name="BSPSysInheritVelocityModifier">;
 
 // BSPSysHavokUpdateModifier
@@ -263,8 +263,9 @@ typedef struct {
 // BSPSysRecycleBoundModifier
 typedef struct {
     NiPSysModifier base;
-    Vec3 unkVec[2] <open=true>;
-    uint unk;
+    Vec3 boundOffset;
+    Vec3 boundExtent;
+    Ref targetNode; // NiNode
 } BSPSRecycleBoundMod <name="BSPSysRecycleBoundModifier">;
 
 // BSPSysStripUpdateModifier
