@@ -17,7 +17,7 @@ typedef struct {
 } SkinWeight <name="Weights", open=suppress>;
 
 typedef struct ( bool hasWeights )  {
-    TransformMat transform;
+    NiTransform transform;
     NiBound boundingSphere;
     ushort numVerts;
     if ( hasWeights && numVerts )
@@ -84,5 +84,5 @@ typedef struct {
 
 typedef struct {
     NiBound boundingSphere;
-    TransformMat transform;
+    NiTransform transform;
 } BSSkinBoneTrans <open=true>;
