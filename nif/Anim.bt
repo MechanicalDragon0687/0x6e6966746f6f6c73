@@ -85,7 +85,8 @@ typedef struct {
     float stopTime;
     Ref manager; // Owner
     STRING accumRootName;
-    ushort flags;
+    if ( stream >= 34 )
+        ushort flags;
 } NiCtlrSeq <name="NiControllerSequence">;
 
 typedef struct {

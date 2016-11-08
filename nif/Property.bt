@@ -15,11 +15,23 @@ typedef NiObjectNET NiTexture <name="NiTexture">;
 
 typedef struct {
     NiProperty prop;
+    ushort flags; // SetFog true == flags |= 1, GetFogFunction == (flags >> 1) & 3
+    float depth;
+    Color3 color;
+} NiFogProperty <name="NiFogProperty">;
+
+typedef struct {
+    NiProperty prop;
+    if ( stream < 26 ) {
+        Color3 ambient;
+        Color3 diffuse;
+    }
     Color3 specular;
     Color3 emissive;
     float glossiness;
     float alpha;
-    float emissiveMult;
+    if ( stream > 21 )
+        float emissiveMult;
 } NiMaterialProperty <name="NiMaterialProperty">;
 
 typedef struct {

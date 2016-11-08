@@ -454,3 +454,8 @@ typedef struct {
     Vec3 center;
     Vec3 halfExtents;
 } BSMultiBoundAABB <name="BSMultiBoundAABB">;
+
+typedef struct {
+    Vec3 center;
+    float radius;
+} BSMultiBoundSphere <name="BSMultiBoundSphere">;

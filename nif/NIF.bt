@@ -51,7 +51,10 @@ typedef struct {
 typedef struct {
     NiObjectNET base;
     local STRING name = base.name;
-    NiAVObjectFlags flags;
+    if ( stream < 34 )
+        ushort flags;
+    else
+        NiAVObjectFlags flags;
     Vec3 translation;
     Matrix33 rotation;
     float scale;
@@ -82,6 +85,8 @@ typedef struct {
     Color3 diffuse;
     Color3 specular;
 } NiLight <name="NiLight", open=true>;
+
+typedef NiLight NiAmbientLight <name="NiAmbientLight", open=false>;
 
 // NiPointLight
 typedef struct {
@@ -190,6 +195,7 @@ typedef struct {
     byte current;
 } BSRangeNode <name="BSRangeNode">;
 
+typedef BSRangeNode BSDebrisNode <name="BSDebrisNode">;
 typedef BSRangeNode BSBlastNode <name="BSBlastNode">;
 typedef BSBlastNode BSDamageStage <name="BSDamageStage">;
 
@@ -397,8 +403,14 @@ struct FILE {
                 case "NiPSysEmitterPlanarAngleCtlr":
                     NiPSEmitPlanarAngleCtlr data;
                     break;
+                case "NiPSysEmitterPlanarAngleVarCtlr":
+                    NiPSEmitPlanarAngleVarCtlr data;
+                    break;
                 case "NiPSysEmitterDeclinationCtlr":
                     NiPSEmitDeclinationCtlr data;
+                    break;
+                case "NiPSysEmitterDeclinationVarCtlr":
+                    NiPSEmitDeclinationVarCtlr data;
                     break;
                 case "BSStripParticleSystem":
                     BSStripParticleSys data;
@@ -502,6 +514,9 @@ struct FILE {
                 case "bhkSPCollisionObject":
                     bhkSPCollObj data;
                     break;
+                case "bhkPCollisionObject":
+                    bhkPCollObj data;
+                    break;
                 case "bhkNPCollisionObject":
                     bhkNPCollObj data;
                     break;
@@ -544,6 +559,9 @@ struct FILE {
                 case "bhkSimpleShapePhantom":
                     bhkSSPhantom data;
                     break;
+                case "bhkAabbPhantom":
+                    bhkAabbPhantom data;
+                    break;
                 case "bhkNiTriStripsShape":
                     bhkNiTriStripsShape data;
                     break;
@@ -561,6 +579,9 @@ struct FILE {
                     break;
                 case "BSMultiBoundAABB":
                     BSMultiBoundAABB data;
+                    break;
+                case "BSMultiBoundSphere":
+                    BSMultiBoundSphere data;
                     break;
                 case "NiExtraData":
                     NiExtraData data;
@@ -582,6 +603,9 @@ struct FILE {
                     break;
                 case "NiTextKeyExtraData":
                     NiTextKeyED data;
+                    break;
+                case "NiBinaryExtraData":
+                    NiBinaryED data;
                     break;
                 case "BSBoneLODExtraData":
                     BSBoneLODED data;
@@ -622,6 +646,9 @@ struct FILE {
                 case "BSBehaviorGraphExtraData":
                     BSBGED data;
                     break;
+                case "BSDebrisNode":
+                    BSDebrisNode data;
+                    break;
                 case "BSBlastNode":
                     BSBlastNode data;
                     break;
@@ -630,6 +657,9 @@ struct FILE {
                     break;
                 case "NiPointLight":
                     NiPointLight data;
+                    break;
+                case "NiAmbientLight":
+                    NiAmbientLight data;
                     break;
                 case "NiCamera":
                     NiCamera data;
@@ -675,6 +705,9 @@ struct FILE {
                     break;
                 case "BSWindModifier":
                     BSWindModifier data;
+                    break;
+                case "BSParentVelocityModifier":
+                    BSParentVelocityMod data;
                     break;
                 case "BSPSysInheritVelocityModifier":
                     BSPSInheritVelMod data;
@@ -748,8 +781,23 @@ struct FILE {
                 case "BSShaderPPLightingProperty":
                     BSShaderPPLightingProperty data;
                     break;
+                case "Lighting30ShaderProperty":
+                    Lighting30ShaderProperty data;
+                    break;
                 case "SkyShaderProperty":
                     SkyShaderProperty data;
+                    break;
+                case "TallGrassShaderProperty":
+                    TallGrassShaderProperty data;
+                    break;
+                case "TileShaderProperty":
+                    TileShaderProperty data;
+                    break;
+                case "WaterShaderProperty":
+                    WaterShaderProperty data;
+                    break;
+                case "NiFogProperty":
+                    NiFogProperty data;
                     break;
                 case "NiMaterialProperty":
                     NiMaterialProperty data;
@@ -792,6 +840,9 @@ struct FILE {
                     break;
                 case "bhkConvexListShape":
                     bhkConvexListShape data;
+                    break;
+                case "bhkOrientHingedBodyAction":
+                    bhkOrientHingedBodyAction data;
                     break;
                 case "bhkLiquidAction":
                     bhkLiquidAction data;

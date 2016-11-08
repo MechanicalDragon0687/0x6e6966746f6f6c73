@@ -58,6 +58,11 @@ typedef struct {
 
 typedef struct {
     NiExtraData data;
+    BinaryData binaryData;
+} NiBinaryED <name="NiBinaryExtraData">;
+
+typedef struct {
+    NiExtraData data;
     STRING file;
     bool controlsBaseSkel;
 } BSBGED <name="BSBehaviorGraphExtraData">;

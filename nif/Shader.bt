@@ -136,14 +136,20 @@ typedef struct {
 
 // Legacy Shader Properties
 
-// BSShaderLightingProperty
+// BSShaderProperty (Legacy)
 typedef struct {
     NiProperty prop;
+    local STRING name = prop.name;
     ushort flags;
     uint shaderType;
     uint shaderFlags1;
     uint shaderFlags2;
     float envMapScale;
+} BSShaderPropertyLegacy <open=true>;
+
+// BSShaderLightingProperty
+typedef struct {
+    BSShaderPropertyLegacy prop;
     uint texClampMode;
 } BSShaderLightingProperty <open=true>; // Abstract
 
@@ -151,23 +157,31 @@ typedef struct {
 typedef struct {
     BSShaderLightingProperty prop;
     SSTRING baseTexture;
-    float falloffStartAngle;
-    float falloffStopAngle;
-    float falloffStartOpacity;
-    float falloffStopOpacity;
+    if ( stream > 26 ) {
+        float falloffStartAngle;
+        float falloffStopAngle;
+        float falloffStartOpacity;
+        float falloffStopOpacity;
+    }
 } BSShaderNoLightingProperty <name="BSShaderNoLightingProperty">;
 
 // BSShaderPPLightingProperty
 typedef struct {
     BSShaderLightingProperty prop;
     Ref textureSet;
-    float refractionStrength;
-    float refractionPeriod;
-    float unkFloat1;
-    float unkFloat2;
+    if ( stream > 14 ) {
+        float refractionStrength;
+        float refractionPeriod;
+    }
+    if ( stream > 24 ) {
+        float unkFloat1;
+        float unkFloat2;
+    }
     if ( stream > 34 )
         Color4 emissiveColor;
 } BSShaderPPLightingProperty <name="BSShaderPPLightingProperty">;
+
+typedef BSShaderPPLightingProperty Lighting30ShaderProperty <name="Lighting30ShaderProperty">;
 
 // SkyShaderProperty
 typedef struct {
@@ -175,3 +189,16 @@ typedef struct {
     SSTRING baseTexture;
     uint skyFlags;
 } SkyShaderProperty <name="SkyShaderProperty">;
+
+// TallGrassShaderProperty
+typedef struct {
+    BSShaderPropertyLegacy prop;
+    SSTRING baseTexture;
+} TallGrassShaderProperty <name="TallGrassShaderProperty">;
+
+typedef struct {
+    BSShaderLightingProperty prop;
+    SSTRING baseTexture;
+} TileShaderProperty <name="TileShaderProperty">;
+
+typedef BSShaderPropertyLegacy WaterShaderProperty <name="WaterShaderProperty", open=false>;

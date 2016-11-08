@@ -141,6 +141,7 @@ typedef struct {
 } bhkNPCollObj <name="bhkNPCollisionObject">;
 
 typedef bhkCollisionObj bhkSPCollObj <name="bhkSPCollisionObject">;
+typedef bhkCollisionObj bhkPCollObj <name="bhkPCollisionObject">;
 
 typedef struct {
     bhkCollisionObj base <open=true>;
@@ -564,6 +565,13 @@ typedef BinaryData bhkRagSystem <name="bhkRagdollSystem">;
 // Legacy
 
 typedef struct {
+    bhkWorldObject obj;
+    uint64 padding;
+    Vec4 aabbMin;
+    Vec4 aabbMax;
+} bhkAabbPhantom <name="bhkAabbPhantom">;
+
+typedef struct {
     uint numShapes;
     if ( numShapes > 0 )
         Ref shape[numShapes];
@@ -575,6 +583,20 @@ typedef struct {
     byte unkByte1;
     float unkFloat2;
 } bhkConvexListShape <name="bhkConvexListShape">;
+
+typedef struct {
+    Ref body;
+    // hkUnaryActionCinfo
+    uint unkInt1;
+    uint unkInt2;
+    // hkOrientHingedBodyActionCinfo
+    uint64 padding;
+    Vec4 hingeAxisLS;
+    Vec4 forwardLS;
+    float strength;
+    float damping;
+    uint64 padding;
+} bhkOrientHingedBodyAction <name="bhkOrientHingedBodyAction">;
 
 typedef struct {
     uint userData;

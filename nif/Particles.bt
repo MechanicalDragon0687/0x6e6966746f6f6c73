@@ -242,6 +242,12 @@ typedef struct {
     float strength;
 } BSWindModifier <name="BSWindModifier">;
 
+// BSParentVelocityModifier
+typedef struct {
+    NiPSysModifier base;
+    float percentage;
+} BSParentVelocityMod <name="BSParentVelocityModifier">;
+
 // BSPSysInheritVelocityModifier
 typedef struct {
     NiPSysModifier base;
@@ -390,7 +396,9 @@ typedef NIPSYSMODFLOATCTRLTR NiPSEmitSpeedCtlr <name="NiPSysEmitterSpeedCtlr", o
 typedef NIPSYSMODFLOATCTRLTR NiPSEmitLifeSpanCtlr <name="NiPSysEmitterLifeSpanCtlr", open=false>;
 typedef NIPSYSMODFLOATCTRLTR NiPSEmitIRadiusCtlr <name="NiPSysEmitterInitialRadiusCtlr", open=false>;
 typedef NIPSYSMODFLOATCTRLTR NiPSEmitPlanarAngleCtlr <name="NiPSysEmitterPlanarAngleCtlr", open=false>;
+typedef NIPSYSMODFLOATCTRLTR NiPSEmitPlanarAngleVarCtlr <name="NiPSysEmitterPlanarAngleVarCtlr", open=false>;
 typedef NIPSYSMODFLOATCTRLTR NiPSEmitDeclinationCtlr <name="NiPSysEmitterDeclinationCtlr", open=false>;
+typedef NIPSYSMODFLOATCTRLTR NiPSEmitDeclinationVarCtlr <name="NiPSysEmitterDeclinationVarCtlr", open=false>;
 
 typedef struct {
     NIPSYSMODCTLR controller;
