@@ -133,11 +133,6 @@ struct BSA {
             FSeek(files.fileRecord[i].file[j].offset);
             size = files.fileRecord[i].file[j].size & 0x3fffffff;
 
-            // I guess only Oblivion uses this
-            sizeMasked = size & 0xC0000000;
-            if ( sizeMasked > 0 )
-                size = sizeMasked;
-
             if ( FTell() + size == FileSize() ) {
                 if ( reachedEnd == 0 )
                     reachedEnd++;

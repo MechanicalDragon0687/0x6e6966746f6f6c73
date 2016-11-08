@@ -99,10 +99,14 @@ string FileDataRead( FileData& f )
 
 string FileDataComment( FileData& f )
 {
+    string s;
     if ( exists( f.pre ) )
-        return "Embedded Filename";
+        s = "Embedded Filename";
+
+    if ( f.size & 0xC0000000 )
+        s += " | Compressed Flag";
     
-    return "";
+    return s;
 }
 
 string FileNameRead( FileName& f )
