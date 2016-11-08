@@ -25,6 +25,8 @@
 typedef struct (int i) {
     local int index <hidden=true> = i;
     byte data[header.blocksize[i]] <open=suppress>;
+    local string s = file.header.btype[file.header.btypeindex[i].index].str;
+    Printf( "Unknown Block: %s\r\n", s );
 } Block <name="~~Undecoded~~", comment=BlockComment, fgcolor=0x0055FF, bgcolor=0xDDFFFF>;
 
 string BlockComment( Block& b )
