@@ -107,12 +107,6 @@ typedef struct {
 
 // MODIFIERS
 
-typedef enum <uint> {
-    FORCE_PLANAR,
-    FORCE_SPHERICAL,
-    FORCE_UNKNOWN
-} ForceType;
-
 typedef struct {
     STRING name;
     uint order;
@@ -149,7 +143,9 @@ typedef struct {
     float color2StartPercent;
     float color2EndPercent;
     float color3StartPercent;
-    Color4 color[3];   
+    Color4 color1;
+    Color4 color2;
+    Color4 color3;   
 } BSPSSimpleColorMod <name="BSPSysSimpleColorModifier">;
 
 // NiPSysRotationModifier
@@ -158,7 +154,7 @@ typedef struct {
     float initialSpeed;
     float initialSpeedVariation;
     float initialAngle;
-    float initialAngelVariation;
+    float initialAngleVariation;
     bool randomSpeedSign;
     bool randomInitialAxis;
     Vec3 initialAxis;
@@ -175,7 +171,10 @@ typedef struct {
 // BSPSysLODModifier
 typedef struct {
     NiPSysModifier base;
-    Vec4 unk;
+    float LODBeginDistance;
+    float LODEndDistance;
+    float unknownFadeFactor1;
+    float unknownFadeFactor2;
 } BSPSLODMod <name="BSPSysLODModifier">;
 
 // NiPSysGravityModifier
@@ -185,10 +184,13 @@ typedef struct {
     Vec3 gravityAxis;
     float decay;
     float strength;
-    ForceType forceType;
+    enum <uint> {
+        FORCE_PLANAR,
+        FORCE_SPHERICAL
+    } forceType;
     float turbulence;
     float turbulenceScale;
-    byte unk;
+    bool worldAligned;
 } NiPSGravityMod <name="NiPSysGravityModifier">;
 
 // NiPSysDragModifier
@@ -213,7 +215,7 @@ typedef struct {
 // BSPSysSubTexModifier
 typedef struct {
     NiPSysModifier base;
-    float startFrame; // uint??
+    float startFrame;
     float startFrameVariation;
     float endFrame;
     float loopStartFrame;
@@ -222,9 +224,6 @@ typedef struct {
     float frameCountVariation;
 } BSPSysSubTexMod <name="BSPSysSubTexModifier">;
 
-typedef enum <uint> { DECAY_NONE, DECAY_LINEAR, DECAY_EXPONENTIAL } DecayType;
-typedef enum <uint> { SPHERICAL_SYMMETRY, CYLINDRICAL_SYMMETRY, PLANAR_SYMMETRY } SymmetryType;
-
 // NiPSysBombModifier
 typedef struct {
     NiPSysModifier base;
@@ -232,8 +231,16 @@ typedef struct {
     Vec3 bombAxis;
     float decay;
     float deltaV;
-    DecayType decayType;
-    SymmetryType symmetryType;
+    enum <uint> {
+        DECAY_NONE,
+        DECAY_LINEAR,
+        DECAY_EXPONENTIAL
+    } decayType;
+    enum <uint> {
+        SYMMMETRY_SPHERICAL,
+        SYMMETRY_CYLINDRICAL,
+        SYMMETRY_PLANAR 
+    } symmetryType;
 } NiPSysBombMod <name="NiPSysBombModifier">;
 
 // BSWindModifier
@@ -284,23 +291,9 @@ typedef struct {
 typedef struct {
     NiPSysModifier base;
     Ref collider;
-} NiPSysCollMgr <name="NiPSysColliderManager">;
+} NiPSysColliderMgr <name="NiPSysColliderManager">;
 
 // EMITTERS
-
-typedef enum <uint> {
-    VELOCITY_USE_NORMALS,
-    VELOCITY_USE_RANDOM,
-    VELOCITY_USE_DIRECTION
-} VelocityType;
-
-typedef enum <uint> {
-    EMIT_FROM_VERTICES,
-    EMIT_FROM_FACE_CENTER,
-    EMIT_FROM_EDGE_CENTER,
-    EMIT_FROM_FACE_SURFACE,
-    EMIT_FROM_EDGE_SURFACE
-} EmissionType;
 
 typedef struct {
     NiPSysModifier base;
@@ -327,15 +320,25 @@ typedef struct {
     uint numMeshes;
     if ( numMeshes > 0 )
         Ref mesh[numMeshes];
-    VelocityType velocityType;
-    EmissionType emissionType;
+    enum <uint> {
+        VELOCITY_USE_NORMALS,
+        VELOCITY_USE_RANDOM,
+        VELOCITY_USE_DIRECTION
+    } velocityType;
+    enum <uint> {
+        EMIT_FROM_VERTICES,
+        EMIT_FROM_FACE_CENTER,
+        EMIT_FROM_EDGE_CENTER,
+        EMIT_FROM_FACE_SURFACE,
+        EMIT_FROM_EDGE_SURFACE
+    } emissionType;
     Vec3 emissionAxis;
 } NiPSysMeshEmitter <name="NiPSysMeshEmitter">;
 
 typedef struct {
     NiPSysVolumeEmitter base;
     float radius;
-} NiPSysSphEmitter <name="NiPSysSphereEmitter">;
+} NiPSysSphereEmitter <name="NiPSysSphereEmitter">;
 
 typedef struct {
     NiPSysVolumeEmitter base;
@@ -348,20 +351,20 @@ typedef struct {
     NiPSysVolumeEmitter base;
     float radius;
     float height;
-} NiPSysCylEmitter <name="NiPSysCylinderEmitter">;
+} NiPSysCylinderEmitter <name="NiPSysCylinderEmitter">;
 
 
 // COLLIDERS
 
 // NiPSysCollider
 typedef struct {
-    float bound;
+    float bounce;
     bool spawnOnCollide;
     bool dieOnCollide;
     Ref spawnModifier; // NiPSysSpawnModifier
-    Ref parent;
-    Ref nextCollider;
-    Ref colliderNode; // NiNode
+    Ref manager;       // NiPSysColliderManager
+    Ref nextCollider;  // NiPSysCollider
+    Ref colliderNode;  // NiNode
 } NiPSysCollider <open=true>; // Abstract
 
 typedef struct {

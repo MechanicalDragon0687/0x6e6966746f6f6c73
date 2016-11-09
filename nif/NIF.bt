@@ -722,19 +722,19 @@ struct FILE {
                     BSPSStripUpdateMod data;
                     break;
                 case "NiPSysColliderManager":
-                    NiPSysCollMgr data;
+                    NiPSysColliderMgr data;
                     break;
                 case "NiPSysMeshEmitter":
                     NiPSysMeshEmitter data;
                     break;
                 case "NiPSysSphereEmitter":
-                    NiPSysSphEmitter data;
+                    NiPSysSphereEmitter data;
                     break;
                 case "NiPSysBoxEmitter":
                     NiPSysBoxEmitter data;
                     break;
                 case "NiPSysCylinderEmitter":
-                    NiPSysCylEmitter data;
+                    NiPSysCylinderEmitter data;
                     break;
                 case "NiPSysPlanarCollider":
                     NiPSysPlanarColl data;
