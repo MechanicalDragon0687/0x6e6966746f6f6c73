@@ -53,15 +53,19 @@ typedef struct {
     uint unkInt2;
     HavokFilter filter;
     uint unkInt3;
-    uint unkInt4;
     if ( stream > 34 ) {
+        uint unkInt4;
         Assert( unkInt4 == 0, "bhkRigidBody unkInt4 is non-zero" );
-        hkResponseType collisionResponse;
-        ubyte unknownByte;
-        ushort contactPointCallbackDelay;
-    } else {
-        uint unkInt;
     }
+
+    hkResponseType collisionResponse2;
+    ubyte unknownByte2;
+    ushort processContactCallbackDelay2;
+    Assert( collisionResponse == collisionResponse2, "Collision Response and copy are not equal" );
+    Assert( processContactCallbackDelay == processContactCallbackDelay2, "Callback Delay and copy are not equal" );
+
+    if ( stream < 83 )
+        uint unkInt5;
 
     Vec4 position;
     QuatXYZW rotation;
