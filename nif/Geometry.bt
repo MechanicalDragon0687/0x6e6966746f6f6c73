@@ -260,7 +260,7 @@ typedef struct ( uint64 f ) {
     }
     
     if ( vf & VF_EYEDATA )
-        uint eyeData;
+        float eyeData;
 
 } BSVertexData;
 
