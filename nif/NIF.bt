@@ -36,6 +36,12 @@ string BlockComment( Block& b )
     return s;
 }
 
+typedef enum {
+    R_OK = 0x1,
+    R_UNKBLOCKS = 0x2,
+    R_EOF = 0x4
+} ReturnCodes;
+
 // DECODED BLOCKS
 
 // NiObjectNET
@@ -207,6 +213,7 @@ typedef struct {
 } BSXFlags <name="BSXFlags">;
 
 struct FILE {
+    local int result = 0;
     struct HEADER {
         char HeaderString[39] <open=suppress>;
         byte version[4] <open=suppress>;
@@ -246,6 +253,7 @@ struct FILE {
     } header <bgcolor=cLtGray>;
 
     local int stream = header.stream;
+    local int unkBlocks <hidden=true> = 0;
 
     Assert( stream == 34 || stream ==  83 || stream == 100 || stream == 130, 
             "This NIF's stream version is not supported." );
@@ -855,6 +863,7 @@ struct FILE {
                     break;
                 default:
                     Block data(i) <open=suppress>;
+                    unkBlocks++;
                     break;
             }
         }
@@ -869,4 +878,13 @@ struct FILE {
 
     Assert( FEof(), "Did not reach end of file." );
 
+    // Command Line return codes
+    if ( unkBlocks > 0 )
+        result |= R_UNKBLOCKS;
+    if ( FEof() )
+        result |= R_OK;
+    else
+        result |= R_EOF;
+
+    Exit( result );
 } file <open=true>;
