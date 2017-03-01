@@ -649,3 +649,20 @@ typedef struct {
     if ( partCount > 0 )
         hkSubPartData data[partCount] <optimize=true>;
 } hkPackedNiTriStripsData <name="hkPackedNiTriStripsData">;
+
+// Deathposes.psa files, FO3/NV
+typedef struct {
+    uint numBones;
+    if ( numBones > 0 )
+        STRING bones[numBones];
+    uint numPoses;
+    if ( numPoses > 0 )
+        struct {
+            uint numMatrices;
+            if ( numMatrices > 0 )
+                struct {
+                    float unkFloat;
+                    Matrix33 matrix;
+                } matrix[numMatrices];
+        } poseArray[numPoses] <optimize=false>;
+} bhkPoseArray <name="bhkPoseArray">;
