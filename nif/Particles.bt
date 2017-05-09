@@ -28,9 +28,7 @@ typedef struct {
     }
 
     bool isWorldSpace;
-    uint numModifiers;
-    if ( numModifiers > 0 )
-        Ref modifier[numModifiers]; // NiPSysModifier
+    RefArray modifiers( "Modifier" ); // NiPSysModifier
 } NiParticleSys <name="NiParticleSystem">;
 
 typedef NiParticleSys NiMeshParticleSys <name="NiMeshParticleSystem">;
@@ -39,9 +37,7 @@ typedef NiParticleSys BSStripParticleSys <name="BSStripParticleSystem">;
 typedef struct {
     NiNode node <open=true>;
     ushort maxEmitterObjs;
-    uint numParticleSys;
-    if ( numParticleSys > 0 )
-        Ref particleSys[numParticleSys];
+    RefArray particleSys( "Particle System" ); // NiParticles
 } BSMasterParticleSystem <name="BSMasterParticleSystem">;
 
 typedef struct {
@@ -267,9 +263,7 @@ typedef struct {
 // BSPSysHavokUpdateModifier
 typedef struct {
     NiPSysModifier base;
-    uint numNodes;
-    if ( numNodes > 0 )
-        Ref node[numNodes]; // NiNode
+    RefArray nodes( "Node" ); // NiNode
     Ref modifier; // NiPSysModifier
 } BSPSHavokUpdateMod <name="BSPSysHavokUpdateModifier">;
 
@@ -317,9 +311,7 @@ typedef struct {
 
 typedef struct {
     NiPSysEmitter base;
-    uint numMeshes;
-    if ( numMeshes > 0 )
-        Ref mesh[numMeshes];
+    RefArray mesh( "Mesh" );
     enum <uint> {
         VELOCITY_USE_NORMALS,
         VELOCITY_USE_RANDOM,

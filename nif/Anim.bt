@@ -87,19 +87,14 @@ typedef struct {
     float endKeyTime;
     Ref owner; // NiControllerManager
     STRING accumRootName;
-    if ( stream >= 34 ) {
-        ushort numAnimNotes;
-        if ( numAnimNotes > 0 )
-            Ref animNotes[numAnimNotes]; // BSAnimNotes
-    }
+    if ( stream >= 34 )
+        RefArray16 animNotes( "Anim Note" ); // BSAnimNotes
 } NiControllerSequence <name="NiControllerSequence">;
 
 typedef struct {
     NITIMECTLR controller;
     bool cumulativeAnim;
-    uint sequenceCount;
-    if ( sequenceCount > 0 )
-        Ref sequence[sequenceCount];
+    RefArray sequence( "Sequence" ); // NiSequence
     Ref objectPalette;
 } NiControllerMgr <name="NiControllerManager">;
 
@@ -110,9 +105,7 @@ typedef struct {
 
 typedef struct {
     NIINTERPCTLR controller;
-    ushort numTargets;
-    if ( numTargets > 0 )
-        Ref targets[numTargets];
+    RefArray16 targets( "Target" ); // NiAVObject
 } NiMultiTransCtlr <name="NiMultiTargetTransformController">;
 
 typedef struct {
@@ -155,9 +148,7 @@ typedef struct {
     if ( boneArraySize > 0 ) {
         struct {
             struct {
-                uint nodeSetSize;
-                if ( nodeSetSize > 0 )
-                    Ref node[nodeSetSize];
+                RefArray node( "Node" );
             } nodeSet[boneArraySize] <optimize=false>;
         } boneArray;
     }

@@ -105,9 +105,7 @@ typedef struct {
     if ( stream > 34 )
         uint unkInt7;
     // end bhkSerializable
-    uint numConstraints;
-    if ( numConstraints > 0 )
-        Ref constraints[numConstraints] <optimize=false>;
+    RefArray constraints( "Action Constraints" );
     
     if ( stream >= 76 )
         ushort flags;
@@ -157,9 +155,7 @@ typedef struct {
 // SHAPES
 
 typedef struct {
-    uint numShapes;
-    if ( numShapes > 0 )
-        Ref shape[numShapes];
+    RefArray shape( "Shape" );
     uint HavokMaterial; // enum
     hkWorldObjCinfoProperty childShapeProp;
     hkWorldObjCinfoProperty childFilterProp;
@@ -243,9 +239,7 @@ typedef struct {
     uint unused5; // eSize;
     uint growBy;
     Vec4 scale; // End Cinfo
-    uint numParts;
-    if ( numParts > 0 )
-        Ref part[numParts];
+    RefArray part( "Part" );
     uint numFilters;
     if ( numFilters > 0 )
         uint Filter[numFilters]; // Enum 
@@ -453,9 +447,7 @@ typedef enum <uint> {
 
 typedef struct {
     hkConstraintType type;
-    uint numEntities;
-    if ( numEntities > 0 )
-       Ref entity[numEntities];
+    RefArray entities( "Entity" );
     uint priority;
     
     switch ( type ) {
@@ -484,9 +476,7 @@ typedef struct {
 // CONSTRAINTS
 
 typedef struct {
-    uint numEntities;
-    if ( numEntities > 0 )
-       Ref entity[numEntities];
+    RefArray entities( "Entity" );
     uint priority;
 } bhkConstraint <open=true>; // Abstract
 
@@ -548,9 +538,7 @@ typedef struct {
     float cfm;
     float maxErrorDistance;
     // hkConstraintChainCinfo
-    uint numEntitiesA;
-    if ( numEntitiesA > 0 )
-        Ref entitiesA[numEntitiesA];
+    RefArray entitiesA( "Entity A" );
     // hkConstraintCinfo
     uint numEntities; // Hardcoded to 2, EntityA + EntityB
     Assert( numEntities == 2, "numEntities != 2" );
@@ -576,9 +564,7 @@ typedef struct {
 } bhkAabbPhantom <name="bhkAabbPhantom">;
 
 typedef struct {
-    uint numShapes;
-    if ( numShapes > 0 )
-        Ref shape[numShapes];
+    RefArray shapes( "Shape" );
     uint material;
     float radius;
     uint unkInt1;

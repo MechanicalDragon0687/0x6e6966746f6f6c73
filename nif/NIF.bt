@@ -47,9 +47,7 @@ typedef enum {
 // NiObjectNET
 typedef struct {
     STRING name;
-    uint numExtraData;
-    if ( numExtraData > 0)
-        Ref extraData[numExtraData] <optimize=false>;
+    RefArray extraData( "Extra Data" ); // NiExtraData
     Ref controller; // NiTimeController
 } NiObjectNET <name="NiObjectNET", open=true>; // Abstract
 
@@ -64,11 +62,9 @@ typedef struct {
     Vec3 translation;
     Matrix33 rotation;
     float scale;
-    if ( file.header.userversion < 12 ) {
-        uint numProperties;
-        if ( numProperties > 0 )
-            Ref properties[numProperties] <optimize=false>;
-    }
+    if ( file.header.userversion < 12 )
+        RefArray properties( "Property" ); // NiProperty
+
     Ref NiCollisionObject;
 } NiAVObject <name="NiAVObject", open=true>;
 
@@ -77,9 +73,7 @@ typedef struct {
     NiAVObject base;
     if ( stream < 130 ) {
         bool switchState;
-        uint numAffectedNodes;
-        if ( numAffectedNodes > 0 )
-            Ref affectedNodes;
+        RefArray affectedNodes( "Affected Node" ); // NiNode
     }
 } NiDynamicEffect <name="NiDynamicEffect", open=true>;
 
@@ -118,25 +112,20 @@ typedef struct {
     float viewportTop;
     float viewportBottom;
     float lodAdjust;
-    Ref scene;
-    Ref screenPolygons;
-    Ref screenTextures;
+    Ref scene; // NiAVObject
+    RefArray screenPolygons( "Polygon" ); // NiScreenPolygon array is always zero length on disk write
+    RefArray screenTextures( "Texture" ); // NiScreenTexture array is always zero length on disk write
+    Assert( screenPolygons.size == 0, "screenPolygons is an unexpected size" );
+    Assert( screenTextures.size == 0, "screenTextures is an unexpected size" );
 } NiCamera <name="NiCamera">;
 
 // NiNode/BSFadeNode
 typedef struct { 
     NiAVObject base;
+    RefArray children( "Child" ); // NiAVObject
+    if ( file.header.stream < 130 )
+        RefArray effect( "Effect" ); // NiDynamicEffect
 
-    uint numChildren;
-    if ( numChildren > 0 ) {
-        Ref children[numChildren];
-    }
-
-    if ( file.header.stream < 130 ) {
-        uint numEffects;
-        if ( numEffects > 0 ) 
-            Ref effect[numEffects]; // NiDynamicEffect
-    }
 } NiNode <name="NiNode">; // END
 
 #include "Geometry.bt"
@@ -150,12 +139,8 @@ typedef NiNode BSLeafAnimNode <name="BSLeafAnimNode">;
 // BSTreeNode
 typedef struct {
     NiNode node <open=true>;
-    uint numBones1;
-    if ( numBones1 > 0 )
-        Ref bones1[numBones1];
-    uint numBones2;
-    if ( numBones2 > 0 )
-        Ref bones2[numBones2];
+    RefArray bones1( "Bone" );
+    RefArray bones2( "Bone" );
 } BSTreeNode <name="BSTreeNode">;
 
 // NiSwitchNode
@@ -874,9 +859,7 @@ struct FILE {
     } blocks <open=true>;
 
     struct FOOTER {
-        uint numRoots;
-        if ( numRoots > 0 )
-            Ref root[numRoots] <optimize=false>;
+        RefArray root( "Root" );
     } footer;
 
     Assert( FEof(), "Did not reach end of file." );

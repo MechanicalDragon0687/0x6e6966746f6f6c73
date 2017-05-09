@@ -375,9 +375,7 @@ typedef struct {
     Ref data; // NiSkinData
     Ref partition; // NiSkinPartition
     Ref root; // NiNode
-    uint numBones;
-    if ( numBones > 0 )
-        Ref bone[numBones]; // NiNode
+    RefArray bone( "Bone" ); // NiNode
 } NiSkinInstance <name="NiSkinInstance">;
 
 // BSDSkinInstance
@@ -392,9 +390,7 @@ typedef struct {
 typedef struct {
     Ref rootParent;
     Ref boneData;
-    uint numBones;
-    if ( numBones > 0 )
-        Ref bone[numBones];
+    RefArray bone( "Bone" ); // NiNode
     uint numUnk;
     if ( numUnk > 0 )
         Vec3 unk[numUnk];

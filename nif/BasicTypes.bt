@@ -325,6 +325,23 @@ string ReadREF ( Ref &r )
     return s;
 }
 
+// Ref Array
+typedef struct ( string str ) {
+    local string name = str;
+    uint size;
+    if ( size > 0 )
+        Ref ref[size] <name=RefArrayItemRead, open=true, optimize=false>;
+} RefArray;
+
+// Ref Array (16-bit Size)
+typedef struct ( string str ) {
+    local string name = str;
+    ushort size;
+    if ( size > 0 )
+        Ref ref[size] <name=RefArrayItemRead, open=true, optimize=false>;
+} RefArray16;
+
+string RefArrayItemRead ( Ref& i ) { return parentof(i).name; }
 
 // BASIC READ FUNCTIONS
 
