@@ -162,7 +162,7 @@ typedef struct {
     uint numUnkInt;
     if ( numUnkInt > 0 )
         uint unkInt[numUnkInt];
-    Assert( numShapes == numUnkInt, "numShapes != numUnkInt" );
+    Assert( shape.size == numUnkInt, "numShapes != numUnkInt" );
 } bhkListShape <name="bhkListShape">;
 
 typedef struct {
