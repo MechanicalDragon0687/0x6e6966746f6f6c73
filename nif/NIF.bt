@@ -666,6 +666,9 @@ struct FILE {
                 case "NiPSysSpawnModifier":
                     NiPSSpawnMod data;
                     break;
+                case "NiPSysColorModifier":
+                    NiPSColorMod data;
+                    break;
                 case "BSPSysSimpleColorModifier":
                     BSPSSimpleColorMod data;
                     break;
@@ -806,6 +809,9 @@ struct FILE {
                     break;
                 case "NiMorphData":
                     NiMorphData data;
+                    break;
+                case "NiColorData":
+                    NiColorData data;
                     break;
                 case "NiGeomMorpherController":
                     NiGeomMorpherCtlr data;

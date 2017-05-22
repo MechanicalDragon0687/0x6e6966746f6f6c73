@@ -234,7 +234,7 @@ typedef struct {
         if ( numKeys > 0 )
             Vec4Key key(interpolation)[numKeys] <optimize=true>;
     }
-} VEC4KEYGRP <name="Keys">;
+} Vec4KeyGrp <name="Keys">;
 
 typedef struct ( KeyType i ) {
     float time;
@@ -460,6 +460,10 @@ typedef struct {
     if ( numMorphs > 0 )
         Morph morph(numVertices)[numMorphs] <optimize=true>;
 } NiMorphData <name="NiMorphData">;
+
+typedef struct {
+    Vec4KeyGrp data; // Color4
+} NiColorData <name="NiColorData">;
 
 typedef struct {
     NIINTERPCTLR controller;

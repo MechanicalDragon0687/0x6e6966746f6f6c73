@@ -130,6 +130,12 @@ typedef struct {
     float lifeSpanVariation;
 } NiPSSpawnMod <name="NiPSysSpawnModifier">;
 
+// NiPSysColorModifier
+typedef struct {
+    NiPSysModifier base;
+    Ref data; // NiColorData
+} NiPSColorMod <name="NiPSysColorModifier">;
+
 // BSPSysSimpleColorModifier
 typedef struct {
     NiPSysModifier base;
