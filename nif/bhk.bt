@@ -364,9 +364,48 @@ typedef struct {
 
 // CONSTRAINT DESCRIPTORS
 
+typedef enum<byte> {
+    MotorNone = 0,
+    MotorPosition = 1,
+    MotorVelocity = 2,
+    MotorSpringDamper = 3
+} MotorType;
+
 typedef struct {
-    float unk[6];
-    byte unkByte;
+    if ( stream > 29 ) {
+        MotorType motor;
+
+        Assert( motor >= 0 && motor <= 3, "MotorType is an unexpected value" );
+
+        if ( motor != MotorNone ) {
+            // bhkLimitedForceConstraintMotor
+            float minForce;
+            float maxForce;
+        }
+
+        switch ( motor ) {
+            case MotorPosition: // bhkPositionConstraintMotor
+                float tau;
+                float damping;
+                float proportionalRecoveryVelocity;
+                float constantRecoveryVelocity;
+                break;
+            case MotorVelocity: // bhkVelocityConstraintMotor
+                float tau;
+                Ref velocityTarget;
+                bool useVelocityTargetFromConstraintTargets;
+                break;
+            case MotorSpringDamper: // bhkSpringDamperConstraintMotor
+                float springConstant;
+                float springDamping;
+                break;
+            case MotorNone:
+                break;
+        }
+        
+        if ( motor != MotorNone )
+            bool motorIsEnabled;
+    }
 } MotorDesc;
 
 typedef struct {
@@ -376,7 +415,8 @@ typedef struct {
     Vec4 pivotA;
     Vec4 axleB;
     Vec4 axleInB1;
-    Vec4 axleInB2;
+    if ( stream > 29 ) // ???
+        Vec4 axleInB2;
     Vec4 pivotB;
 } HingeDesc <open=true>;
 
@@ -385,19 +425,19 @@ typedef struct {
     float minAngle;
     float maxAngle;
     float maxFriction;
-    bool enableMotor;
-    if ( enableMotor == 1 )
-        MotorDesc motor;
+    MotorDesc motor;
 } LimitedHingeDesc <open=true>;
 
 typedef struct {
     Vec4 twistA;
     Vec4 planeA;
-    Vec4 motorA;
+    if ( stream > 29 ) // ???
+        Vec4 motorA;
     Vec4 pivotA;
     Vec4 twistB;
     Vec4 planeB;
-    Vec4 motorB;
+    if ( stream > 29 ) // ???
+        Vec4 motorB;
     Vec4 pivotB;
     float coneMaxAngle;
     float planeMinAngle;
@@ -405,9 +445,8 @@ typedef struct {
     float twistMinAngle;
     float twistMaxAngle;
     float maxFriction;
-    bool enableMotor;
-    if ( enableMotor )
-        MotorDesc motor;
+    MotorDesc motor;
+
 } RagdollDesc <open=true>;
 
 typedef struct {
@@ -424,16 +463,19 @@ typedef struct {
 typedef struct {
     Vec4 slidingA;
     Vec4 rotationA;
+    if ( stream > 29 )
     Vec4 planeA;
     Vec4 pivotA;
     Vec4 slidingB;
     Vec4 rotationB;
+    if ( stream > 29 )
     Vec4 planeB;
     Vec4 pivotB;
     float minDistance;
     float maxDistance;
     float friction;
-    byte unkByte;
+    MotorDesc motor;
+
 } PrismaticDesc <open=true>;
 
 typedef enum <uint> {
@@ -471,6 +513,8 @@ typedef struct {
             break;
     }
 
+    float strength;
+
 } SubConstraintDesc <open=true>;
 
 // CONSTRAINTS
@@ -498,8 +542,7 @@ typedef struct {
 typedef struct {
     bhkConstraint base;
     SubConstraintDesc subconstraint;
-    float threshold;
-    bool removeIfBroken;
+    bool removeWhenBroken;
 } bhkBreakConstraint <name="bhkBreakableConstraint">;
 
 typedef struct {
@@ -520,7 +563,6 @@ typedef struct {
 typedef struct {
     bhkConstraint base;
     SubConstraintDesc subconstraint;
-    float strength;
 } bhkMalleableConstraint <name="bhkMalleableConstraint">;
 
 typedef struct {
