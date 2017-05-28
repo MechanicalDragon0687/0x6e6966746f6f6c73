@@ -6,7 +6,7 @@
 //   Version: 
 //   Purpose: 
 //  Category: 
-// File Mask: *.nif,*.bto,*.btr,*.psa
+// File Mask: *.nif,*.kf,*.bto,*.btr,*.psa,*.rdt
 //  ID Bytes: 47 61 6D 65 62 72 79 6F 20 46 69 6C 65 20 46 6F 72 6D 61 74 2C 20 56 65 72 73 69 6F 6E 20 32 30 2E 32 2E 30 2E 37 0A 07 00 02 14 01 [+1] 00 00 00
 //   History: 
 //------------------------------------------------
@@ -764,6 +764,12 @@ struct FILE {
                     break;
                 case "bhkBallSocketConstraintChain":
                     bhkBASConstraintChain data;
+                    break;
+                case "bhkRagdollTemplate":
+                    bhkRagdollTemplate data;
+                    break;
+                case "bhkRagdollTemplateData":
+                    bhkRagdollTemplateData data;
                     break;
                 case "NiMeshParticleSystem":
                     NiMeshParticleSys data;

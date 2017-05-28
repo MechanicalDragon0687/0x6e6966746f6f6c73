@@ -590,6 +590,45 @@ typedef struct {
 } bhkBASConstraintChain <name="bhkBallSocketConstraintChain">;
 
 
+typedef struct {
+    STRING name;
+    RefArray bones( "Bone" );
+} bhkRagdollTemplate <name="bhkRagdollTemplate">;
+
+typedef struct {
+    STRING name;
+    float mass;
+    float restitution;
+    float friction;
+    float radius;
+    uint material; // Havok Material
+    uint numConstraints;
+    if ( numConstraints > 0 )
+        struct {
+            hkConstraintType type;
+            RefArray entities( "Entity" );
+            uint priority;
+            
+            switch ( type ) {
+                case BallAndSocket:
+                    BallAndSocketDesc desc;
+                    break;
+                case Hinge:
+                    HingeDesc desc;
+                    break;
+                case LimitedHinge:
+                    LimitedHingeDesc desc;
+                    break;
+                case Ragdoll:
+                    RagdollDesc desc;
+                    break;
+                case Malleable:
+                    SubConstraintDesc desc;
+                    break;
+            }
+        } constraints[numConstraints] <optimize=false>;
+} bhkRagdollTemplateData <name="bhkRagdollTemplateData">;
+
 // SYSTEMS
 
 typedef BinaryData bhkPhysSystem <name="bhkPhysicsSystem">;
