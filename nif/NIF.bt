@@ -855,6 +855,12 @@ struct FILE {
                 case "bhkPoseArray":
                     bhkPoseArray data;
                     break;
+                case "BSAnimNotes":
+                    BSAnimNotes data;
+                    break;
+                case "BSAnimNote":
+                    BSAnimNote data;
+                    break;
                 default:
                     Block data(i) <open=suppress>;
                     unkBlocks++;

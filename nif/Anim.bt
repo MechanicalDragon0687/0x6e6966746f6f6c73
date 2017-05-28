@@ -87,8 +87,10 @@ typedef struct {
     float endKeyTime;
     Ref owner; // NiControllerManager
     STRING accumRootName;
-    if ( stream >= 34 )
-        RefArray16 animNotes( "Anim Note" ); // BSAnimNotes
+    if ( stream <= 28 )
+        Ref animNotes; // BSAnimNotes
+    if ( stream > 28 )
+        RefArray16 animNotes( "Anim Notes" ) <optimize=false>; // BSAnimNotes.. Multidimensional?
 } NiControllerSequence <name="NiControllerSequence">;
 
 typedef struct {
@@ -482,3 +484,25 @@ typedef struct {
     NITIMECTLR controller;
     uint keys;
 } bhkBlendController <name="bhkBlendController">;
+
+typedef enum<uint> {
+    ANT_INVALID = 0,
+    ANT_GRABIK = 1,
+    ANT_LOOKIK = 2
+} AnimNoteType;
+
+typedef struct {
+    AnimNoteType type; // BSAnimNote::AnimNoteType
+    float time;
+    if ( type == ANT_GRABIK )
+        uint arm; // GRABIK_ARM
+    if ( type != ANT_INVALID ) {
+        float gain;
+        uint state; // GRABIK_STATE / LOOKIK_STATE
+    }
+} BSAnimNote <name="BSAnimNote">;
+
+typedef struct {
+    RefArray16 animNotes( "Anim Note" ); // BSAnimNote
+} BSAnimNotes <name="BSAnimNotes">;
+
