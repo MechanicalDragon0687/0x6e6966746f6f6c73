@@ -204,8 +204,7 @@ typedef struct {
 } bhkSSPhantom <name="bhkSimpleShapePhantom">;
 
 typedef struct {
-    uint mat;
-    float radius;
+    bhkConvexShape shape;
     hkWorldObjCinfoProperty vertsProp;
     hkWorldObjCinfoProperty normalsProp;
     // hkArray<hkFourTransposedPointsf,hkContainerHeapAllocator> m_rotatedVertices;
