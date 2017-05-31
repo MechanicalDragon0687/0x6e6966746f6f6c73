@@ -81,8 +81,8 @@ typedef struct {
     Assert( (nbtMethod >> 12) <= 1, "Unsupported NBT method" );
 
     local ubyte numTextureSets = dataFlags & 0x3F; // The max UV Sets is 63
-    if ( stream >= 83 )
-        numTextureSets = dataFlags & 0x1; // There is only ever 1 UV Set in stream 83 and higher
+    if ( stream >= 34 )
+        numTextureSets = dataFlags & 0x1; // There is only ever 1 UV Set in stream 34 and higher
 
     if ( stream > 34 )
         uint materialCRC;
