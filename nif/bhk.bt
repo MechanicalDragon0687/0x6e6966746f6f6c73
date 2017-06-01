@@ -477,13 +477,45 @@ typedef struct {
 
 } PrismaticDesc <open=true>;
 
+typedef struct {
+    struct ConstraintData constraintData;
+    float threshold;
+    bool removeWhenBroken;
+} BreakableDesc <open=true>;
+
+typedef struct {
+    struct ConstraintData constraintData;
+    float strength;
+} MalleableDesc <open=true>;
+
 typedef enum <uint> {
     BallAndSocket = 0,
     Hinge = 1,
     LimitedHinge = 2,
+    //POINTTOPATH = 3,
     Prismatic = 6,
     Ragdoll = 7,
-    StiffSpring = 8
+    StiffSpring = 8,
+    //WHEEL     = 9,
+    //GENERIC   = 10,
+    //CONTACT   = 11,
+    Breakable = 12,
+    Malleable = 13,
+    //POINTTOPLANE       = 14, 
+    //PULLEY             = 15, 
+    //ROTATIONAL         = 16, 
+    //HINGE_LIMITS       = 18, 
+    //RAGDOLL_LIMITS     = 19, 
+    //CUSTOM             = 20, 
+    //RACK_AND_PINION    = 21, 
+    //COG_WHEEL          = 22, 
+    //FIXED              = 23, 
+    //DEFORMABLE_FIXED   = 24, 
+    //LINEAR_SLACK       = 25, 
+    //// Chain types
+    //STIFF_SPRING_CHAIN = 100,
+    //BALL_SOCKET_CHAIN  = 101,
+    //POWERED_CHAIN      = 102
 } hkConstraintType;
 
 typedef struct {
@@ -510,11 +542,15 @@ typedef struct {
         case StiffSpring:
             StiffSpringDesc desc;
             break;
+        case Breakable:
+            BreakableDesc desc;
+            break;
+        case Malleable:
+            MalleableDesc desc;
+            break;
     }
 
-    float strength;
-
-} SubConstraintDesc <open=true>;
+} ConstraintData <open=true>;
 
 // CONSTRAINTS
 
@@ -540,8 +576,7 @@ typedef struct {
 
 typedef struct {
     bhkConstraint base;
-    SubConstraintDesc subconstraint;
-    bool removeWhenBroken;
+    BreakableDesc desc;
 } bhkBreakConstraint <name="bhkBreakableConstraint">;
 
 typedef struct {
@@ -551,7 +586,7 @@ typedef struct {
 
 typedef struct {
     bhkConstraint base;
-    BallAndSocketDesc hinge;
+    BallAndSocketDesc desc;
 } bhkBASConstraint <name="bhkBallAndSocketConstraint">;
 
 typedef struct {
@@ -561,7 +596,7 @@ typedef struct {
 
 typedef struct {
     bhkConstraint base;
-    SubConstraintDesc subconstraint;
+    MalleableDesc desc;
 } bhkMalleableConstraint <name="bhkMalleableConstraint">;
 
 typedef struct {
@@ -576,7 +611,7 @@ typedef struct {
     // hkpBallSocketChainData
     float tau;
     float damping;
-    float cfm;
+    float cfm; // Constraint mixing force
     float maxErrorDistance;
     // hkConstraintChainCinfo
     RefArray entitiesA( "Entity A" );
@@ -603,29 +638,7 @@ typedef struct {
     uint material; // Havok Material
     uint numConstraints;
     if ( numConstraints > 0 )
-        struct {
-            hkConstraintType type;
-            RefArray entities( "Entity" );
-            uint priority;
-            
-            switch ( type ) {
-                case BallAndSocket:
-                    BallAndSocketDesc desc;
-                    break;
-                case Hinge:
-                    HingeDesc desc;
-                    break;
-                case LimitedHinge:
-                    LimitedHingeDesc desc;
-                    break;
-                case Ragdoll:
-                    RagdollDesc desc;
-                    break;
-                case Malleable:
-                    SubConstraintDesc desc;
-                    break;
-            }
-        } constraints[numConstraints] <optimize=false>;
+        ConstraintData constraints[numConstraints] <optimize=false>;
 } bhkRagdollTemplateData <name="bhkRagdollTemplateData">;
 
 // SYSTEMS
