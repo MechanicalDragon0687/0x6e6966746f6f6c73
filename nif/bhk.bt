@@ -740,8 +740,9 @@ typedef struct {
             uint numMatrices;
             if ( numMatrices > 0 )
                 struct {
-                    float unkFloat;
-                    Matrix33 matrix;
+                    Vec3 translation;
+                    QuatXYZW rotation;
+                    Vec3 scale;
                 } matrix[numMatrices];
         } poseArray[numPoses] <optimize=false>;
 } bhkPoseArray <name="bhkPoseArray">;
