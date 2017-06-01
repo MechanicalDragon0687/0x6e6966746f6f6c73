@@ -45,7 +45,8 @@ typedef struct {
     NiTexture tex;
     bool useExternal;
     STRING filename;
-    Ref unkLink;
+    Ref data; // NiPixelData if < 20.2.0.4 or !persistentRenderData
+              // else NiPersistentSrcTextureRendererData
     PixelLayout pixelLayout;
     MipMapFormat mipMapFormat;
     AlphaFormat alphaFormat;
