@@ -34,6 +34,16 @@ string RevStr( string& s )
     return t;
 }
 
+string CleanPath( string& s )
+{
+    string t;
+    int i;
+    for ( i = 0; i < Strlen(s); i++ )
+        t += (s[i] == '/') ? '\\' : s[i];
+
+    return t;
+}
+
 uint32 CreateHash(string path)
 {
    return bscrc32_lower( path );
@@ -62,7 +72,7 @@ void GenerateHashes( uint32& filehash, uint32& dirhash,
                      uint32 origFilehash, uint32 origDirhash )
 {
     filehash = CreateHash( filename );
-    dirhash = CreateHash( dirpath );
+    dirhash = CreateHash( CleanPath( dirpath ) );
     if ( filehash != origFilehash || dirhash != origDirhash ) {
         string h1;
         SPrintf( h1, "%X", filehash );
