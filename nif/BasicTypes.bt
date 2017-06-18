@@ -13,7 +13,109 @@
 
 //typedef float float <read=ParseFloat>;
 
-typedef uint64 VertexDesc <format=hex>;
+typedef union {
+    ushort value;
+    struct {
+        ushort : 4;
+        ushort vertex   : 1;
+        ushort uv1      : 1;
+        ushort uv2      : 1;
+        ushort normal   : 1;
+        ushort tangent  : 1;
+        ushort color    : 1;
+        ushort skinned  : 1;
+        ushort landData : 1;
+        ushort eyeData  : 1;
+        ushort unk      : 1;
+        ushort fullprec : 1;
+    } bitflags;
+} VertexFlags <name="Vertex Flags", read=VertexFlagsRead, open=false>;
+
+string VertexFlagsRead( VertexFlags& f )
+{
+    string s;
+
+    ushort vf = f.value >> 4;
+    
+    if ( vf & VF_VERTEX )
+        s += "VERTEX | ";
+    if ( vf & VF_UV )
+        s += "UV_1 | ";
+    if ( vf & VF_UV_2 )
+        s += "UV_2 | ";
+    if ( vf & VF_NORMAL )
+        s += "NORMAL | ";
+    if ( vf & VF_TANGENT )
+        s += "TANGENT | ";
+    if ( vf & VF_COLORS )
+        s += "COLOR | ";
+    if ( vf & VF_SKINNED )
+        s += "SKINNED | ";
+    if ( vf & VF_LANDDATA )
+        s += "LANDDATA | ";
+    if ( vf & VF_EYEDATA )
+        s += "EYEDATA | ";
+    if ( vf & 0x200 )
+        s += " UNKNOWN | ";
+    if ( vf & VF_FULLPREC )
+        s += "FULLPREC | ";
+
+    SPrintf(s, "%s (%u)", s, f.value );
+    
+    return s;
+}
+
+typedef union {
+    uint64 value <format=hex>;
+    local uint64 flags = value >> 44;
+    struct
+    {
+        // Sizes and Offsets are all multiplied by 4
+        byte szVertexData : 4;
+        byte szVertex : 4;
+        byte oTexCoord0 : 4;
+        byte oTexCoord1 : 4;
+        byte oNormal : 4;
+        byte oTangent : 4;
+        byte oColor : 4;
+        byte oSkinningData : 4;
+        byte oLandscapeData : 4;
+        byte oEyeData : 4;
+        VertexFlags vertexFlags;
+        byte unused;
+    } bits <open=true>;
+} VertexDesc <read=VertexDescRead, open=true>;
+
+string VertexDescRead( VertexDesc& f )
+{
+    string s;
+    
+    SPrintf(s, "%s: %u", "Size", f.bits.szVertexData * 4);
+
+    SPrintf(s, "%s | OFFSETS", s );
+    
+    if ( f.bits.szVertex > 0 )
+        SPrintf(s, "%s | Vertex: DYNAMIC", s);
+    else if ( f.flags & VF_VERTEX )
+        SPrintf(s, "%s | %s: %u", s, "Vertex", f.bits.szVertex * 4);
+    if ( f.flags & VF_UV )
+        SPrintf(s, "%s | %s: %u", s, "UV1", f.bits.oTexCoord0 * 4);
+    if ( f.flags & VF_UV_2 )
+        SPrintf(s, "%s | %s: %u", s, "UV2", f.bits.oTexCoord1 * 4);
+    if ( f.flags & VF_NORMAL )
+        SPrintf(s, "%s | %s: %u", s, "Normal", f.bits.oNormal * 4);
+    if ( f.flags & VF_TANGENT )
+        SPrintf(s, "%s | %s: %u", s, "Tangent", f.bits.oTangent * 4);
+    if ( f.flags & VF_COLORS )
+        SPrintf(s, "%s | %s: %u", s, "Color", f.bits.oColor * 4);
+    if ( f.flags & VF_SKINNED )
+        SPrintf(s, "%s | %s: %u", s, "Skin", f.bits.oSkinningData * 4);
+    if ( f.flags & VF_LANDDATA )
+        SPrintf(s, "%s | %s: %u", s, "Land", f.bits.oLandscapeData * 4);
+    if ( f.flags & VF_EYEDATA )
+        SPrintf(s, "%s | %s: %u", s, "Eye", f.bits.oEyeData * 4);
+    return s;
+}
 
 typedef ubyte bool;
 

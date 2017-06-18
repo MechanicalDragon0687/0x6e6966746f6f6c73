@@ -212,12 +212,6 @@ typedef struct {
     } BSGeometrySegmentData <open=true>;
 } BSSegmentedTriShape <name="BSSegmentedTriShape">;
 
-typedef enum <ushort> { 
-    VF_VERTEX = 0x1, VF_UV = 0x2, VF_NORMAL = 0x8, 
-    VF_TANGENT = 0x10, VF_COLORS = 0x20, VF_SKINNED = 0x40,
-    VF_EYEDATA = 0x100, VF_FULLPREC = 0x400
-} VertexComponent;
-
 // BSVertexData
 typedef struct ( uint64 f ) {
     local uint64 vf = (f & 0xffff0000000000) >> 44;
@@ -280,7 +274,7 @@ typedef struct {
 
     uint dataSize;
     if ( dataSize > 0 )
-        BSVertexData vertexData(vertexDesc)[numVerts] <open=suppress, optimize=true>;
+        BSVertexData vertexData(vertexDesc.value)[numVerts] <open=suppress, optimize=true>;
     if ( dataSize > 0 && numTris > 0 )
         Triangle triangles[numTris];
 
@@ -428,7 +422,7 @@ typedef struct {
         //local uint64 fakeDesc = (uint64)(vertexSize / 4) << 64;
 
         if ( dataSize > 0 )
-            BSVertexData vertexData(vertexDesc)[dataSize/vertexSize] <open=suppress, optimize=true>;
+            BSVertexData vertexData(vertexDesc.value)[dataSize/vertexSize] <open=suppress, optimize=true>;
         SkinPartition parts[numParts] <optimize=false>;
     }   
 } NiSkinPartition <name="NiSkinPartition">;

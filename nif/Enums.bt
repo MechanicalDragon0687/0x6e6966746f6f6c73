@@ -11,6 +11,13 @@
 //   History: 
 //------------------------------------------------
 
+// Vertex Data flags
+typedef enum <ushort> { 
+    VF_VERTEX = 0x1, VF_UV = 0x2, VF_UV_2 = 0x4, VF_NORMAL = 0x8, 
+    VF_TANGENT = 0x10, VF_COLORS = 0x20, VF_SKINNED = 0x40, VF_LANDDATA = 0x80,
+    VF_EYEDATA = 0x100, VF_FULLPREC = 0x400
+} VertexAttribute;
+
 
 // NiAVObject Flags
 //  These bits appear to have the same function across all supported NIFs (34, 83, 100, 130),
