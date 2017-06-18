@@ -45,8 +45,9 @@ typedef struct TexRecord( uint i )
 	byte	    numMips;		// 14
 	DXGI_FORMAT	format;			// 15 - DXGI_FORMAT
 	uint16	    dx10Flags;		// 16 - 0800 - Normal, 0801 - Cubemap
+    Assert( height % 8 == 0 && width % 8 == 0, "The width or height are not divisible by 8." );
     Assert( gnrlFlags == 0, "gnrlFlags is not 0" );
-    Assert( numChunks > 0 && numChunks < 5, "numChunks differs from expected" ); // Note: Archive2 settings allow you to set higher than 4 for max.
+    Assert( numChunks > 0 && numChunks < 6, "numChunks differs from expected" ); // Note: Archive2 settings allow you to set higher than 4 for max.
     Assert( chunkHeaderSize == 24, "Chunk Header size differs from expected" );
     Assert( width > 0 && height > 0 && width < 16385 && height < 16385, "Height or width differs from expected" );
     Assert( format > 0 && format < 100, "DXGI format differs from expected" );
