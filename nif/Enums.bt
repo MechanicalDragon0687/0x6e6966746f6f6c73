@@ -180,25 +180,26 @@ typedef enum <uint> {
 
 typedef enum <uint> {
     DEFAULT,
-    ENV_MAP,
-    GLOW,
+    ENVMAP,
+    GLOWMAP,
     PARALLAX,
     FACE,
-    SKIN,
-    HAIR,
-    POM,
-    WORLD_MT,
-    WORLDMAP_1,
-    UNKNOWN_10,
-    MULTILAYER,
-    UNKNOWN_12,
-    WORLDMAP_2,
-    SPARKLE,
-    WORLDMAP_3,
-    EYE_ENV,
-    UNKNOWN_17,
-    WORLDMAP_4,
-    WORLDLOD_MT    
+    SKIN_TINT,
+    HAIR_TINT,
+    PARALLAX_OCC,
+    MULTI_TEXTURE_LANDSCAPE,
+    LOD_LANDSCAPE,
+    SNOW,
+    MULTI_LAYER_PARALLAX,
+    TREE_ANIM,
+    LOD_OBJECTS,
+    MULTI_INDEX_TRISHAPE_SNOW,
+    LOD_OBJECTS_HD,
+    EYE,
+    CLOUD,
+    LOD_LANDSCAPE_NOISE,
+    MULTI_TEXTURE_LANDSCAPE_LOD_BLEND,
+    DISMEMBERMENT
 } ShaderType <name="Shader Type">;
 
 // Collision
