@@ -56,3 +56,9 @@ uint Version( uint major, uint minor, uint patch, uint internal )
 {
     return (major << 24) | (minor << 16) | (patch << 8) | internal;
 }
+
+byte IsOblivion( uint version, uint userVersion ) {
+    // Unused Oblivion NIFs: V10_0_1_2 (One File: MinotaurOLD.nif)
+    // Absent Oblivion NIFs in GOG and Steam versions: V10_1_0_0, V10_1_0_101
+    return version == V10_1_0_106 || version == V20_0_0_5 || (userVersion == 11 && version == V20_0_0_4);
+}

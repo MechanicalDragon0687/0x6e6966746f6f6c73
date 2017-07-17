@@ -57,48 +57,77 @@ typedef enum {
 struct FILE {
     local int result = 0;
     struct HEADER {
-        char HeaderString[39] <open=suppress>;
-        byte version[4] <open=suppress>;
-        byte endian;
-        int userversion;
+        local string hdr = ReadLine(0);
+        char HeaderString[Strlen(hdr)] <open=suppress>;
+        uint version <format=hex>;
+
+        // Endianness
+        if ( version >= Version(20, 0, 0, 3) )
+            byte littleEndian;
+        else
+            local byte littleEndian = 1;
+
+        // User defined version
+        if ( version >= Version(10, 0, 1, 8) )
+            int userVersion;
+        else
+            local int userVersion = 0;
+
         int numblocks;
-        int stream;
-
-        ubyte creatorlength <hidden=true>;
-        char creator[creatorlength] <open=suppress>;
-
-        ubyte export1length <hidden=true>;
-        char export1[export1length] <open=suppress>;
-
-        ubyte export2length <hidden=true>;
-        char export2[export2length] <open=suppress>;
-
-        if ( stream == 130 ) {
-            ubyte export3length <hidden=true>;
-            char export3[export3length] <open=suppress>;
+        
+        if ( version == V20_2_0_7 || IsOblivion(version, userVersion) ) {
+            // Bethesda BSStreamHeader
+            uint stream;
+            SSTRING8 author; // 64 limit
+            SSTRING8 processScript; // 64 limit
+            SSTRING8 exportScript; // 64 limit
+            if ( stream == 130 )
+                SSTRING8 maxFilePath;
+        } else if ( version >= V30_0_0_2 ) {
+            local int stream = 12; // Fake stream version
+            // Embedded PNG files for file thumbnail
+            int embedDataSize;
+            int numEmbeds;
+            if ( numEmbeds > 0 ) {
+                int embedSizes[numEmbeds];
+                local int i;
+                for ( i = 0; i < numEmbeds; i++ )
+                    byte data[embedSizes[i]];
+            }
+        } else {
+            local int stream = 0; // Fake stream version
         }
 
-        ushort numblocktypes;
+        if ( version >= Version(5, 0, 0, 1) ) {
+            ushort numblocktypes;
+            SSTRING btype[numblocktypes] <optimize=false, open=suppress>;
+            BLOCKTYPEINDEX btypeindex[numblocks] <optimize=false, open=suppress>;
+        }
 
-        SSTRING btype[numblocktypes] <optimize=false, open=suppress>;
-
-        BLOCKTYPEINDEX btypeindex[numblocks] <optimize=false, open=suppress>;
-
-        uint blocksize[numblocks] <open=suppress>;
-
-        uint numstrings;
-        uint maxstringlength;
+        if ( version >= Version(20, 2, 0, 5) )
+            uint blocksize[numblocks] <open=suppress>;
         
-        SSTRING strs[numstrings] <optimize=false, open=suppress>;
+        if ( version >= Version(20, 1, 0, 1) ) {
+            uint numstrings;
+            uint maxstringlength;
+            
+            if ( numstrings > 0 )
+                SSTRING strs[numstrings] <optimize=false, open=suppress>;
+        }
+        
+        if ( version >= Version(5, 0, 0, 6) ) {
+            uint numGroups;
+            if ( numGroups > 0 )
+                uint size[numGroups];
+        }
 
-        uint unknown;
     } header <bgcolor=cLtGray>;
 
-    local int stream = header.stream;
+    local uint version = header.version;
+    local uint stream = header.stream;
     local int unkBlocks <hidden=true> = 0;
 
-    Assert( stream == 34 || stream ==  83 || stream == 100 || stream == 130, 
-            "This NIF's stream version is not supported." );
+    Assert( version >= V20_2_0_7, "This NIF version is not supported." );
 
     struct BLOCKS {
         local int i <hidden=true>;
