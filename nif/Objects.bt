@@ -1,0 +1,89 @@
+//------------------------------------------------
+//--- 010 Editor v8.0 Binary Template
+//
+//      File: Objects.bt
+//   Authors: jonwd7
+//   Version: 
+//   Purpose: 
+//  Category: 
+// File Mask: 
+//  ID Bytes: 
+//   History: 
+//------------------------------------------------
+
+// NiObjectNET
+typedef struct {
+    STRING name;
+    RefArray extraData( "Extra Data" ); // NiExtraData
+    Ref controller; // NiTimeController
+} NiObjectNET <name="NiObjectNET", open=true>; // Abstract
+
+// NiAVObject 
+typedef struct {
+    NiObjectNET base;
+    local STRING name = base.name;
+
+    if ( stream < 34 )
+        ushort flags;
+    else
+        NiAVObjectFlags flags;
+    Vec3 translation;
+    Matrix33 rotation;
+    float scale;
+    if ( stream <= 34 )
+        RefArray properties( "Property" ); // NiProperty
+
+    Ref NiCollisionObject;
+} NiAVObject <name="NiAVObject", open=true>;
+
+
+// NiDynamicEffect 
+typedef struct {
+    NiAVObject base;
+    if ( stream < 130 ) {
+        bool switchState;
+        RefArray affectedNodes( "Affected Node" ); // NiNode
+    }
+} NiDynamicEffect <name="NiDynamicEffect", open=true>;
+
+// NiLight
+typedef struct {
+    NiDynamicEffect base;
+    float dimmer;
+    Color3 ambient;
+    Color3 diffuse;
+    Color3 specular;
+} NiLight <name="NiLight", open=true>;
+
+typedef NiLight NiAmbientLight <name="NiAmbientLight", open=false>;
+
+// NiPointLight
+typedef struct {
+    NiLight light;
+    float constantAtten;
+    float linearAtten;
+    float quadraticAtten;
+} NiPointLight <name="NiPointLight">;
+
+// NiCamera
+typedef struct {
+    NiAVObject base;
+    ushort obsoleteFlags;
+    float frustumLeft;
+    float frustumRight;
+    float frustumTop;
+    float frustumBottom;
+    float frustumNear;
+    float frustumFar;
+    bool useOrtho;
+    float viewportLeft;
+    float viewportRight;
+    float viewportTop;
+    float viewportBottom;
+    float lodAdjust;
+    Ref scene; // NiAVObject
+    RefArray screenPolygons( "Polygon" ); // NiScreenPolygon array is always zero length on disk write
+    RefArray screenTextures( "Texture" ); // NiScreenTexture array is always zero length on disk write
+    Assert( screenPolygons.size == 0, "screenPolygons is an unexpected size" );
+    Assert( screenTextures.size == 0, "screenTextures is an unexpected size" );
+} NiCamera <name="NiCamera">;

@@ -61,6 +61,12 @@ typedef struct {
     BinaryData binaryData;
 } NiBinaryED <name="NiBinaryExtraData">;
 
+// BSXFlags
+typedef struct { 
+    NiExtraData data;
+    uint integerData;
+} BSXFlags <name="BSXFlags">;
+
 typedef struct {
     NiExtraData data;
     STRING file;

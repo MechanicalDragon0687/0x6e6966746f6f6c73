@@ -1,0 +1,78 @@
+//------------------------------------------------
+//--- 010 Editor v8.0 Binary Template
+//
+//      File: Nodes.bt
+//   Authors: jonwd7
+//   Version: 
+//   Purpose: 
+//  Category: 
+// File Mask: 
+//  ID Bytes: 
+//   History: 
+//------------------------------------------------
+
+// NiNode/BSFadeNode
+typedef struct { 
+    NiAVObject base;
+    RefArray children( "Child" ); // NiAVObject
+    if ( file.header.stream < 130 )
+        RefArray effect( "Effect" ); // NiDynamicEffect
+
+} NiNode <name="NiNode">; // END
+
+typedef NiNode BSFadeNode <name="BSFadeNode">;
+typedef NiNode BSLeafAnimNode <name="BSLeafAnimNode">;
+
+// BSTreeNode
+typedef struct {
+    NiNode node <open=true>;
+    RefArray bones1( "Bone" );
+    RefArray bones2( "Bone" );
+} BSTreeNode <name="BSTreeNode">;
+
+// NiSwitchNode
+typedef struct {
+    NiNode node <open=true>;
+    NiSwitchFlags flags;
+    uint index;
+} NiSwitchNode <name="NiSwitchNode">;
+
+// NiBillboardNode
+typedef struct {
+    NiNode node <open=true>;
+    BillboardMode mode;
+} NiBBNode <name="NiBillboardNode">;
+
+// BSOrderedNode
+typedef struct {
+    NiNode node <open=true>;
+    Vec4 alphaSortBound;
+    bool isStaticBound;
+} BSOrderedNode <name="BSOrderedNode">;
+
+// BSMultiBoundNode
+typedef struct {
+    NiNode node <open=true>;
+    Ref multiBound;
+    if ( stream >= 83 )
+        BSCPCullingType cullingMode;
+} BSMultiBoundNode <name="BSMultiBoundNode">;
+
+// BSValueNode
+typedef struct {
+    NiNode node <open=true>;
+    uint value;
+    BSValueNodeFlags flags;
+} BSValueNode <name="BSValueNode">;
+
+// BSBlastNode / BSDamageStage
+typedef struct {
+    NiNode node <open=true>;
+    byte min;
+    byte max;
+    byte current;
+} BSRangeNode <name="BSRangeNode">;
+
+typedef BSRangeNode BSDebrisNode <name="BSDebrisNode">;
+typedef BSRangeNode BSBlastNode <name="BSBlastNode">;
+typedef BSBlastNode BSDamageStage <name="BSDamageStage">;
