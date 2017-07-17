@@ -372,10 +372,7 @@ typedef struct {
 
 string ReadSSTRING( SSTRING &s )
 {
-    if ( s.stringlength > 0 )
-        return s.str;
-
-    return "";
+    return s.str;
 }
 
 // SSTRING16
@@ -389,10 +386,21 @@ typedef struct {
 
 string ReadSSTRING16( SSTRING16 &s )
 {
-    if ( s.stringlength > 0 )
-        return s.str;
+    return s.str;
+}
 
-    return "";
+// SSTRING8
+typedef struct {
+    uchar stringlength <hidden=true>;
+    if ( stringlength > 0 )
+        char str[stringlength] <open=suppress>;
+    else
+        local char str = '\0';
+} SSTRING8 <read=ReadSSSTRING8>;
+
+string ReadSSSTRING8( SSTRING8 &s )
+{
+    return s.str;
 }
 
 // BLOCKTYPEINDEX
