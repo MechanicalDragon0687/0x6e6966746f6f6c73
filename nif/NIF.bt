@@ -59,7 +59,27 @@ struct FILE {
     struct HEADER {
         local string hdr = ReadLine(0);
         char HeaderString[Strlen(hdr)] <open=suppress>;
-        uint version <format=hex>;
+
+        // Obtain the version string from the header string
+        local int result, size;
+        result = RegExSearch( hdr, versionRegex, size );
+        // Convert the version string into an integer
+        local uint verFromStr = GetVersionFromString( SubStr( hdr, result, size - 1 ) );
+
+        if ( verFromStr > V3_1 ) {
+            uint version <format=hex>;
+            Assert( version == verFromStr, "Numeric version does not match version obtained from header string" );
+        } else {
+            local uint version = verFromStr;
+            local int i = 0;
+            local string copy;
+            for ( i; i < 3; i++ ) {
+                copy = ReadLine(FTell());
+                struct {
+                    char CopyrightString[Strlen(copy)];
+                } Copyright <optimize=false>;
+            }
+        }
 
         // Endianness
         if ( version >= Version(20, 0, 0, 3) )
