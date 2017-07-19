@@ -241,7 +241,7 @@ typedef struct {
     RefArray part( "Part" );
     uint numFilters;
     if ( numFilters > 0 )
-        uint Filter[numFilters]; // Enum 
+        HavokFilter Filter[numFilters]; 
 } bhkNiTriStripsShape <name="bhkNiTriStripsShape">;
 
 
@@ -693,7 +693,6 @@ typedef struct {
     float neighborStrength;
 } bhkLiquidAction <name="bhkLiquidAction">;
 
-
 typedef struct {
     HavokFilter filter;
     uint numVerts;
@@ -703,9 +702,16 @@ typedef struct {
 typedef struct {
     Triangle tri;
     ushort weldingInfo;
+    if ( stream <= 11 )
+        Vec3 normal;
 } hkTriangleData;
 
 typedef struct {
+    if ( stream <= 11 ) {
+        ushort partCount;
+        if ( partCount > 0 )
+            hkSubPartData data[partCount] <optimize=true>;
+    }
     uint userData;
     uint unused1; // Pointer/garbage
     float radius;
@@ -720,13 +726,20 @@ typedef struct {
     uint keyCount;
     if ( keyCount > 0 )
         hkTriangleData triData[keyCount];
+
     uint numVerts;
-    byte unkByte;
+
+    if ( stream > 11 )
+        byte unkByte;
+
     if ( numVerts > 0 )
         Vec3 compressedVertData[numVerts];
-    ushort partCount;
-    if ( partCount > 0 )
-        hkSubPartData data[partCount] <optimize=true>;
+
+    if ( stream > 11 ) {
+        ushort partCount;
+        if ( partCount > 0 )
+            hkSubPartData data[partCount] <optimize=true>;
+    }
 } hkPackedNiTriStripsData <name="hkPackedNiTriStripsData">;
 
 // Deathposes.psa files, FO3/NV
