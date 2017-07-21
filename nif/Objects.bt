@@ -21,7 +21,7 @@ typedef struct {
 // NiAVObject 
 typedef struct {
     NiObjectNET base;
-    local STRING name = base.name;
+    local string nameStr = base.name.nameStr;
 
     if ( stream < 34 )
         ushort flags;

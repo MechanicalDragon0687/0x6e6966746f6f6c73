@@ -13,7 +13,6 @@
 
 typedef struct {
     NiAVObject base;
-    local STRING name = base.name;
     Ref data; // NiGeometryData
     Ref skin; // NiSkinInstance
     uint nummaterials;
@@ -34,7 +33,6 @@ typedef struct {
 
 typedef struct {
     NiAVObject base;
-    local STRING name = base.name;
     NiBound bound;
     Ref skin;
     Ref shaderProperty;

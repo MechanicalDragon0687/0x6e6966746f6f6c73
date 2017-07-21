@@ -21,7 +21,7 @@ typedef struct {
 
 typedef struct {
     NiProperty prop;
-    local STRING name = prop.name;
+    local string nameStr = prop.name.nameStr;
     uint SLSF1;
     uint SLSF2;
     TexCoord UVOffset <open=suppress>;
@@ -139,7 +139,7 @@ typedef struct {
 // BSShaderProperty (Legacy)
 typedef struct {
     NiProperty prop;
-    local STRING name = prop.name;
+    local string nameStr = prop.name.nameStr;
     ushort flags;
     uint shaderType;
     uint shaderFlags1;

@@ -341,10 +341,10 @@ typedef struct ( uint n, string str ) {
 string FloatArrayItemRead ( _float& i ) { return i.name; }
 
 
-// STRING 
-typedef uint STRING <read=ReadSTRINGIndex>;
+// STRINGINDEX
+typedef uint STRINGINDEX <read=ReadSTRINGINDEX>;
 
-string ReadSTRINGIndex ( STRING &s ) {
+string ReadSTRINGINDEX ( STRINGINDEX &s ) {
     if ( s == -1 )
         return "";
 
@@ -353,10 +353,10 @@ string ReadSTRINGIndex ( STRING &s ) {
     return t;
 }
 
-string ReadSTRING ( STRING &s ) {
+string ReadSTRINGINDEXLocal ( STRINGINDEX &s ) {
     if ( s == -1 )
         return "";
-    string t;
+    local string t;
     SPrintf(t, "%s", file.header.strs[s].str);
     return t;
 }
@@ -373,6 +373,23 @@ typedef struct {
 string ReadSSTRING( SSTRING &s )
 {
     return s.str;
+}
+
+// STRING (Combine STRINGINDEX and SSTRING)
+typedef struct {
+    local string nameStr;
+    if ( version < Version(20, 1, 0, 1) ) {
+        SSTRING name;
+        nameStr = ReadSSTRING( name );
+    } else {
+        STRINGINDEX name;
+        nameStr = ReadSTRINGINDEXLocal( name );
+    }
+} STRING <read=ReadSTRING>;
+
+string ReadSTRING( STRING &s )
+{
+    return s.nameStr;
 }
 
 // SSTRING16
@@ -425,12 +442,14 @@ string ReadREF ( Ref &r )
 
     string n;
     string t = file.header.btype[file.header.btypeindex[r].index].str;
-    if ( exists(file.blocks.data[r].base.name) ) {
-        n = ReadSTRING( file.blocks.data[r].base.name );
+    if ( exists(file.blocks.data[r].base.name.nameStr) ) {
+        n = file.blocks.data[r].base.name.nameStr;
+    } else if ( exists(file.blocks.data[r].base.nameStr) ) {
+        n = file.blocks.data[r].base.nameStr;
     }
 
     string s;
-    SPrintf(s, "%s [%u] (%s)", n, r, t);
+    SPrintf(s, "%s [%u] (%s)", t, r, n);
 
     return s;
 }
@@ -440,7 +459,7 @@ typedef struct ( string str ) {
     local string name = str;
     uint size;
     if ( size > 0 )
-        Ref ref[size] <name=RefArrayItemRead, open=true, optimize=false>;
+        Ref ref[size] <name=RefArrayItemName, open=true, optimize=false>;
 } RefArray;
 
 // Ref Array (16-bit Size)
@@ -448,10 +467,10 @@ typedef struct ( string str ) {
     local string name = str;
     ushort size;
     if ( size > 0 )
-        Ref ref[size] <name=RefArrayItemRead, open=true, optimize=false>;
+        Ref ref[size] <name=RefArrayItemName, open=true, optimize=false>;
 } RefArray16;
 
-string RefArrayItemRead ( Ref& i ) { return parentof(i).name; }
+string RefArrayItemName ( Ref& i ) { return parentof(i).name; }
 
 // BASIC READ FUNCTIONS
 
