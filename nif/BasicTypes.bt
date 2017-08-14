@@ -420,9 +420,15 @@ string ReadSSSTRING8( SSTRING8 &s )
     return s.str;
 }
 
+enum 
+{
+    SKIPPABLE_MASK = 0x8000
+};
+
 // BLOCKTYPEINDEX
 typedef struct  {
-    short index;
+    ushort indexRaw;
+    local ushort index = indexRaw & ~(SKIPPABLE_MASK);
 } BLOCKTYPEINDEX <read=ReadBLOCKTYPEINDEX>;
 
 string ReadBLOCKTYPEINDEX( BLOCKTYPEINDEX &b )
