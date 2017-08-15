@@ -67,6 +67,8 @@ typedef struct {
 typedef struct {
     Ref source;
     ushort flags;
+    if ( version >= Version(20, 5, 0, 4) )
+        ushort maxAnisotropy;
     bool hasTexTransform;
     if ( hasTexTransform )
         TexTransform transform;
