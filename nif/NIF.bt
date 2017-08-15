@@ -53,6 +53,7 @@ typedef enum {
 #include "Particles.bt"
 #include "Shader.bt"
 #include "Property.bt"
+#include "PhysX.bt"
 
 struct FILE {
     local int result = 0;
@@ -774,6 +775,39 @@ struct FILE {
                     break;
                 case "BSAnimNote":
                     BSAnimNote data;
+                    break;
+                case "NiPhysXProp":
+                    NiPhysXProp data;
+                    break;
+                case "NiPhysXPropDesc":
+                    NiPhysXPropDesc data;
+                    break;
+                case "NiPhysXActorDesc":
+                    NiPhysXActorDesc data;
+                    break;
+                case "NiPhysXBodyDesc":
+                    NiPhysXBodyDesc data;
+                    break;
+                case "NiPhysXD6JointDesc":
+                    NiPhysXD6JointDesc data;
+                    break;
+                case "NiPhysXShapeDesc":
+                    NiPhysXShapeDesc data;
+                    break;
+                case "NiPhysXMeshDesc":
+                    NiPhysXMeshDesc data;
+                    break;
+                case "NiPhysXMaterialDesc":
+                    NiPhysXMaterialDesc data;
+                    break;
+                case "NiPhysXTransformDest":
+                    NiPhysXTransformDest data;
+                    break;
+                case "NiPhysXKinematicSrc":
+                    NiPhysXKinematicSrc data;
+                    break;
+                case "NiPhysXDynamicSrc":
+                    NiPhysXDynamicSrc data;
                     break;
                 default:
                     Block data(i) <open=suppress>;

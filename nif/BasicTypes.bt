@@ -188,6 +188,13 @@ typedef struct {
 } Matrix33;
 
 typedef struct {
+    Vec3 _1;
+    Vec3 _2;
+    Vec3 _3;
+    Vec3 _4;
+} Matrix34;
+
+typedef struct {
     Vec4 _1;
     Vec4 _2;
     Vec4 _3;

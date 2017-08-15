@@ -1,0 +1,438 @@
+//------------------------------------------------
+//--- 010 Editor v8.0 Binary Template
+//
+//      File: PhysX.bt
+//   Authors: jonwd7
+//   Version: 
+//   Purpose: 
+//  Category: 
+// File Mask: 
+//  ID Bytes: 
+//   History: 
+//------------------------------------------------
+
+typedef struct {
+    NiObjectNET base;
+    float scalePtoW;
+    RefArray sources( "Source" ); // NiPhysXSrc
+    RefArray dests( "Dest" ); // NiPhysXDest
+    if ( version >= Version(20, 4, 0, 0) )
+        RefArray modifiedMeshes( "Modified Mesh" ); // NiMesh
+
+    if ( version >= Version(30, 1, 0, 2) && version < Version(30, 2, 0, 3) )
+        STRING tempName;
+
+    bool keepMeshes;
+    Ref propDesc; // NiPhysXPropDesc
+} NiPhysXProp <name="NiPhysXProp">;
+
+
+typedef struct {
+    RefArray actors( "Actor" ); // NiPhysXActorDesc
+    RefArray joints( "Joint" ); // NiPhysXJointDesc
+    if ( version >= Version(20, 3, 0, 5) )
+        RefArray clothes( "Cloth" ); // NiPhysXClothDesc
+    
+    uint numMaterials;
+    if ( numMaterials > 0 ) {
+        struct {
+            ushort key;
+            Ref materialDesc; // NiPhysXMaterialDesc
+        } material[numMaterials] <optimize=true>;
+    }
+
+    uint numStates;
+    if ( version >= Version(20, 4, 0, 0) ) {
+        uint numStateNames;
+        if ( numStateNames > 0 ) {
+            struct {
+                STRING name;
+                uint index;
+            } stateName[numStateNames] <optimize=false>;
+        }
+
+        ubyte flags;
+    }
+} NiPhysXPropDesc <name="NiPhysXPropDesc">;
+
+
+typedef struct {
+    STRING actorName;
+    uint numPoses;
+    if ( numPoses > 0 )
+        Matrix34 poses[numPoses];
+    Ref bodyDesc; // NiPhysXBodyDesc
+    float density;
+    uint actorFlags;
+    ushort actorGroup;
+    if ( version >= Version(20, 4, 0, 0) ) {
+        ushort dominanceGroup;
+        uint contactReportFlags;
+        ushort forceFieldMaterial;
+    } else if ( version > Version(20, 3, 0, 0) && version < Version(20, 3, 0, 6) ) {
+        uint dummy;
+    }
+    
+    RefArray shapeDescs( "Shape Desc" ); // NiPhysXShapeDesc
+    Ref actorParent; // NiPhysXActorDesc
+    Ref source; // NiPhysXRigidBodySrc
+    Ref dest; // NiPhysXRigidBodyDest
+} NiPhysXActorDesc <name="NiPhysXActorDesc">;
+
+
+typedef struct {
+    Matrix34 localPose;
+    Vec3 spaceInertia;
+    float mass;
+    uint numVels;
+    if ( numVels > 0 ) {
+        struct {
+            Vec3 linearVelocity;
+            Vec3 angularVelocity;
+            if ( version >= Version(30, 2, 0, 3) )
+                bool sleep;
+        } storedVels[numVels] <optimize=true>;
+    }
+    float wakeUpCounter;
+    float linearDamping;
+    float angularDamping;
+    float maxAngularVelocity;
+    float CCDMotionThreshold;
+    uint flags;
+    float sleepLinearVel;
+    float sleepAngularVel;
+    uint solverIterCount;
+    if ( version >= Version(20, 4, 0, 0) ) {
+        float sleepEnergyThreshold;
+        float sleepDamping;
+    }
+    float contactReportThreshold;
+} NiPhysXBodyDesc <name="NiPhysXBodyDesc">;
+
+
+// TODO: Cannot find any uses
+typedef struct {
+    STRING name;
+    Ref mesh; // NiPhysXMeshDesc
+    if ( version < Version(20, 4, 0, 0) )
+        Matrix34 pose;
+    float thickness;
+    if ( version >= Version(30, 1, 0, 3) )
+        float selfCollisionThickness;
+    float density;
+    float bendingStiffness;
+    float stretchingStiffness;
+    float dampingCoefficient;
+    if ( version >= Version(30, 1, 0, 3) )
+        float hardStretchLimitationFactor;
+    float friction;
+    float pressure;
+    float tearFactor;
+    float collisionResponseCoefficient;
+    float attachResponseCoefficient;
+    float attachTearFactor;
+    if ( version >= Version(20, 4, 0, 0) ) {
+        float toFluidResponseCoeff;
+        float fromFluidResponseCoeff;
+        float minAdhereVelocity;
+        float relativeGridSpacing;
+    }
+    uint solverIterations;
+    if ( version >= Version(30, 1, 0, 3) )
+        uint hierSolverIterations;
+    Vec3 externalAcceleration;
+    if ( version >= Version(20, 4, 0, 0) )
+        float windAcceleration;
+    float wakeUpCounter;
+    float sleepLinearVelocity;
+    ushort collisionGroup;
+    uint collisionBits[4];
+    if ( version >= Version(20, 4, 0, 0) )
+        ushort forceFieldMaterial;
+    uint flags;
+    if ( version >= Version(30, 2, 0, 3) ) {
+        ushort vertexMapSize;
+        if ( vertexMapSize > 0 ) {
+            ushort vertexMap[vertexMapSize] <optimize=false>;
+        }
+    }
+
+    if ( version >= Version(20, 4, 0, 0) ) {
+        uint numStates;
+        if ( numStates > 0 ) {
+            struct {
+                Matrix34 pose;
+                ushort numVertexPos;
+                if ( numVertexPos > 0 ) {
+                    Vec3 vertexPos[numVertexPos];
+                }
+                ushort numTearIndices;
+                if ( numTearIndices > 0 ) {
+                    ushort tearIndices[numTearIndices];
+                    Vec3 tearSplitPlanes[numTearIndices];
+                }
+            } state[numStates] <optimize=false>;
+        }
+    }
+    
+    uint numAttachments;
+    if ( numAttachments > 0 ) {
+        struct {
+            Ref shape; // NiPhysXShapeDesc
+            uint vertexCount;
+            if ( vertexCount == 0 ) {
+                uint flags;
+            } else {
+                struct {
+                    uint vertexID;
+                    Vec3 position;
+                    uint flags;
+                } position[vertexCount];
+            }
+        } attachment[numAttachments] <optimize=false>;
+    }
+
+    Ref parentActor; // NiPhysXActorDesc
+    if ( version < Version(20, 4, 0, 0) ) {
+        Ref dest; // NiPhysXClothDest
+    } else {
+        Ref targetMesh; // NiMesh
+    }
+} NiPhysXClothDesc <name="NiPhysXClothDesc">;
+
+
+typedef enum <uint> { 
+    NX_JOINT_PRISMATIC,
+    NX_JOINT_REVOLUTE,
+    NX_JOINT_CYLINDRICAL,
+    NX_JOINT_SPHERICAL,
+    NX_JOINT_POINT_ON_LINE,
+    NX_JOINT_POINT_IN_PLANE,
+    NX_JOINT_DISTANCE,
+    NX_JOINT_PULLEY,
+    NX_JOINT_FIXED,
+    NX_JOINT_D6
+} NxJointType;
+
+typedef enum <uint> {
+    NX_D6JOINT_MOTION_LOCKED,
+    NX_D6JOINT_MOTION_LIMITED,
+    NX_D6JOINT_MOTION_FREE
+} NxD6JointMotion;
+
+typedef enum <uint> {
+    NX_D6JOINT_DRIVE_POSITION = 1,
+    NX_D6JOINT_DRIVE_VELOCITY
+} NxD6JointDriveType;
+
+typedef enum <uint> {
+    NX_JPM_NONE,
+    NX_JPM_POINT_MINDIST,
+    NX_JPM_LINEAR_MINDIST
+} NxJointProjectionMode;
+
+typedef struct {
+    Ref actor; // NiPhysXActorDesc
+    Vec3 localNormal;
+    Vec3 localAxis;
+    Vec3 localAnchor;
+} NiPhysXJointActor;
+
+typedef struct {
+    float value;
+    float restitution;
+    float spring;
+    float damping;
+} NxJointLimitSoftDesc;
+
+typedef struct {
+    NxD6JointDriveType driveType;
+    float restitution;
+    float spring;
+    float damping;
+} NxJointDriveDesc;
+
+typedef struct {
+    NxJointType jointType;
+    STRING name;
+    NiPhysXJointActor actors[2];
+    float maxForce;
+    float maxTorque;
+    
+    if ( version >= Version(20, 5, 0, 3) ) {
+        float solverExtrapolationFactor;
+        uint useAccelerationSpring;
+    }
+
+    uint jointFlags;
+
+    Vec3 limitPoint;
+    uint numLimits;
+    if ( numLimits > 0 ) {
+        struct {
+            Vec3 limitPlaneNormal;
+            float limitPlaneD;
+            if ( version >= Version(20, 4, 0, 0) )
+                float limitPlaneR;
+        } limits[numLimits] <optimize=true>;
+    }
+
+} NiPhysXJointDesc <name="NiPhysXJointDesc", open=true>; // Abstract
+
+typedef struct {
+    NiPhysXJointDesc joint;
+    NxD6JointMotion xMotion;
+    NxD6JointMotion yMotion;
+    NxD6JointMotion zMotion;
+    NxD6JointMotion swing1Motion;
+    NxD6JointMotion swing2Motion;
+    NxD6JointMotion twistMotion;
+    NxJointLimitSoftDesc linearLimit;
+    NxJointLimitSoftDesc swing1Limit;
+    NxJointLimitSoftDesc swing2Limit;
+    NxJointLimitSoftDesc twistLLimit;
+    NxJointLimitSoftDesc twistHLimit;
+    NxJointDriveDesc xDrive;
+    NxJointDriveDesc yDrive;
+    NxJointDriveDesc zDrive;
+    NxJointDriveDesc swingDrive;
+    NxJointDriveDesc twistDrive;
+    NxJointDriveDesc slerpDrive;
+    Vec3 drivePosition;
+    Quat driveOrientation;
+    Vec3 driveLinearVelocity;
+    Vec3 driveAngularVelocity;
+    NxJointProjectionMode projectionMode;
+    float projectionDistance;
+    float projectionAngle;
+    float gearRatio;
+    uint flags;
+} NiPhysXD6JointDesc <name="NiPhysXD6JointDesc">;
+
+
+typedef struct {
+    ushort index;
+    uint numStates;
+    if ( numStates > 0 ) {
+        struct {
+            float dynamicFriction;
+            float staticFriction;
+            float restitution;
+            float dynamicFrictionV;
+            float staticFrictionV;
+            Vec3 dirOfAnisotropy;
+            uint flags;
+            uint frictionCombineMode;
+            uint restitutionCombineMode;
+            if ( version <= Version(20, 2, 3, 0) ) {
+                bool hasSpring;
+                if ( hasSpring ) {
+                    float spring;
+                    float damper;
+                    float targetValue;
+                }
+            }
+        } materialDescs[numStates] <optimize=false>;
+    }
+} NiPhysXMaterialDesc <name="NiPhysXMaterialDesc">;
+
+
+typedef struct {
+    if ( version < Version(20, 3, 0, 5) )
+        bool isConvex;
+    STRING name;
+    BinaryData meshData;
+    if ( version >= Version(20, 3, 0, 5) && version < Version(30, 2, 0, 3)  ) {
+        ushort meshSize;
+        ushort meshData[meshSize] <optimize=false>;
+    }
+    uint meshFlags;
+    if ( version >= Version(20, 3, 0, 1) )
+        uint meshPagingMode;
+    if ( version >= Version(20, 3, 0, 2) && version < Version(20, 3, 0, 5) )
+        bool isHardware;
+    else if ( version >= Version(20, 3, 0, 5) )
+        ubyte flags;
+
+} NiPhysXMeshDesc <name="NiPhysXMeshDesc">;
+
+
+typedef enum <uint> {
+    NX_SHAPE_PLANE,
+    NX_SHAPE_SPHERE,
+    NX_SHAPE_BOX,
+    NX_SHAPE_CAPSULE,
+    NX_SHAPE_WHEEL,
+    NX_SHAPE_CONVEX,
+    NX_SHAPE_MESH,
+    NX_SHAPE_HEIGHTFIELD,
+    NX_SHAPE_RAW_MESH,
+    NX_SHAPE_COMPOUND
+} NxShapeType;
+
+typedef struct {
+    NxShapeType shapeType;
+    Matrix34 localPose;
+    uint shapeFlags;
+    ushort collisionGroup;
+    ushort materialIndex;
+    float density;
+    float mass;
+    float skinWidth;
+    STRING name;
+    if ( version >= Version(20, 4, 0, 0) )
+        uint nonInteractingCompartmentTypes;
+    uint collisionBits[4];
+
+    switch ( shapeType )
+    {
+        case NX_SHAPE_PLANE:
+            float val1;
+            Vec3 point1;
+            break;
+        case NX_SHAPE_SPHERE:
+            float val1;
+            break;
+        case NX_SHAPE_BOX:
+            Vec3 point1;
+            break;
+        case NX_SHAPE_CAPSULE:
+            float val1;
+            float val2;
+            uint flags;
+            break;
+        case NX_SHAPE_CONVEX:
+        case NX_SHAPE_MESH:
+            Ref shape; // NiPhysXMeshDesc
+            break;
+    }
+    
+} NiPhysXShapeDesc <name="NiPhysXShapeDesc">;
+
+
+typedef struct {
+    bool active;
+    bool interp;
+} NiPhysXDest <name="NiPhysXDest", open=true>; // Abstract
+
+typedef struct {
+    NiPhysXDest base;
+} NiPhysXRigidBodyDest <name="NiPhysXRigidBodyDest", open=true>; // Abstract
+
+typedef struct {
+    NiPhysXRigidBodyDest base;
+    Ref target; // NiAVobject
+} NiPhysXTransformDest <name="NiPhysXTransformDest">;
+
+typedef struct {
+    bool active;
+    bool interp;
+} NiPhysXSrc <name="NiPhysXSrc", open=true>; // Abstract
+
+typedef struct {
+    NiPhysXSrc base;
+    Ref source; // NiAVObject
+} NiPhysXRigidBodySrc <name="NiPhysXRigidBodySrc">;
+
+typedef NiPhysXRigidBodySrc NiPhysXKinematicSrc <name="NiPhysXKinematicSrc">;
+typedef NiPhysXRigidBodySrc NiPhysXDynamicSrc <name="NiPhysXDynamicSrc">;
