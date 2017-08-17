@@ -108,14 +108,15 @@ struct FILE {
             local int stream = 12; // Fake stream version
             // Embedded PNG files for file thumbnail
             int embedDataSize;
-            if ( embedDataSize > 0 ) {
-                int numEmbeds;
-                if ( numEmbeds > 0 ) {
-                    int embedSizes[numEmbeds];
-                    local int i;
-                    for ( i = 0; i < numEmbeds; i++ )
-                        byte data[embedSizes[i]];
-                }
+            local int dataPassed = 0;
+            while ( dataPassed < embedDataSize ) {
+                uint embedCount;
+                dataPassed += 4;
+                struct {
+                    uint embedSize;
+                    dataPassed += embedSize + 4;
+                    byte data[embedSize];
+                } embed[embedCount] <optimize=false>;
             }
         } else {
             local int stream = 0; // Fake stream version
