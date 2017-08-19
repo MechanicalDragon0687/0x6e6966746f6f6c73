@@ -139,6 +139,6 @@ typedef struct {
     
     uint numShaderTex;
     if ( numShaderTex > 0 ) {
-        ShaderTex shaderTex[numShaderTex];
+        ShaderTex shaderTex[numShaderTex] <optimize=false>;
     }
 } NiTexturingProperty <name="NiTexturingProperty">;
