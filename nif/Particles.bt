@@ -41,43 +41,84 @@ typedef struct {
 } BSMasterParticleSystem <name="BSMasterParticleSystem">;
 
 typedef struct {
-    local bool IS_PSYS = true;
+    if ( BSStream() )
+        local bool IS_PSYS = true;
     NiGeometryData base;
+    local ushort numVerts = base.numVerts;
 
     bool hasRadii;
+    if ( !BSStream() && hasRadii && numVerts )
+        float radii[numVerts];
+    
     ushort numActiveVerts;
     bool hasSizes;
+    if ( !BSStream() && hasSizes && numVerts )
+        float sizes[numVerts];
+
     bool hasRotations;
+    if ( !BSStream() && hasRotations && numVerts )
+        Quat rotations[numVerts];
     bool hasRotationAngles;
+    if ( !BSStream() && hasRotationAngles && numVerts )
+        float rotationAngles[numVerts];
     bool hasRotationAxes;
-    bool hasTextureIndices; // NOT the bool for subtexoffsets
+    if ( !BSStream() && hasRotationAxes && numVerts )
+        Vec3 rotationAxes[numVerts];
+
+    if ( BSStream() ) {
+        bool hasTextureIndices; // NOT the bool for subtexoffsets
+        
+        local uint numOffsets = 0;
+        if ( stream > 34 ) {
+            uint numSubtexOffsets;
+            numOffsets = numSubtexOffsets;
+        } else {
+            ubyte numSubtexOffsets;
+            numOffsets = numSubtexOffsets;
+        }
     
-    local uint numOffsets = 0;
-    if ( stream > 34 ) {
-        uint numSubtexOffsets;
-        numOffsets = numSubtexOffsets;
-    } else {
-        ubyte numSubtexOffsets;
-        numOffsets = numSubtexOffsets;
+        if ( numOffsets > 0 )
+            Vec4 subtexOffsets[numOffsets];
+    
+        if ( stream > 34 ) {
+            float aspectRatio;
+            // 0x1 = VelocityOrientation, 0x2 = InitialRotationFromVelocity, 0x100 = SpeedToAspectEnabled
+            ushort aspectFlags;
+            float speedToAspectAspect2;
+            float speedToAspectSpeed1;
+            float speedToAspectSpeed2;
+        }
     }
 
-    if ( numOffsets > 0 )
-        Vec4 subtexOffsets[numOffsets];
-
-    if ( stream > 34 ) {
-        float aspectRatio;
-        // 0x1 = VelocityOrientation, 0x2 = InitialRotationFromVelocity, 0x100 = SpeedToAspectEnabled
-        ushort aspectFlags;
-        float speedToAspectAspect2;
-        float speedToAspectSpeed1;
-        float speedToAspectSpeed2;
-    }
 } NiParticlesData <open=true>;
 
 
 typedef struct {
     NiParticlesData data;
+    local ushort numVerts = data.base.numVerts;
+    
+    if ( !BSStream() && numVerts > 0 ) {
+        struct {
+            Vec3 velocity;
+            if ( version < Version(10, 3, 0, 5) )
+                Vec3 rotationAxis;
+
+            float age;
+            float lifespan;
+            float lastUpdate;
+            ushort generation;
+            ushort code;
+        } particleInfo[numVerts];
+    }
+
     bool hasRotationSpeeds;
+    if ( !BSStream() && hasRotationSpeeds && numVerts )
+        float rotationSpeeds[numVerts];
+
+    if ( !BSStream() ) {
+        ushort numAddedParticles;
+        ushort addedParticlesBase;
+    }
 } NiPSysData <name="NiPSysData">;
 
 // NiMeshPSysData
@@ -192,7 +233,9 @@ typedef struct {
     } forceType;
     float turbulence;
     float turbulenceScale;
-    bool worldAligned;
+
+    if ( stream > 16 )
+        bool worldAligned;
 } NiPSGravityMod <name="NiPSysGravityModifier">;
 
 // NiPSysDragModifier
