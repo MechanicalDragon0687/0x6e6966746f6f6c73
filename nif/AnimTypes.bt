@@ -1,0 +1,113 @@
+//------------------------------------------------
+//--- 010 Editor v8.0 Binary Template
+//
+//      File: AnimTypes.bt
+//   Authors: jonwd7
+//   Version: 
+//   Purpose: 
+//  Category: 
+// File Mask: 
+//  ID Bytes: 
+//   History: 
+//------------------------------------------------
+
+typedef struct ( KeyType i ) {
+    float time;
+    Vec3 value;
+    if ( i == 2 ) {
+        Vec3 forward;
+        Vec3 backward;
+    }
+    if ( i == 3 )
+        TBC tbc;
+} Vec3Key <name="Vector3 Key">;
+
+typedef struct {
+    uint numKeys;
+    if ( numKeys > 0 ) {
+        KeyType interpolation;
+        if ( numKeys > 0 )
+            Vec3Key key(interpolation)[numKeys] <optimize=true>;
+    }
+} Vec3KeyGrp <name="Keys">;
+
+typedef struct ( KeyType i ) {
+    float time;
+    Vec4 value;
+    if ( i == 2 ) {
+        Vec4 forward;
+        Vec4 backward;
+    }
+    if ( i == 3 )
+        TBC tbc;
+} Vec4Key <name="Vector4 Key">;
+
+typedef struct {
+    uint numKeys;
+    if ( numKeys > 0 ) {
+        KeyType interpolation;
+        if ( numKeys > 0 )
+            Vec4Key key(interpolation)[numKeys] <optimize=true>;
+    }
+} Vec4KeyGrp <name="Keys">;
+
+typedef struct ( KeyType i ) {
+    float time;
+    float value;
+    if ( i == 2 ) {
+        float forward;
+        float backward;
+    }
+    if ( i == 3 )
+        TBC tbc;
+} FloatKey <name="Float Key">;
+
+typedef struct {
+    uint numKeys;
+    if ( numKeys > 0 ) {
+        KeyType interpolation;
+        if ( numKeys > 0 )
+            FloatKey key(interpolation)[numKeys] <optimize=true>;
+    }
+
+} FloatKeyGrp <name="Keys">;
+
+typedef struct ( KeyType i ) {
+    float time;
+    byte value;
+    if ( i == 2 ) {
+        byte forward;
+        byte backward;
+    }
+    if ( i == 3 )
+        TBC tbc;
+} ByteKey <name="Byte Key">;
+
+typedef struct {
+    uint numKeys;
+    if ( numKeys > 0 ) {
+        KeyType interpolation;
+        if ( numKeys > 0 )
+            ByteKey key(interpolation)[numKeys] <optimize=true>;
+    }
+} ByteKeyGrp <name="Keys">;
+
+typedef struct ( KeyType i ) {
+    float time;
+    STRING value;
+    if ( i == 2 ) {
+        STRING forward;
+        STRING backward;
+    }
+    if ( i == 3 )
+        TBC tbc;
+} StringKey <name="String Key">;
+
+typedef struct {
+    uint numKeys;
+    if ( numKeys > 0 ) {
+        KeyType interpolation;
+        if ( numKeys > 0 )
+            StringKey key(interpolation)[numKeys] <optimize=true>;
+    }
+} StringKeyGrp <name="Keys">;

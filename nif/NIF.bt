@@ -19,25 +19,8 @@
 
 #include "Enums.bt"
 #include "BasicTypes.bt"
-#include "Anim.bt"
-#include "ExtraData.bt"
+#include "AnimTypes.bt"
 #include "SkinTypes.bt"
-#include "bhk.bt"
-
-// Undecoded Block
-typedef struct (int i) {
-    local int index <hidden=true> = i;
-    byte data[header.blocksize[i]] <open=suppress>;
-    local string s = file.header.btype[file.header.btypeindex[i].index].str;
-    Printf( "Unknown Block: %s\r\n", s );
-} Block <name="~~Undecoded~~", comment=BlockComment, fgcolor=0x0055FF, bgcolor=0xDDFFFF>;
-
-string BlockComment( Block& b )
-{
-    string s;
-    SPrintf(s, "%s", file.header.btype[file.header.btypeindex[b.index].index].str);
-    return s;
-}
 
 typedef enum {
     R_OK = 0x1,
@@ -48,12 +31,15 @@ typedef enum {
 // DECODED BLOCKS
 
 #include "Objects.bt"
+#include "ExtraData.bt"
 #include "Nodes.bt"
 #include "Geometry.bt"
+#include "Anim.bt"
 #include "Particles.bt"
 #include "Shader.bt"
 #include "Property.bt"
 #include "PhysX.bt"
+#include "bhk.bt"
 
 struct FILE {
     local int result = 0;
