@@ -102,11 +102,12 @@ typedef struct {
     float sleepLinearVel;
     float sleepAngularVel;
     uint solverIterCount;
-    if ( version >= Version(20, 4, 0, 0) ) {
+    if ( version >= Version(20, 3, 0, 0) ) {
         float sleepEnergyThreshold;
         float sleepDamping;
     }
-    float contactReportThreshold;
+    if ( version >= Version(20, 4, 0, 0) )
+        float contactReportThreshold;
 } NiPhysXBodyDesc <name="NiPhysXBodyDesc">;
 
 
