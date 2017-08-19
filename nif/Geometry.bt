@@ -447,3 +447,110 @@ typedef struct {
     Vec3 center;
     float radius;
 } BSMultiBoundSphere <name="BSMultiBoundSphere">;
+
+
+// New Geometry (20.5+)
+
+typedef struct {
+    NiAVObject base;
+    uint numMaterials;
+    if ( numMaterials > 0 ) {
+        struct {
+            STRING name;
+            uint extraData;
+        } material[numMaterials];
+    }
+    uint activeMaterial;
+    bool materialNeedsUpdateDefault;
+} NiRenderObject <name="NiRenderObject", open=true>; // Abstract
+
+
+typedef struct {
+    NiRenderObject base;
+    PrimitiveType primitiveType;
+    ushort submeshCount;
+    bool instancingEnabled;
+    NiBound bound;
+    uint dataStreamRefCount;
+    if ( dataStreamRefCount > 0 ) {
+        struct {
+            Ref datastream; // NiDataStream
+            bool perInstance;
+            UShortArraySz submeshToRegionIndexMap( "Submesh to Region Map", 2 );
+            uint elementDescCount;
+            if ( elementDescCount > 0 ) {
+                struct {
+                    STRING name;
+                    uint index;
+                } elementDesc[elementDescCount] <open=true>;
+            }
+        } dataStreamRef[dataStreamRefCount] <optimize=false, open=true>;
+    }
+    RefArray modifiers( "Modifier" ); // NiMeshModifier
+} NiMesh <name="NiMesh">;
+
+
+typedef struct ( char u, char a ) {
+    local DataStreamUsage usage <hidden=false> = u;
+    local DataStreamAccess access <hidden=false> = a;
+    uint size;
+    CloningBehavior cloningBehavior;
+    uint numRegions;
+    if ( numRegions > 0 ) {
+        struct {
+            uint startIndex;
+            uint range;
+        } region[numRegions];
+    }
+    uint numComponentFormats;
+    if ( numComponentFormats > 0 )
+        DataStreamFormat format[numComponentFormats] <open=true>;
+    char data[size];
+    bool streamable;
+} NiDataStream <name="NiDataStream">;
+
+
+typedef struct {
+    UShortArraySz submitPoints( "Submit Point", 4 );
+    UShortArraySz completePoints( "Complete Point", 4 );
+} NiMeshModifier <name="NiMeshModifier", open=true>; // Abstract
+
+typedef struct {
+    NiMeshModifier base;
+    enum <ubyte> { // Needs bitflag
+        FLAG_RELATIVETARGETS = 0x01,
+        FLAG_UPDATENORMALS   = 0x02,
+        FLAG_NEEDSUPDATE     = 0x04,
+        FLAG_ALWAYSUPDATE    = 0x08,
+        FLAG_NEEDSCOMPLETION = 0x10,
+        FLAG_SKINNED         = 0x20,
+        FLAG_SWSKINNED       = 0x40,
+    } flags;
+    ushort numTargets;
+    uint numElements;
+    if ( numElements > 0 ) {
+        struct {
+            STRING semantic;
+            uint semanticIndex;
+            uint normalizeFlag;
+        } element[numElements] <optimize=false>;
+    }
+} NiMorphMeshModifier <name="NiMorphMeshModifier">;
+
+typedef struct {
+    NiMeshModifier base;
+    enum <ushort> { // Needs bitflag
+        USE_SOFTWARE_SKINNING  = 0x0001,
+        RECOMPUTE_BOUNDS = 0x0002
+    } flags;
+
+    Ref rootBone; // NiAVObject
+    NiTransform parentToSkinTransform;
+    uint numBones;
+    if ( numBones > 0 ) {
+        Ref bone[numBones];
+        NiTransform boneTransform[numBones] <open=false>;
+        if ( flags & RECOMPUTE_BOUNDS )
+            NiBound boneBound[numBones];
+    }
+} NiSkinningMeshModifier <name="NiSkinningMeshModifier">;

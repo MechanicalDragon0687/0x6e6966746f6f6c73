@@ -1013,6 +1013,18 @@ struct FILE {
                 case "NiPSBoundUpdater":
                     NiPSBoundUpdater data;
                     break;
+                case "NiMesh":
+                    NiMesh data;
+                    break;
+                case "NiDataStream":
+                    NiDataStream data( args[0], args[1] );
+                    break;
+                case "NiMorphMeshModifier":
+                    NiMorphMeshModifier data;
+                    break;
+                case "NiSkinningMeshModifier":
+                    NiSkinningMeshModifier data;
+                    break;
                 default:
                     Block data(i) <open=suppress>;
                     unkBlocks++;
