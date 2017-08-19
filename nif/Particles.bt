@@ -227,10 +227,7 @@ typedef struct {
     Vec3 gravityAxis;
     float decay;
     float strength;
-    enum <uint> {
-        FORCE_PLANAR,
-        FORCE_SPHERICAL
-    } forceType;
+    ForceType forceType;
     float turbulence;
     float turbulenceScale;
 
@@ -276,16 +273,8 @@ typedef struct {
     Vec3 bombAxis;
     float decay;
     float deltaV;
-    enum <uint> {
-        DECAY_NONE,
-        DECAY_LINEAR,
-        DECAY_EXPONENTIAL
-    } decayType;
-    enum <uint> {
-        SYMMMETRY_SPHERICAL,
-        SYMMETRY_CYLINDRICAL,
-        SYMMETRY_PLANAR 
-    } symmetryType;
+    DecayType decayType;
+    SymmType symmetryType;
 } NiPSysBombMod <name="NiPSysBombModifier">;
 
 // BSWindModifier
@@ -361,18 +350,8 @@ typedef struct {
 typedef struct {
     NiPSysEmitter base;
     RefArray mesh( "Mesh" );
-    enum <uint> {
-        VELOCITY_USE_NORMALS,
-        VELOCITY_USE_RANDOM,
-        VELOCITY_USE_DIRECTION
-    } velocityType;
-    enum <uint> {
-        EMIT_FROM_VERTICES,
-        EMIT_FROM_FACE_CENTER,
-        EMIT_FROM_EDGE_CENTER,
-        EMIT_FROM_FACE_SURFACE,
-        EMIT_FROM_EDGE_SURFACE
-    } emissionType;
+    InitialVelocityType initialVelocityType;
+    MeshEmissionType meshEmissionType;
     Vec3 emissionAxis;
 } NiPSysMeshEmitter <name="NiPSysMeshEmitter">;
 
@@ -475,3 +454,335 @@ typedef struct {
     if ( stream >= 34 )
         float baseScale;
 } NiPSysGrowFadeMod <name="NiPSysGrowFadeModifier">;
+
+
+// New Particles
+
+typedef struct {
+    NiMesh base <open=true>;
+    Ref simulator; // NiPSSimulator
+    Ref generator; // NiPSBoundUpdater
+    RefArray emitters( "Emitter" ); // NiPSEmitter
+    RefArray spawners( "Spawner" ); // NiPSSpawner
+    Ref deathSpawner; // NiPSSpawner
+    uint maxNumParticles;
+    bool hasColors;
+    bool hasRotations;
+    bool hasRotationAxes;
+    if ( version >= Version(20, 6, 1, 0) )
+        bool hasAnimatedTextures;
+    bool worldSpace;
+    if ( version >= Version(20, 6, 1, 0) ) {
+        AlignMethod normalMethod;
+        Vec3 normalDir;
+        AlignMethod upMethod;
+        Vec3 upDir;
+        Ref livingSpawner; // NiPSSpawner
+        ubyte numSpawnRateKeys;
+        if ( numSpawnRateKeys > 0 ) {
+            struct {
+                float value;
+                float time;
+            } spawnRateKey[numSpawnRateKeys];
+        }
+        bool preRPI;
+    }
+} NiPSParticleSystem <name="NiPSParticleSystem">;
+
+typedef struct {
+    NiPSParticleSystem base <open=true>;
+    RefArray masterParticles( "Master Particle" ); // NiAVObject
+    uint poolSize;
+    bool autoFillPools;
+} NiPSMeshParticleSystem <name="NiPSMeshParticleSystem">;
+
+
+typedef struct {
+    Ref spawner; // NiPSSpawner
+    enum <uint> {
+        COLLIDER_PLANAR = 0, // NiPSPlanarCollider.
+        COLLIDER_SPHERICAL // NiPSSphericalCollider.
+    } colliderType;
+    bool active;
+} NiPSCollider <name="NiPSCollider", open=true>;
+
+typedef struct {
+    NiPSCollider base;
+    float bounce;
+    bool spawnOnCollide;
+    bool dieOnCollide;
+    float width;
+    float height;
+    Vec3 xAxis;
+    Vec3 yAxis;
+    Ref colliderObject; // NiAVObject
+} NiPSPlanarCollider <name="NiPSPlanarCollider">;
+
+typedef struct {
+    NiPSCollider base;
+    float bounce;
+    bool spawnOnCollide;
+    bool dieOnCollide;
+    float radius;
+    Ref colliderObject; // NiAVObject
+} NiPSSphericalCollider <name="NiPSSphericalCollider">;
+
+
+typedef struct {
+    STRING name;
+    enum <uint> {
+        FORCE_BOMB = 0, // NiPSBombForce
+        FORCE_DRAG, // NiPSDragForce
+        FORCE_AIR_FIELD, // NiPSAirFieldForce
+        FORCE_DRAG_FIELD, // NiPSDragFieldForce
+        FORCE_GRAVITY_FIELD, // NiPSGravityFieldForce
+        FORCE_RADIAL_FIELD, // NiPSRadialFieldForce
+        FORCE_TURBULENCE_FIELD, // NiPSTurbulenceFieldForce
+        FORCE_VORTEX_FIELD, // NiPSVortexFieldForce
+        FORCE_GRAVITY // NiPSGravityForce
+    } forceType;
+    bool active;
+} NiPSForce <name="NiPSForce", open=true>;
+
+typedef struct {
+    NiPSForce base;
+    Vec3 bombAxis;
+    float decay;
+    float deltaV;
+    DecayType decayType;
+    SymmType symmType;
+    Ref bombObject; // NiAVObject
+} NiPSBombForce <name="NiPSBombForce">;
+
+typedef struct {
+    NiPSForce base;
+    Vec3 dragAxis;
+    float percentage;
+    float range;
+    float rangeFalloff;
+    Ref dragObject; // NiAVObject
+} NiPSDragForce <name="NiPSDragForce">;
+
+typedef struct {
+    NiPSForce base;
+    Vec3 gravityAxis;
+    float decay;
+    float strength;
+    ForceType forceType;
+    float turbulence;
+    float turbulenceScale;
+    Ref gravityObject; // NiAVObject
+} NiPSGravityForce <name="NiPSGravityForce">;
+
+
+typedef struct {
+    STRING name;
+    float speed;
+    float speedVar;
+    if ( version >= Version(20, 6, 1, 0) )
+        float speedFlipRatio;
+    float declination;
+    float declinationVar;
+    float planarAngle;
+    float planarAngleVar;
+    if ( version < Version(20, 6, 1, 0) )
+        ByteColor4 color;
+    float size;
+    float sizeVar;
+    float lifespan;
+    float lifespanVar;
+    float rotAngle;
+    float rotAngleVar;
+    float rotSpeed;
+    float rotSpeedVar;
+    Vec3 rotAxis;
+    bool randomRotSpeedSign;
+    bool randomRotAxis;
+} NiPSEmitter <name="NiPSEmitter", open=true>; // Abstract
+
+typedef struct {
+    NiPSEmitter base;
+    Ref emitterObject; // NiAVObject
+} NiPSVolumeEmitter <name="NiPSVolumeEmitter", open=true>; // Abstract
+
+typedef struct {
+    NiPSVolumeEmitter base;
+    float width;
+    float height;
+    float depth;
+} NiPSBoxEmitter <name="NiPSBoxEmitter">;
+
+typedef struct {
+    NiPSVolumeEmitter base;
+    float radius;
+} NiPSSphereEmitter <name="NiPSSphereEmitter">;
+
+typedef struct {
+    NiPSVolumeEmitter base;
+    float radius;
+    float height;
+} NiPSCylinderEmitter <name="NiPSCylinderEmitter">;
+
+typedef struct {
+    NiPSEmitter base;
+    RefArray meshEmitters( "Mesh Emitter" ); // NiMesh Ptr
+    if ( version < Version(20, 6, 1, 0) )
+        Vec3 emitAxis;
+    if ( version >= Version(20, 6, 1, 0) )
+        Ref emitterObject; // NiAVObject
+    MeshEmissionType meshEmissionType;
+    InitialVelocityType initialVelocityType;
+} NiPSMeshEmitter <name="NiPSMeshEmitter">;
+
+
+typedef struct {
+    NISINGLEINTERPCTLR base;
+    STRING emitterName;
+} NiPSEmitterCtlr <name="NiPSEmitterCtlr", open=true>; // Abstract
+
+typedef NiPSEmitterCtlr NiPSEmitterFloatCtlr <name="NiPSEmitterFloatCtlr">; // Abstract
+
+typedef struct {
+    NiPSEmitterCtlr base;
+    Ref emitterActiveInterpolator;
+} NiPSEmitParticlesCtlr <name="NiPSEmitParticlesCtlr">;
+
+typedef struct {
+    NISINGLEINTERPCTLR base;
+    STRING forceName;
+} NiPSForceCtlr <name="NiPSForceCtlr">; // Abstract
+
+typedef NiPSForceCtlr NiPSForceBoolCtlr <name="NiPSForceBoolCtlr">;
+typedef NiPSForceCtlr NiPSForceFloatCtlr <name="NiPSForceFloatCtlr">;
+typedef NiPSForceBoolCtlr NiPSForceActiveCtlr <name="NiPSForceActiveCtlr">;
+typedef NiPSForceFloatCtlr NiPSGravityStrengthCtlr <name="NiPSGravityStrengthCtlr">;
+
+typedef NiPSEmitterFloatCtlr NiPSEmitterSpeedCtlr <name="NiPSEmitterSpeedCtlr">;
+typedef NiPSEmitterFloatCtlr NiPSEmitterRadiusCtlr <name="NiPSEmitterRadiusCtlr">;
+typedef NiPSEmitterFloatCtlr NiPSEmitterDeclinationCtlr <name="NiPSEmitterDeclinationCtlr">;
+typedef NiPSEmitterFloatCtlr NiPSEmitterDeclinationVarCtlr <name="NiPSEmitterDeclinationVarCtlr">;
+typedef NiPSEmitterFloatCtlr NiPSEmitterPlanarAngleCtlr <name="NiPSEmitterPlanarAngleCtlr">;
+typedef NiPSEmitterFloatCtlr NiPSEmitterPlanarAngleVarCtlr <name="NiPSEmitterPlanarAngleVarCtlr">;
+typedef NiPSEmitterFloatCtlr NiPSEmitterRotAngleCtlr <name="NiPSEmitterRotAngleCtlr">;
+typedef NiPSEmitterFloatCtlr NiPSEmitterRotAngleVarCtlr <name="NiPSEmitterRotAngleVarCtlr">;
+typedef NiPSEmitterFloatCtlr NiPSEmitterRotSpeedCtlr <name="NiPSEmitterRotSpeedCtlr">;
+typedef NiPSEmitterFloatCtlr NiPSEmitterRotSpeedVarCtlr <name="NiPSEmitterRotSpeedVarCtlr">;
+typedef NiPSEmitterFloatCtlr NiPSEmitterLifeSpanCtlr <name="NiPSEmitterLifeSpanCtlr">;
+typedef NITIMECTLR NiPSResetOnLoopCtlr <name="NiPSResetOnLoopCtlr">;
+
+typedef struct {
+    NiMeshModifier base;
+    RefArray simulatorSteps( "Simulator Step" ); // NiPSSimulatorStep
+} NiPSSimulator <name="NiPSSimulator">;
+
+typedef struct {
+
+} NiPSSimulatorStep <name="NiPSSimulatorStep", open=true>; // Abstract
+
+typedef enum <uint> {
+    PSKERNELLOOP_CLAMP_BIRTH = 0,
+    PSKERNELLOOP_CLAMP_DEATH = 1,
+    PSKERNELLOOP_AGESCALE = 2,
+    PSKERNELLOOP_LOOP = 3,
+    PSKERNELLOOP_REFLECT = 4
+} PSLoopBehavior;
+
+typedef struct {
+    NiPSSimulatorStep base;
+    if ( version < Version(20, 6, 1, 0) ) {
+        ubyte numColorKeys;
+        if ( numColorKeys > 0 ) {
+            struct {
+                float time;
+                ByteColor4 color;
+            } colorKey[numColorKeys];
+        }
+    } else {
+        ubyte numSizeKeys;
+        if ( numSizeKeys > 0 ) {
+            struct {
+                float value;
+                float time;
+            } sizeKey[numSizeKeys];
+        }
+        PSLoopBehavior sizeLoopBehavior;
+
+        ubyte numColorKeys;
+        if ( numColorKeys > 0 ) {
+            struct {
+                ByteColor4 color;
+                float time;
+            } colorKey[numColorKeys];
+        }
+        PSLoopBehavior colorLoopBehavior;
+
+        ubyte numRotationKeys;
+        if ( numRotationKeys > 0 ) {
+            struct {
+                float value;
+                float time;
+            } rotationKey[numRotationKeys];
+        }
+        PSLoopBehavior rotationLoopBehavior;
+    }
+    float growTime;
+    float shrinkTime;
+    ushort growGeneration;
+    ushort shrinkGeneration;
+} NiPSSimulatorGeneralStep <name="NiPSSimulatorGeneralStep">;
+
+typedef struct {
+    NiPSSimulatorStep base;
+    RefArray forces( "Force" ); // NiPSForce
+} NiPSSimulatorForcesStep <name="NiPSSimulatorForcesStep">;
+
+typedef struct {
+    NiPSSimulatorStep base;
+    RefArray colliders( "Collider" ); // NiPSCollider
+} NiPSSimulatorCollidersStep <name="NiPSSimulatorCollidersStep">;
+
+typedef struct {
+    NiPSSimulatorStep base;
+} NiPSSimulatorFinalStep <name="NiPSSimulatorFinalStep">;
+
+typedef struct {
+    NiPSSimulatorStep base;
+    ubyte numRotationKeys;
+    if ( numRotationKeys > 0 ) {
+        struct {
+            Quat rotation;
+            float time;
+        } rotationKey[numRotationKeys];
+    }
+    PSLoopBehavior rotationLoopBehavior;
+} NiPSSimulatorMeshAlignStep <name="NiPSSimulatorMeshAlignStep">;
+
+typedef struct {
+    NiMeshModifier base;
+} NiPSFacingQuadGenerator <name="NiPSFacingQuadGenerator">;
+
+typedef struct {
+    NiMeshModifier base;
+    float scaleAmountU;
+    float scaleLimitU;
+    float scaleRestU;
+    float scaleAmountV;
+    float scaleLimitV;
+    float scaleRestV;
+    float centerU;
+    float centerV;
+    bool UVScrolling;
+    ushort numFramesAcross;
+    ushort numFramesDown;
+    bool pingPong;
+    ushort initialFrame;
+    float initialFrameVariation;
+    ushort numFrames;
+    float numFramesVariation;
+    float initialTime;
+    float finalTime;
+} NiPSAlignedQuadGenerator <name="NiPSAlignedQuadGenerator">;
+
+typedef struct {
+    ushort updateSkip;
+} NiPSBoundUpdater <name="NiPSBoundUpdater">;

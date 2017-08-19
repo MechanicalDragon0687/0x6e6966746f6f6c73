@@ -902,6 +902,117 @@ struct FILE {
                 case "NiPhysXDynamicSrc":
                     NiPhysXDynamicSrc data;
                     break;
+                case "NiPSParticleSystem":
+                    NiPSParticleSystem data;
+                    break;
+                case "NiPSMeshParticleSystem":
+                    NiPSMeshParticleSystem data;
+                    break;
+                case "NiPSPlanarCollider":
+                    NiPSPlanarCollider data;
+                    break;
+                case "NiPSSphericalCollider":
+                    NiPSSphericalCollider data;
+                    break;
+                case "NiPSBombForce":
+                    NiPSBombForce data;
+                    break;
+                case "NiPSDragForce":
+                    NiPSDragForce data;
+                    break;
+                case "NiPSGravityForce":
+                    NiPSGravityForce data;
+                    break;
+                case "NiPSBoxEmitter":
+                    NiPSBoxEmitter data;
+                    break;
+                case "NiPSSphereEmitter":
+                    NiPSSphereEmitter data;
+                    break;
+                case "NiPSCylinderEmitter":
+                    NiPSCylinderEmitter data;
+                    break;
+                case "NiPSMeshEmitter":
+                    NiPSMeshEmitter data;
+                    break;
+                case "NiPSEmitParticlesCtlr":
+                    NiPSEmitParticlesCtlr data;
+                    break;
+                case "NiPSForceBoolCtlr":
+                    NiPSForceBoolCtlr data;
+                    break;
+                case "NiPSForceFloatCtlr":
+                    NiPSForceFloatCtlr data;
+                    break;
+                case "NiPSForceActiveCtlr":
+                    NiPSForceActiveCtlr data;
+                    break;
+                case "NiPSGravityStrengthCtlr":
+                    NiPSGravityStrengthCtlr data;
+                    break;
+                case "NiPSEmitterSpeedCtlr":
+                    NiPSEmitterSpeedCtlr data;
+                    break;
+                case "NiPSEmitterRadiusCtlr":
+                    NiPSEmitterRadiusCtlr data;
+                    break;
+                case "NiPSEmitterDeclinationCtlr":
+                    NiPSEmitterDeclinationCtlr data;
+                    break;
+                case "NiPSEmitterDeclinationVarCtlr":
+                    NiPSEmitterDeclinationVarCtlr data;
+                    break;
+                case "NiPSEmitterPlanarAngleCtlr":
+                    NiPSEmitterPlanarAngleCtlr data;
+                    break;
+                case "NiPSEmitterPlanarAngleVarCtlr":
+                    NiPSEmitterPlanarAngleVarCtlr data;
+                    break;
+                case "NiPSEmitterRotAngleCtlr":
+                    NiPSEmitterRotAngleCtlr data;
+                    break;
+                case "NiPSEmitterRotAngleVarCtlr":
+                    NiPSEmitterRotAngleVarCtlr data;
+                    break;
+                case "NiPSEmitterRotSpeedCtlr":
+                    NiPSEmitterRotSpeedCtlr data;
+                    break;
+                case "NiPSEmitterRotSpeedVarCtlr":
+                    NiPSEmitterRotSpeedVarCtlr data;
+                    break;
+                case "NiPSEmitterLifeSpanCtlr":
+                    NiPSEmitterLifeSpanCtlr data;
+                    break;
+                case "NiPSResetOnLoopCtlr":
+                    NiPSResetOnLoopCtlr data;
+                    break;
+                case "NiPSSimulator":
+                    NiPSSimulator data;
+                    break;
+                case "NiPSSimulatorGeneralStep":
+                    NiPSSimulatorGeneralStep data;
+                    break;
+                case "NiPSSimulatorForcesStep":
+                    NiPSSimulatorForcesStep data;
+                    break;
+                case "NiPSSimulatorCollidersStep":
+                    NiPSSimulatorCollidersStep data;
+                    break;
+                case "NiPSSimulatorFinalStep":
+                    NiPSSimulatorFinalStep data;
+                    break;
+                case "NiPSSimulatorMeshAlignStep":
+                    NiPSSimulatorMeshAlignStep data;
+                    break;
+                case "NiPSFacingQuadGenerator":
+                    NiPSFacingQuadGenerator data;
+                    break;
+                case "NiPSAlignedQuadGenerator":
+                    NiPSAlignedQuadGenerator data;
+                    break;
+                case "NiPSBoundUpdater":
+                    NiPSBoundUpdater data;
+                    break;
                 default:
                     Block data(i) <open=suppress>;
                     unkBlocks++;

@@ -754,3 +754,45 @@ typedef enum <uint> {
     USE_ABV     = 0x00000004,
     USE_NIBOUND = 0x00000008
 } CollisionMode;
+
+// Particles
+
+typedef enum <uint> {
+    EMIT_FROM_VERTICES = 0,
+    EMIT_FROM_FACE_CENTER,
+    EMIT_FROM_EDGE_CENTER,
+    EMIT_FROM_FACE_SURFACE,
+    EMIT_FROM_EDGE_SURFACE
+} MeshEmissionType;
+
+typedef enum <uint> {
+    VELOCITY_USE_NORMALS = 0,
+    VELOCITY_USE_RANDOM,
+    VELOCITY_USE_DIRECTION
+} InitialVelocityType;
+
+typedef enum <uint> {
+    ALIGN_INVALID = 0x00,
+    ALIGN_PER_PARTICLE = 0x01,
+    ALIGN_LOCAL_FIXED = 0x02,
+    ALIGN_LOCAL_POSITION = 0x5,
+    ALIGN_LOCAL_VELOCITY = 0x9,
+    ALIGN_CAMERA = 0x10
+} AlignMethod;
+
+typedef enum <uint> {
+    DECAY_NONE,
+    DECAY_LINEAR,
+    DECAY_EXPONENTIAL
+} DecayType;
+
+typedef enum <uint> {
+    SYMM_SPHERICAL,
+    SYMM_CYLINDRICAL,
+    SYMM_PLANAR
+} SymmType;
+
+typedef enum <uint> {
+    FORCE_PLANAR,
+    FORCE_SPHERICAL
+} ForceType;
