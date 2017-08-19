@@ -166,7 +166,7 @@ typedef struct {
             Assert( false, "Shared Normals are not expected for this NIF version" );
 
         struct {
-            IndexArray16 normal[numSharedNormals] <open=suppress, optimize=false>;
+            UShortArraySz normal("Shared Normal", 2)[numSharedNormals] <open=suppress, optimize=false>;
         } sharedNormalsArray <open=suppress>;
     }
 

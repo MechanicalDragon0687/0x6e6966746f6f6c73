@@ -251,12 +251,6 @@ typedef struct {
 } NiBound;
 
 typedef struct {
-    ushort size;
-    if ( size > 0 )
-        ushort index[size];
-} IndexArray16;
-
-typedef struct {
     uint size;
     if ( size > 0 )
         byte data[size] <open=suppress>;
@@ -265,7 +259,7 @@ typedef struct {
 
 // ubyte wrapper for UByteArray
 typedef struct ( string str ) {
-    local string name = str;
+    local string name <hidden=true> = str;
     ubyte item;
 } _ubyte <name=UByteName, read=UByteRead>;
 
@@ -279,7 +273,7 @@ string UByteRead ( _ubyte& b )
 
 // ushort wrapper for UShortArray
 typedef struct ( string str ) {
-    local string name = str;
+    local string name <hidden=true> = str;
     ushort item;
 } _ushort <name=UShortName, read=UShortRead>;
 
@@ -293,7 +287,7 @@ string UShortRead ( _ushort& b )
 
 // uint wrapper for UIntArray
 typedef struct ( string str ) {
-    local string name = str;
+    local string name <hidden=true> = str;
     uint item;
 } _uint <name=UIntName, read=UIntRead>;
 
@@ -307,7 +301,7 @@ string UIntRead ( _uint& b )
 
 // float wrapper for FloatArray
 typedef struct ( string str ) {
-    local string name = str;
+    local string name <hidden=true> = str;
     float item;
 } _float <name=FloatName, read=FloatRead>;
 
@@ -319,32 +313,112 @@ string FloatRead ( _float& f )
     return s;
 }
 
-// For Multi-dimensional ubyte arrays whose member names can be supplied
-typedef struct ( uint n, string str ) {
-    _ubyte item(str)[n] <name=UByteArrayItemRead, optimize=false>; // Optimize true hides the values
+// For ubyte arrays whose member names and size can be supplied
+typedef struct ( uint size, string str ) {
+    _ubyte item(str)[size] <name=UByteArrayItemRead, optimize=false>; // Optimize true hides the values
 } UByteArray <open=suppress, optimize=false>;
 
+// UByteArray with custom size type (in bytes)
+typedef struct ( string str, uint szSize ) {
+    switch ( szSize ) {
+        case 1:
+            ubyte size;
+            break;
+        case 2:
+            ushort size;
+            break;
+        case 4:
+        default:
+            uint size;
+            break;
+    }
+    local string s <hidden=true> = str;
+    if ( size > 0 )
+        _ubyte item(str)[size] <name=UByteArrayItemRead, optimize=false>; // Optimize true hides the values
+} UByteArraySz <open=suppress, optimize=false, name=UByteArraySzName>;
+
+string UByteArraySzName ( UByteArraySz& a ) { return a.s + " Array"; }
 string UByteArrayItemRead ( _ubyte& i ) { return i.name; }
 
-// For Multi-dimensional ubyte arrays whose member names can be supplied
-typedef struct ( uint n, string str ) {
-    _ushort item(str)[n] <name=UShortArrayItemRead, optimize=false>;
+// For ushort arrays whose member names and size can be supplied
+typedef struct ( uint size, string str ) {
+    _ushort item(str)[size] <name=UShortArrayItemRead, optimize=false>;
 } UShortArray <open=suppress, optimize=false>;
 
+// UShortArray with custom size type (in bytes)
+typedef struct ( string str, uint szSize ) {
+    switch ( szSize ) {
+        case 1:
+            ubyte size;
+            break;
+        case 2:
+            ushort size;
+            break;
+        case 4:
+        default:
+            uint size;
+            break;
+    }
+    local string s <hidden=true> = str;
+    if ( size > 0 )
+        _ushort item(str)[size] <name=UShortArrayItemRead, optimize=false>;
+} UShortArraySz <open=suppress, optimize=false, name=UShortArraySzName>;
+
+string UShortArraySzName ( UShortArraySz& a ) { return a.s + " Array"; }
 string UShortArrayItemRead ( _ushort& i ) { return i.name; }
 
-// For Multi-dimensional uint arrays whose member names can be supplied
-typedef struct ( uint n, string str ) {
-    _uint item(str)[n] <name=UIntArrayItemRead, optimize=false>;
+// For uint arrays whose member names and size can be supplied
+typedef struct ( uint size, string str ) {
+    _uint item(str)[size] <name=UIntArrayItemRead, optimize=false>;
 } UIntArray <open=suppress, optimize=false>;
 
+// UIntArray with custom size type (in bytes)
+typedef struct ( string str, uint szSize ) {
+    switch ( szSize ) {
+        case 1:
+            ubyte size;
+            break;
+        case 2:
+            ushort size;
+            break;
+        case 4:
+        default:
+            uint size;
+            break;
+    }
+    local string s <hidden=true> = str;
+    if ( size > 0 )
+        _uint item(str)[size] <name=UIntArrayItemRead, optimize=false>;
+} UIntArraySz <open=suppress, optimize=false, name=UIntArraySzName>;
+
+string UIntArraySzName ( UIntArraySz& a ) { return a.s + " Array"; }
 string UIntArrayItemRead ( _uint& i ) { return i.name; }
 
-// For Multi-dimensional float arrays whose member names can be supplied
-typedef struct ( uint n, string str ) {
-    _float item(str)[n] <name=FloatArrayItemRead, optimize=false>;
+// For float arrays whose member names and size can be supplied
+typedef struct ( uint size, string str ) {
+    _float item(str)[size] <name=FloatArrayItemRead, optimize=false>;
 } FloatArray <open=suppress, optimize=false>;
 
+// FloatArray with custom size type (in bytes)
+typedef struct ( string str, uint szSize ) {
+    switch ( szSize ) {
+        case 1:
+            ubyte size;
+            break;
+        case 2:
+            ushort size;
+            break;
+        case 4:
+        default:
+            uint size;
+            break;
+    }
+    local string s <hidden=true> = str;
+    if ( size > 0 )
+        _float item(str)[size] <name=FloatArrayItemRead, optimize=false>;
+} FloatArraySz <open=suppress, optimize=false, name=FloatArraySzName>;
+
+string FloatArraySzName ( FloatArraySz& a ) { return a.s + " Array"; }
 string FloatArrayItemRead ( _float& i ) { return i.name; }
 
 
@@ -398,6 +472,29 @@ string ReadSTRING( STRING &s )
 {
     return s.nameStr;
 }
+
+typedef struct {
+    uint size;
+    if ( size > 0 )
+        STRING str[size];
+} StringArray;
+
+typedef struct ( uint szSize ) {
+    switch ( szSize ) {
+        case 1:
+            ubyte size;
+            break;
+        case 2:
+            ushort size;
+            break;
+        case 4:
+        default:
+            uint size;
+            break;
+    }
+    if ( size > 0 )
+        STRING str[size];
+} StringArraySz;
 
 // SSTRING16
 typedef struct {
