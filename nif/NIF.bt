@@ -6,7 +6,7 @@
 //   Version: 
 //   Purpose: 
 //  Category: 
-// File Mask: *.nif,*.kf,*.bto,*.btr,*.psa,*.rdt,*.nifcache
+// File Mask: *.nif,*.kf,*.bto,*.btr,*.psa,*.rdt,*.nifcache,*.nft,*.item
 //  ID Bytes: 47 61 6D 65 62 72 79 6F 20 46 69 6C 65 20 46 6F 72 6D 61 74 2C 20 56 65 72 73 69 6F 6E 20
 //   History: 
 //------------------------------------------------
@@ -90,13 +90,13 @@ struct FILE {
 
         // User defined version
         if ( version >= Version(10, 0, 1, 8) )
-            int userVersion;
+            uint userVersion;
         else
-            local int userVersion = 0;
+            local uint userVersion = 0;
 
         int numblocks;
         
-        if ( version == V20_2_0_7 || IsOblivion(version, userVersion) ) {
+        if ( IsBethesda(version, userVersion) ) {
             // Bethesda BSStreamHeader
             uint stream;
             SSTRING8 author; // 64 limit
@@ -105,7 +105,7 @@ struct FILE {
             if ( stream == 130 )
                 SSTRING8 maxFilePath;
         } else if ( version >= V30_0_0_2 ) {
-            local int stream = 12; // Fake stream version
+            local int stream = 0; // Fake stream version
             // Embedded PNG files for file thumbnail
             int embedDataSize;
             local int dataPassed = 0;
@@ -148,6 +148,7 @@ struct FILE {
     } header <bgcolor=cLtGray>;
 
     local uint version = header.version;
+    local uint userVersion = header.userVersion;
     local uint stream = header.stream;
     local int unkBlocks <hidden=true> = 0;
 
@@ -850,13 +851,20 @@ struct FILE {
     struct FOOTER {
         RefArray root( "Root" );
     } footer;
-
-    Assert( FEof(), "Did not reach end of file." );
+    
+    // Bully SE files are padded to the nearest 2048, do not assert EOF for them
+    local uint remainder <hidden=true> = FileSize() - FTell();
+    local byte assertEOF <hidden=true> = 1;
+    if ( version == V20_3_0_9 && userVersion == 0 && FileSize() % 2048 == 0 && remainder <= 2048 )
+        assertEOF = 0;
+    
+    if ( assertEOF )
+        Assert( FEof(), "Did not reach end of file." );
 
     // Command Line return codes
     if ( unkBlocks > 0 )
         result |= R_UNKBLOCKS;
-    if ( FEof() )
+    if ( FEof() || !assertEOF )
         result |= R_OK;
     else
         result |= R_EOF;
