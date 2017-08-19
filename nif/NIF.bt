@@ -155,9 +155,37 @@ struct FILE {
 
     struct BLOCKS {
         local int i <hidden=true>;
+        local int j <hidden=true>;
+        local string str <hidden=true>;
+        local string strClean <hidden=true>;
+        local uint args[2] <hidden=true>;
+        local char argChars[2] <hidden=true>;
+        local uint iArg <hidden=true> = 0;
+
         for ( i = 0 ; i < header.numblocks; i++ )
         {
-            switch( header.btype[header.btypeindex[i].index].str )
+            str = header.btype[header.btypeindex[i].index].str;
+            if ( Strstr( str, "NiDataStream" ) == 0 ) {
+                // e.g. split "NiDataStream\0011\00118" to "NiDataStream", "1", "18"
+                // and convert "1" and "18" to integers
+                for ( j = 0; j < Strlen(str); j++ ) {
+                    if ( str[j] == 0x01 ) {
+                        if ( iArg == 0 ) {
+                            strClean = SubStr( str, 0, j );
+                            args[iArg] = Atoi(str[j+1]);
+                        } else {
+                            argChars[0] = str[j+1];
+                            argChars[1] = (j + 2 < Strlen(str)) ? str[j+2] : '\0';
+                            args[iArg] = Atoi(argChars);
+                        }
+                        iArg = !iArg;
+                    }
+                }
+                str = strClean;
+            }
+
+
+            switch( str )
             {
                 case "NiNode":
                     NiNode data;
