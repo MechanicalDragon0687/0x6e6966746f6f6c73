@@ -55,6 +55,7 @@ typedef struct {
     Color3 specular;
 } NiLight <name="NiLight", open=true>;
 
+typedef NiLight NiDirectionalLight <name="NiDirectionalLight", open=false>;
 typedef NiLight NiAmbientLight <name="NiAmbientLight", open=false>;
 
 // NiPointLight
@@ -64,6 +65,27 @@ typedef struct {
     float linearAtten;
     float quadraticAtten;
 } NiPointLight <name="NiPointLight">;
+
+
+// NiTextureEffect
+typedef struct {
+    NiDynamicEffect base;
+    Matrix33 modelProjectionMatrix;
+    Vec3 modelProjectionTrans;
+    FilterMode filterMode;
+    if ( version >= Version(20, 5, 0, 4) )
+        ushort maxAnisotropy;
+    ClampMode clampMode;
+    TextureType textureType;
+    CoordGenType coordGenType;
+    Ref texture; // NiTexture
+    bool planeEnable;
+    Vec3 planeNormal;
+    float planeConstant;
+    if ( version < Version(10, 3, 0, 4) )
+        uint landK;
+
+} NiTextureEffect <name="NiTextureEffect">;
 
 // NiCamera
 typedef struct {
@@ -87,3 +109,140 @@ typedef struct {
     Assert( screenPolygons.size == 0, "screenPolygons is an unexpected size" );
     Assert( screenTextures.size == 0, "screenTextures is an unexpected size" );
 } NiCamera <name="NiCamera">;
+
+
+typedef struct {
+    PixelFormat format;
+    if ( version < Version(10, 3, 0, 3) ) {
+        uint colorMasks[4];
+        uint bpp;
+        uint oldFastCompare[2];
+        PixelTiling tiling;
+    } else {
+        uchar bitsPerPixel;
+        uint rendererHint;
+        uint extraData;
+        uchar flags;
+        PixelTiling tiling;
+        if ( version >= Version(20, 3, 0, 4) )
+            bool sRGBSpace;
+        
+        struct {
+            PixelComponent componentType;
+            PixelRepresentation representation;
+            uchar bitsPerComponent;
+            bool isSigned;
+        } component[NUM_COMPS];
+    }
+} NiPixelFormat <name="NiPixelFormat">;
+
+// NiPixelData
+typedef struct {
+    NiPixelFormat pixelFormat;
+    Ref palette; // NiPalette
+    uint mipMapLevels;
+    uint pixelStride;
+    if ( mipMapLevels > 0 ) {
+        struct {
+            uint width;
+            uint height;
+            uint offsetInBytes;
+        } mip[mipMapLevels];
+    }
+    uint dataSize;
+
+    if ( version < Version(10, 3, 0, 6) )
+        local uint faces = 1;
+    else
+        uint faces;
+    
+    char pixelData[dataSize * faces] <open=suppress>;
+} NiPixelData <name="NiPixelData">;
+
+
+// NiPersistentSrcTextureRendererData
+typedef struct {
+    NiPixelFormat pixelFormat;
+    Ref palette; // NiPalette
+    uint mipMapLevels;
+    uint pixelStride;
+    if ( mipMapLevels > 0 ) {
+        struct {
+            uint width;
+            uint height;
+            uint offsetInBytes;
+        } mip[mipMapLevels];
+    }
+    uint dataSize;
+
+    if ( version >= Version(20, 2, 0, 6) )
+        uint padDataSize;
+    
+    uint faces;
+
+    if ( version < Version(30, 1, 0, 1) )
+        PlatformID platformID;
+    else
+        RendererID rendererID;
+
+    char pixelData[dataSize * faces] <open=suppress>;
+} NiPersistentSrcTextureRendererData <name="NiPersistentSrcTextureRendererData">;
+
+
+// NiCollisionObject
+typedef struct {
+    Ref target; // NiAVObject
+} NiCollisionObject <name="NiCollisionObject">;
+
+
+// NiBoundingVolume
+typedef struct {
+    enum <uint> {
+        BASE_BV      = -1,
+        SPHERE_BV    = 0,
+        BOX_BV       = 1,
+        CAPSULE_BV   = 2,
+        LOZENGE_BV   = 3,
+        UNION_BV     = 4,
+        HALFSPACE_BV = 5
+    } boundType;
+    switch ( boundType )
+    {
+        case SPHERE_BV:
+            Vec3 center;
+            float radius;
+            break;
+        case BOX_BV:
+            Vec3 center;
+            Vec3 axis[3];
+            Vec3 extent;
+            break;
+        case CAPSULE_BV:
+            Vec3 center;
+            Vec3 axis;
+            float extent;
+            float radius;
+            break;
+        case LOZENGE_BV:
+            break;
+        case UNION_BV:
+            uint numBV;
+            struct NiBoundingVolume boundingVolumes[numBV];
+            break;
+        case HALFSPACE_BV:
+            Vec3 planeNormal;
+            float planeConstant;
+            Vec3 center;
+            break;
+    }
+} NiBoundingVolume;
+
+// NiCollisionData
+typedef struct {
+    NiCollisionObject base <open=true>;
+    PropagationMode propagationMode;
+    CollisionMode collisionMode;
+    bool useABV;
+    if ( useABV )
+        NiBoundingVolume ABV; 
+} NiCollisionData <name="NiCollisionData">;

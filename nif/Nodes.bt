@@ -37,11 +37,38 @@ typedef struct {
     uint index;
 } NiSwitchNode <name="NiSwitchNode">;
 
+typedef struct {
+    NiSwitchNode node <open=true>;
+    Ref data; // NiLODData
+} NiLODNode <name="NiLODNode">;
+
+typedef struct {
+    Vec3 center;
+    uint numRanges;
+    if ( numRanges > 0 ) {
+        struct {
+            float near;
+            float far;
+        } ranges[numRanges];
+    }
+} NiRangeLODData <name="NiRangeLODData">;
+
 // NiBillboardNode
 typedef struct {
     NiNode node <open=true>;
     BillboardMode mode;
 } NiBBNode <name="NiBillboardNode">;
+
+// NiSortAdjustNode
+typedef struct {
+    NiNode node <open=true>;
+    enum <uint> {
+        SORTING_INHERIT,
+        SORTING_OFF
+    } sortingMode;
+    if ( version < Version(20, 0, 0, 4) )
+        Ref accumulator; // NiAccumulator
+} NiSortAdjustNode <name="NiSortAdjustNode">;
 
 // BSOrderedNode
 typedef struct {

@@ -400,6 +400,8 @@ typedef NIPSYSMODFLOATCTRLTR NiPSEmitPlanarAngleCtlr <name="NiPSysEmitterPlanarA
 typedef NIPSYSMODFLOATCTRLTR NiPSEmitPlanarAngleVarCtlr <name="NiPSysEmitterPlanarAngleVarCtlr", open=false>;
 typedef NIPSYSMODFLOATCTRLTR NiPSEmitDeclinationCtlr <name="NiPSysEmitterDeclinationCtlr", open=false>;
 typedef NIPSYSMODFLOATCTRLTR NiPSEmitDeclinationVarCtlr <name="NiPSysEmitterDeclinationVarCtlr", open=false>;
+typedef NIPSYSMODFLOATCTRLTR NiPSysInitialRotSpeedCtlr <name="NiPSysInitialRotSpeedCtlr", open=false>;
+typedef NIPSYSMODFLOATCTRLTR NiPSysInitialRotSpeedVarCtlr <name="NiPSysInitialRotSpeedVarCtlr", open=false>;
 
 typedef struct {
     NIPSYSMODCTLR controller;

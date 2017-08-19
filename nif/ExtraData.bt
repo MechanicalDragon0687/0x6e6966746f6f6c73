@@ -27,15 +27,18 @@ typedef struct {
 
 typedef struct {
     NiExtraData data;
+    FloatArraySz floatsData( "Float Data", 4 );
+} NiFloatsED <name="NiFloatsExtraData", read=ReadFloatsED>;
+
+typedef struct {
+    NiExtraData data;
     uint integerData;
 } NiIntegerED <name="NiIntegerExtraData", read=ReadIntED>;
 
 typedef struct {
     NiExtraData data;
-    uint dataSize;
-    if ( dataSize > 0 )
-        uint integerData[dataSize] <optimize=true>;
-} NiIntegersED <name="NiIntegersExtraData">;
+    UIntArraySz integersData( "Integer Data", 4 );
+} NiIntegersED <name="NiIntegersExtraData", read=ReadIntsED>;
 
 typedef struct {
     NiExtraData data;
@@ -60,6 +63,11 @@ typedef struct {
     NiExtraData data;
     BinaryData binaryData;
 } NiBinaryED <name="NiBinaryExtraData">;
+
+typedef struct {
+    NiExtraData data;
+    Color4 colorData;
+} NiColorED <name="NiColorExtraData">;
 
 // BSXFlags
 typedef struct { 
@@ -225,10 +233,24 @@ string ReadFloatED( NiFloatED& ed )
     return s;
 }
 
+string ReadFloatsED( NiFloatsED& ed )
+{
+    string s;
+    SPrintf(s, "%s (Size: %u)", ReadSTRING(ed.data.name), ed.floatsData.size);
+    return s;
+}
+
 string ReadIntED( NiIntegerED& ed )
 {
     string s;
     SPrintf(s, "%s: %u", ReadSTRING(ed.data.name), ed.integerData);
+    return s;
+}
+
+string ReadIntsED( NiIntegersED& ed )
+{
+    string s;
+    SPrintf(s, "%s (Size:%u)", ReadSTRING(ed.data.name), ed.integersData.size);
     return s;
 }
 

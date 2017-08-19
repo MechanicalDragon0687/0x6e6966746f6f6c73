@@ -275,8 +275,17 @@ struct FILE {
                 case "NiSwitchNode":
                     NiSwitchNode data;
                     break;
+                case "NiLODNode":
+                    NiLODNode data;
+                    break;
+                case "NiRangeLODData":
+                    NiRangeLODData data;
+                    break;
                 case "NiBillboardNode":
                     NiBBNode data;
+                    break;
+                case "NiSortAdjustNode":
+                    NiSortAdjustNode data;
                     break;
                 case "BSOrderedNode":
                     BSOrderedNode data;
@@ -301,6 +310,15 @@ struct FILE {
                     break;
                 case "NiMultiTargetTransformController":
                     NiMultiTransCtlr data;
+                    break;
+                case "NiFlipController":
+                    NiFlipController data;
+                    break;
+                case "NiMorphWeightsController":
+                    NiMorphWeightsController data;
+                    break;
+                case "NiBoneLODController":
+                    NiBoneLODController data;
                     break;
                 case "NiVisController":
                     NiVisCtlr data;
@@ -343,6 +361,12 @@ struct FILE {
                     break;
                 case "NiPSysEmitterDeclinationVarCtlr":
                     NiPSEmitDeclinationVarCtlr data;
+                    break;
+                case "NiPSysInitialRotSpeedCtlr":
+                    NiPSysInitialRotSpeedCtlr data;
+                    break;
+                case "NiPSysInitialRotSpeedVarCtlr":
+                    NiPSysInitialRotSpeedVarCtlr data;
                     break;
                 case "BSStripParticleSystem":
                     BSStripParticleSys data;
@@ -430,6 +454,12 @@ struct FILE {
                     break;
                 case "NiPosData":
                     NiPosData data;
+                    break;
+                case "NiCollisionObject":
+                    NiCollisionObject data;
+                    break;
+                case "NiCollisionData":
+                    NiCollisionData data;
                     break;
                 case "BSXFlags":
                     BSXFlags data;
@@ -524,8 +554,14 @@ struct FILE {
                 case "NiFloatExtraData":
                     NiFloatED data;
                     break;
+                case "NiFloatsExtraData":
+                    NiFloatsED data;
+                    break;
                 case "NiIntegerExtraData":
                     NiIntegerED data;
+                    break;
+                case "NiIntegersExtraData":
+                    NiIntegersED data;
                     break;
                 case "NiStringExtraData":
                     NiStringED data;
@@ -538,6 +574,9 @@ struct FILE {
                     break;
                 case "NiBinaryExtraData":
                     NiBinaryED data;
+                    break;
+                case "NiColorExtraData":
+                    NiColorED data;
                     break;
                 case "BSBoneLODExtraData":
                     BSBoneLODED data;
@@ -593,8 +632,20 @@ struct FILE {
                 case "NiAmbientLight":
                     NiAmbientLight data;
                     break;
+                case "NiDirectionalLight":
+                    NiDirectionalLight data;
+                    break;
                 case "NiCamera":
                     NiCamera data;
+                    break;
+                case "NiPixelData":
+                    NiPixelData data;
+                    break;
+                case "NiTextureEffect":
+                    NiTextureEffect data;
+                    break;
+                case "NiPersistentSrcTextureRendererData":
+                    NiPersistentSrcTextureRendererData data;
                     break;
                 case "BSFrustumFOVController":
                     BSFrustumCtlr data;
@@ -743,14 +794,26 @@ struct FILE {
                 case "NiMaterialProperty":
                     NiMaterialProperty data;
                     break;
+                case "NiSpecularProperty":
+                    NiSpecularProperty data;
+                    break;
                 case "NiStencilProperty":
                     NiStencilProperty data;
                     break;
                 case "NiTexturingProperty":
                     NiTexturingProperty data;
                     break;
+                case "NiVertexColorProperty":
+                    NiVertexColorProperty data;
+                    break;
+                case "NiZBufferProperty":
+                    NiZBufferProperty data;
+                    break;
                 case "NiSourceTexture":
                     NiSourceTexture data;
+                    break;
+                case "NiSourceCubeMap":
+                    NiSourceCubeMap data;
                     break;
                 case "NiMorphData":
                     NiMorphData data;

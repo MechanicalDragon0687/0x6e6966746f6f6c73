@@ -627,10 +627,130 @@ typedef enum <uint> {
 } AlphaFormat <name="Alpha Format">;
 
 typedef enum <uint> {
-    PX_FMT_RGB8,
-    PX_FMT_RGBA8,
-    PX_FMT_PAL8,
+    FILTER_NEAREST,
+    FILTER_BILERP,
+    FILTER_TRILERP,
+    FILTER_NEAREST_MIPNEAREST,
+    FILTER_NEAREST_MIPLERP,
+    FILTER_BILERP_MIPNEAREST,
+    FILTER_ANISOTROPIC
+} FilterMode;
+
+typedef enum <uint> {
+    CLAMP_S_CLAMP_T,
+    CLAMP_S_WRAP_T,
+    WRAP_S_CLAMP_T,
+    WRAP_S_WRAP_T
+} ClampMode;
+
+typedef enum <uint> {
+    PX_FMT_RGB = 0,
+    PX_FMT_RGBA,
+    PX_FMT_PAL,
+    PX_FMT_PALALPHA,
     PX_FMT_DXT1,
+    PX_FMT_DXT3,
     PX_FMT_DXT5,
-    PX_FMT_DXT5_ALT
-} PixelFormat <name="Pixel Format">;
+    PX_FMT_RGB24NONINTERLEAVED,
+    PX_FMT_BUMP,
+    PX_FMT_BUMPLUMA,
+    PX_FMT_RENDERERSPECIFIC,
+    PX_FMT_ONE_CHANNEL,
+    PX_FMT_TWO_CHANNEL,
+    PX_FMT_THREE_CHANNEL,
+    PX_FMT_FOUR_CHANNEL,
+    PX_FMT_DEPTH_STENCIL,
+    PX_FMT_UNKNOWN,
+    PX_FMT_MAX
+} PixelFormat;
+
+typedef enum <uint> {
+    PX_TILE_NONE = 0,
+    PX_TILE_XENON,
+    PX_TILE_MAX
+} PixelTiling;
+
+typedef enum <uint> {
+    PX_CMP_RED = 0,
+    PX_CMP_GREEN,
+    PX_CMP_BLUE,
+    PX_CMP_ALPHA,
+    PX_CMP_COMPRESSED,
+    PX_CMP_OFFSET_U,
+    PX_CMP_OFFSET_V,         
+    PX_CMP_OFFSET_W,
+    PX_CMP_OFFSET_Q,
+    PX_CMP_LUMA,
+    PX_CMP_HEIGHT,
+    PX_CMP_VECTOR_X,
+    PX_CMP_VECTOR_Y,
+    PX_CMP_VECTOR_Z,       
+    PX_CMP_PADDING,
+    PX_CMP_INTENSITY,
+    PX_CMP_INDEX,
+    PX_CMP_DEPTH,
+    PX_CMP_STENCIL,
+    PX_CMP_EMPTY,
+    PX_CMP_MAX,
+    NUM_COMPS = 4 
+} PixelComponent;
+
+typedef enum <uint> {
+    PX_REP_NORM_INT = 0,
+    PX_REP_HALF,
+    PX_REP_FLOAT,
+    PX_REP_INDEX,
+    PX_REP_COMPRESSED,
+    PX_REP_UNKNOWN,
+    PX_REP_INT
+} PixelRepresentation;
+
+// Objects
+
+typedef enum <uint> {
+    RENDERER_XBOX360 = 0,
+    RENDERER_PS3,
+    RENDERER_DX9,
+    RENDERER_D3D10,
+    RENDERER_WII,
+    RENDERER_GENERIC,
+    RENDERER_D3D11
+} RendererID;
+
+typedef enum <uint> {
+    NI_ANY = 0,
+    NI_XENON,
+    NI_PS3,
+    NI_DX9, 
+    NI_WII,
+    NI_D3D10
+} PlatformID;
+
+typedef enum <uint> {
+    PROJECTED_LIGHT,
+    PROJECTED_SHADOW,
+    ENVIRONMENT_MAP,
+    FOG_MAP
+} TextureType;
+
+typedef enum <uint> {
+    WORLD_PARALLEL,
+    WORLD_PERSPECTIVE,
+    SPHERE_MAP,
+    SPECULAR_CUBE_MAP,
+    DIFFUSE_CUBE_MAP
+} CoordGenType;
+
+typedef enum <uint> {
+    PROPAGATE_ON_SUCCESS,
+    PROPAGATE_ON_FAILURE,
+    PROPAGATE_ALWAYS,
+    PROPAGATE_NEVER
+} PropagationMode;
+
+typedef enum <uint> {
+    USE_OBB     = 0x00000001,
+    USE_TRI     = 0x00000002,
+    USE_ABV     = 0x00000004,
+    USE_NIBOUND = 0x00000008
+} CollisionMode;

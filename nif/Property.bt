@@ -37,9 +37,46 @@ typedef struct {
 typedef struct {
     NiProperty prop;
     ushort flags;
+} NiSpecularProperty <name="NiSpecularProperty">;
+
+typedef struct {
+    NiProperty prop;
+    ushort flags;
     uint ref;
     uint mask;
 } NiStencilProperty <name="NiStencilProperty">;
+
+typedef struct {
+    NiProperty prop;
+    ushort flags;
+    if ( version < Version(20, 1, 0, 2) ) {
+        enum <uint> {
+            SOURCE_IGNORE,
+            SOURCE_EMISSIVE,
+            SOURCE_AMB_DIFF
+        } sourceVertexMode;
+        enum <uint> {
+            LIGHTING_E,
+            LIGHTING_E_A_D
+        } lightingMode;
+    }
+} NiVertexColorProperty <name="NiVertexColorProperty">;
+
+typedef struct {
+    NiProperty prop;
+    ushort flags;
+    if ( version < Version(20, 1, 0, 2) )
+        enum <uint> {
+            TEST_ALWAYS,
+            TEST_LESS,
+            TEST_EQUAL,
+            TEST_LESSEQUAL,
+            TEST_GREATER,
+            TEST_NOTEQUAL,
+            TEST_GREATEREQUAL,
+            TEST_NEVER
+        } testFunction;
+} NiZBufferProperty <name="NiZBufferProperty">;
 
 typedef struct {
     NiTexture tex;
@@ -55,6 +92,7 @@ typedef struct {
     bool persistentRenderData;
 } NiSourceTexture <name="NiSourceTexture">;
 
+typedef NiSourceTexture NiSourceCubeMap <name="NiSourceCubeMap">;
 
 typedef struct {
     TexCoord translation <name="Translation?">;

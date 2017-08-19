@@ -111,6 +111,40 @@ typedef struct {
 } NiMultiTransCtlr <name="NiMultiTargetTransformController">;
 
 typedef struct {
+    NIFLOATINTERPCTLR controller;
+    uint affectedMap;
+    RefArray textures( "Texture" ); // NiTexture
+} NiFlipController <name="NiFlipController">;
+
+typedef struct {
+    NIINTERPCTLR controller;
+    uint count;
+    RefArray interpolators( "Interpolator" );
+    StringArray targetNames;
+} NiMorphWeightsController <name="NiMorphWeightsController">;
+
+typedef struct {
+    NITIMECTLR controller;
+    int lod;
+    uint numLODs;
+    uint numBones;
+    if ( numBones > 0 )
+        RefArray nodeSets( "Bone" )[numBones] <optimize=false>; // NiNode
+    
+    uint numSkins;
+    if ( numSkins > 0 ) {
+        struct {
+            uint size;
+            if ( size > 0 ) {
+                Ref skinGeometry[size]; // NiTriBasedGeom
+                Ref skinInstance[size]; // NiSkinInstance
+            }
+        } skinInfos[numSkins] <optimize=false>;
+    }
+    RefArray skins( "Skin" ); // NiTriBasedGeom
+} NiBoneLODController <name="NiBoneLODController">;
+
+typedef struct {
     NITIMECTLR controller;
     Ref interpolator; // NiFloatInterpolator
 } BSFrustumCtlr <name="BSFrustumFOVController">;
