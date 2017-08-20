@@ -43,6 +43,7 @@ typedef struct {
 } NiLODNode <name="NiLODNode">;
 
 typedef struct {
+    NIOBJECT
     Vec3 center;
     uint numRanges;
     if ( numRanges > 0 ) {

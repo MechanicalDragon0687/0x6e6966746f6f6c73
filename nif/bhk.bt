@@ -130,13 +130,13 @@ typedef bhkRigidBody bhkRigidBodyT <name="bhkRigidBodyT">;
 */
 
 typedef struct {
-    Ref target;
+    NiCollisionObject base <open=true>;
     ushort flags;
     Ref body;
 } bhkCollisionObj <name="bhkCollisionObject">;
 
 typedef struct {
-    Ref target;
+    NiCollisionObject base <open=true>;
     ushort flags;
     Ref data;
     uint bodyID;

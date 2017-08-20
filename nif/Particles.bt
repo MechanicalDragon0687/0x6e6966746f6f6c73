@@ -145,6 +145,7 @@ typedef struct {
 // MODIFIERS
 
 typedef struct {
+    NIOBJECT
     STRING name;
     uint order;
     Ref target;
@@ -378,6 +379,7 @@ typedef struct {
 
 // NiPSysCollider
 typedef struct {
+    NIOBJECT
     float bounce;
     bool spawnOnCollide;
     bool dieOnCollide;
@@ -405,28 +407,28 @@ typedef struct {
 
 // NiPSysModifierCtlr
 typedef struct {
-    NISINGLEINTERPCTLR controller;
+    NiSingleInterpController controller;
     STRING modifier;
-} NIPSYSMODCTLR <open=true>; // Abstract
+} NiPSysModifierCtlr <name="NiPSysModifierCtlr", open=true>; // Abstract
 
-typedef NIPSYSMODCTLR NIPSYSBOOLCTLR <name="NiPSysModifierCtlr", open=true>; // Abstract
-typedef NIPSYSBOOLCTLR NiPSysActiveCtlr <name="NiPSysModifierActiveCtlr", open=false>;
+typedef NiPSysModifierCtlr NiPSysModifierBoolCtlr <name="NiPSysModifierBoolCtlr", open=true>; // Abstract
+typedef NiPSysModifierBoolCtlr NiPSysActiveCtlr <name="NiPSysModifierActiveCtlr", open=false>;
 
-typedef NIPSYSMODCTLR NIPSYSMODFLOATCTRLTR <name="NiPSysModifierFloatCtlr", open=true>; // Abstract
-typedef NIPSYSMODFLOATCTRLTR NiPSysGravStrCtlr <name="NiPSysGravityStrengthCtlr", open=false>;
-typedef NIPSYSMODFLOATCTRLTR NiPSysInitRotSpeedCtlr <name="NiPSysInitialRotSpeedCtlr", open=false>;
-typedef NIPSYSMODFLOATCTRLTR NiPSEmitSpeedCtlr <name="NiPSysEmitterSpeedCtlr", open=false>;
-typedef NIPSYSMODFLOATCTRLTR NiPSEmitLifeSpanCtlr <name="NiPSysEmitterLifeSpanCtlr", open=false>;
-typedef NIPSYSMODFLOATCTRLTR NiPSEmitIRadiusCtlr <name="NiPSysEmitterInitialRadiusCtlr", open=false>;
-typedef NIPSYSMODFLOATCTRLTR NiPSEmitPlanarAngleCtlr <name="NiPSysEmitterPlanarAngleCtlr", open=false>;
-typedef NIPSYSMODFLOATCTRLTR NiPSEmitPlanarAngleVarCtlr <name="NiPSysEmitterPlanarAngleVarCtlr", open=false>;
-typedef NIPSYSMODFLOATCTRLTR NiPSEmitDeclinationCtlr <name="NiPSysEmitterDeclinationCtlr", open=false>;
-typedef NIPSYSMODFLOATCTRLTR NiPSEmitDeclinationVarCtlr <name="NiPSysEmitterDeclinationVarCtlr", open=false>;
-typedef NIPSYSMODFLOATCTRLTR NiPSysInitialRotSpeedCtlr <name="NiPSysInitialRotSpeedCtlr", open=false>;
-typedef NIPSYSMODFLOATCTRLTR NiPSysInitialRotSpeedVarCtlr <name="NiPSysInitialRotSpeedVarCtlr", open=false>;
+typedef NiPSysModifierCtlr NiPSysModifierFloatCtlr <name="NiPSysModifierFloatCtlr", open=true>; // Abstract
+typedef NiPSysModifierFloatCtlr NiPSysGravStrCtlr <name="NiPSysGravityStrengthCtlr", open=false>;
+typedef NiPSysModifierFloatCtlr NiPSysInitRotSpeedCtlr <name="NiPSysInitialRotSpeedCtlr", open=false>;
+typedef NiPSysModifierFloatCtlr NiPSEmitSpeedCtlr <name="NiPSysEmitterSpeedCtlr", open=false>;
+typedef NiPSysModifierFloatCtlr NiPSEmitLifeSpanCtlr <name="NiPSysEmitterLifeSpanCtlr", open=false>;
+typedef NiPSysModifierFloatCtlr NiPSEmitIRadiusCtlr <name="NiPSysEmitterInitialRadiusCtlr", open=false>;
+typedef NiPSysModifierFloatCtlr NiPSEmitPlanarAngleCtlr <name="NiPSysEmitterPlanarAngleCtlr", open=false>;
+typedef NiPSysModifierFloatCtlr NiPSEmitPlanarAngleVarCtlr <name="NiPSysEmitterPlanarAngleVarCtlr", open=false>;
+typedef NiPSysModifierFloatCtlr NiPSEmitDeclinationCtlr <name="NiPSysEmitterDeclinationCtlr", open=false>;
+typedef NiPSysModifierFloatCtlr NiPSEmitDeclinationVarCtlr <name="NiPSysEmitterDeclinationVarCtlr", open=false>;
+typedef NiPSysModifierFloatCtlr NiPSysInitialRotSpeedCtlr <name="NiPSysInitialRotSpeedCtlr", open=false>;
+typedef NiPSysModifierFloatCtlr NiPSysInitialRotSpeedVarCtlr <name="NiPSysInitialRotSpeedVarCtlr", open=false>;
 
 typedef struct {
-    NIPSYSMODCTLR controller;
+    NiPSysModifierCtlr controller;
     Ref visInterpolator;
 } NiPSysEmitterCtlr <name="NiPSysEmitterCtlr">;
 
@@ -437,7 +439,7 @@ typedef struct {
     Ref masterParticleSystem; // BSMasterParticleSystem
 } BSPSysMultiTargetEmitterCtlr <name="BSPSysMultiTargetEmitterCtlr">;
 
-typedef NITIMECTLR NiPSysUpdateCtlr <name="NiPSysUpdateCtlr", open=false>;
+typedef NiTimeController NiPSysUpdateCtlr <name="NiPSysUpdateCtlr", open=false>;
 
 
 // Legacy Particles
@@ -498,6 +500,7 @@ typedef struct {
 
 
 typedef struct {
+    NIOBJECT
     Ref spawner; // NiPSSpawner
     enum <uint> {
         COLLIDER_PLANAR = 0, // NiPSPlanarCollider.
@@ -529,6 +532,7 @@ typedef struct {
 
 
 typedef struct {
+    NIOBJECT
     STRING name;
     enum <uint> {
         FORCE_BOMB = 0, // NiPSBombForce
@@ -576,6 +580,7 @@ typedef struct {
 
 
 typedef struct {
+    NIOBJECT
     STRING name;
     float speed;
     float speedVar;
@@ -636,7 +641,7 @@ typedef struct {
 
 
 typedef struct {
-    NISINGLEINTERPCTLR base;
+    NiSingleInterpController base;
     STRING emitterName;
 } NiPSEmitterCtlr <name="NiPSEmitterCtlr", open=true>; // Abstract
 
@@ -648,7 +653,7 @@ typedef struct {
 } NiPSEmitParticlesCtlr <name="NiPSEmitParticlesCtlr">;
 
 typedef struct {
-    NISINGLEINTERPCTLR base;
+    NiSingleInterpController base;
     STRING forceName;
 } NiPSForceCtlr <name="NiPSForceCtlr">; // Abstract
 
@@ -668,7 +673,7 @@ typedef NiPSEmitterFloatCtlr NiPSEmitterRotAngleVarCtlr <name="NiPSEmitterRotAng
 typedef NiPSEmitterFloatCtlr NiPSEmitterRotSpeedCtlr <name="NiPSEmitterRotSpeedCtlr">;
 typedef NiPSEmitterFloatCtlr NiPSEmitterRotSpeedVarCtlr <name="NiPSEmitterRotSpeedVarCtlr">;
 typedef NiPSEmitterFloatCtlr NiPSEmitterLifeSpanCtlr <name="NiPSEmitterLifeSpanCtlr">;
-typedef NITIMECTLR NiPSResetOnLoopCtlr <name="NiPSResetOnLoopCtlr">;
+typedef NiTimeController NiPSResetOnLoopCtlr <name="NiPSResetOnLoopCtlr">;
 
 typedef struct {
     NiMeshModifier base;
@@ -676,7 +681,7 @@ typedef struct {
 } NiPSSimulator <name="NiPSSimulator">;
 
 typedef struct {
-
+    NIOBJECT
 } NiPSSimulatorStep <name="NiPSSimulatorStep", open=true>; // Abstract
 
 typedef enum <uint> {
@@ -784,5 +789,6 @@ typedef struct {
 } NiPSAlignedQuadGenerator <name="NiPSAlignedQuadGenerator">;
 
 typedef struct {
+    NIOBJECT
     ushort updateSkip;
 } NiPSBoundUpdater <name="NiPSBoundUpdater">;

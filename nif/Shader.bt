@@ -11,8 +11,6 @@
 //   History: 
 //------------------------------------------------
 
-typedef NiObjectNET NiProperty <name="NiProperty">;
-
 // BSShaderTextureSet
 typedef struct {
     int numTextures;

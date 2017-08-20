@@ -28,6 +28,7 @@ typedef struct {
 
 
 typedef struct {
+    NIOBJECT
     RefArray actors( "Actor" ); // NiPhysXActorDesc
     RefArray joints( "Joint" ); // NiPhysXJointDesc
     if ( version >= Version(20, 3, 0, 5) )
@@ -57,6 +58,7 @@ typedef struct {
 
 
 typedef struct {
+    NIOBJECT
     STRING actorName;
     uint numPoses;
     if ( numPoses > 0 )
@@ -81,6 +83,7 @@ typedef struct {
 
 
 typedef struct {
+    NIOBJECT
     Matrix34 localPose;
     Vec3 spaceInertia;
     float mass;
@@ -113,6 +116,7 @@ typedef struct {
 
 // TODO: Cannot find any uses
 typedef struct {
+    NIOBJECT
     STRING name;
     Ref mesh; // NiPhysXMeshDesc
     if ( version < Version(20, 4, 0, 0) )
@@ -254,6 +258,7 @@ typedef struct {
 } NxJointDriveDesc;
 
 typedef struct {
+    NIOBJECT
     NxJointType jointType;
     STRING name;
     NiPhysXJointActor actors[2];
@@ -312,6 +317,7 @@ typedef struct {
 
 
 typedef struct {
+    NIOBJECT
     ushort index;
     uint numStates;
     if ( numStates > 0 ) {
@@ -339,6 +345,7 @@ typedef struct {
 
 
 typedef struct {
+    NIOBJECT
     if ( version < Version(20, 3, 0, 5) )
         bool isConvex;
     STRING name;
@@ -372,6 +379,7 @@ typedef enum <uint> {
 } NxShapeType;
 
 typedef struct {
+    NIOBJECT
     NxShapeType shapeType;
     Matrix34 localPose;
     uint shapeFlags;
@@ -412,6 +420,7 @@ typedef struct {
 
 
 typedef struct {
+    NIOBJECT
     bool active;
     bool interp;
 } NiPhysXDest <name="NiPhysXDest", open=true>; // Abstract
@@ -426,6 +435,7 @@ typedef struct {
 } NiPhysXTransformDest <name="NiPhysXTransformDest">;
 
 typedef struct {
+    NIOBJECT
     bool active;
     bool interp;
 } NiPhysXSrc <name="NiPhysXSrc", open=true>; // Abstract

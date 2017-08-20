@@ -12,6 +12,7 @@
 //------------------------------------------------
 
 typedef struct {
+    NIOBJECT
     STRING name;
 } NiExtraData <name="NiExtraData", read=ReadED>;
 

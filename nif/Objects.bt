@@ -11,8 +11,15 @@
 //   History: 
 //------------------------------------------------
 
+// NiObject
+typedef struct {
+    if ( version < V10_1_0_114 )
+        uint groupID;
+} NiObject <name="NiObject">;
+
 // NiObjectNET
 typedef struct {
+    NIOBJECT
     STRING name;
     RefArray extraData( "Extra Data" ); // NiExtraData
     Ref controller; // NiTimeController
@@ -138,6 +145,7 @@ typedef struct {
 
 // NiPixelData
 typedef struct {
+    NIOBJECT
     NiPixelFormat pixelFormat;
     Ref palette; // NiPalette
     uint mipMapLevels;
@@ -162,6 +170,7 @@ typedef struct {
 
 // NiPersistentSrcTextureRendererData
 typedef struct {
+    NIOBJECT
     NiPixelFormat pixelFormat;
     Ref palette; // NiPalette
     uint mipMapLevels;
@@ -191,6 +200,7 @@ typedef struct {
 
 // NiCollisionObject
 typedef struct {
+    NIOBJECT
     Ref target; // NiAVObject
 } NiCollisionObject <name="NiCollisionObject">;
 

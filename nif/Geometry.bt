@@ -57,13 +57,16 @@ typedef struct {
 
 // NiGeometryData
 typedef struct {
+    NIOBJECT
     // IS_PSYS is defined when used in NiParticleSystemData
     // Technically, Bethesda broke inheritance between NiGeometryData > NiParticlesData
     // and NiParticlesData now inherits directly from NiObject with much of the same
     // layout as NiGeometryData. 
     local bool isPSys = exists(parentof(this).IS_PSYS);
 
-    uint groupID;
+    if ( version >= Version(10, 1, 0, 114) )
+        uint groupID;
+
     ushort numVerts;
     byte keepFlags; // KEEP_XYZ = 0x1 | KEEP_NORM | KEEP_COLOR | KEEP_UV | KEEP_INDICES | KEEP_BONEDATA
     byte compressFlags; // COMPRESS_NORM = 0x1 | COMPRESS_COLOR | COMPRESS_UV | COMPRESS_WEIGHT | COMPRESS_POSITION
@@ -120,6 +123,7 @@ typedef struct {
 
 // NiAdditionalGeometryData
 typedef struct {
+    NIOBJECT
     ushort numVertices;
     uint dataStreamCount;
     if ( dataStreamCount > 0 )
@@ -364,6 +368,7 @@ typedef struct {
 
 // NiSkinInstance
 typedef struct {
+    NIOBJECT
     Ref data; // NiSkinData
     Ref partition; // NiSkinPartition
     Ref root; // NiNode
@@ -391,6 +396,7 @@ typedef struct {
 
 // NiSkinData
 typedef struct {
+    NIOBJECT
     NiTransform transform;
     uint numBones;
     bool hasWeights;
@@ -410,6 +416,7 @@ typedef struct {
 
 // NiSkinPartition
 typedef struct {
+    NIOBJECT
     uint numParts;
     if ( stream < 100 ) {
         SkinPartition parts[numParts];
@@ -491,6 +498,7 @@ typedef struct {
 
 
 typedef struct ( char u, char a ) {
+    NIOBJECT
     local DataStreamUsage usage <hidden=false> = u;
     local DataStreamAccess access <hidden=false> = a;
     uint size;
@@ -511,6 +519,7 @@ typedef struct ( char u, char a ) {
 
 
 typedef struct {
+    NIOBJECT
     UShortArraySz submitPoints( "Submit Point", 4 );
     UShortArraySz completePoints( "Complete Point", 4 );
 } NiMeshModifier <name="NiMeshModifier", open=true>; // Abstract
