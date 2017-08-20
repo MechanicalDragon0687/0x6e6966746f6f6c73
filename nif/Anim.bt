@@ -62,34 +62,65 @@ typedef struct {
     // NiControllerSequence::InterpArrayItem
     Ref interpolator;
     Ref controller;
-    byte priority;
+    if ( BSStream() )
+        byte priority;
+    if ( version < Version(10, 1, 0, 111) ) {
+        Ref blendInterp;
+        ushort blendIndex;
+    }
     // NiControllerSequence::IDTag
-    STRING AVObjectName;
-    STRING propertyType;
-    STRING controllerType;
-    STRING controllerID;
-    STRING interpolatorID;
+    if ( version >= Version(10, 2, 0, 0) && version < Version(20, 1, 0, 1) ) {
+        Ref palette; // NiStringPalette
+        Ref AVObjectName;
+        Ref propertyType;
+        Ref controllerType;
+        Ref controllerID;
+        Ref interpolatorID;
+    } else {
+        STRING AVObjectName;
+        STRING propertyType;
+        STRING controllerType;
+        STRING controllerID;
+        STRING interpolatorID;
+    }
 } ControlledBlock <name="Controlled Block">;
 
 typedef enum <uint> { LOOP, REVERSE, CLAMP, MAX_CYCLE_TYPES } CycleType;
 
 typedef struct {
     STRING name;
+    if ( DIV2 ) {
+        uint numUnkInt;
+        if ( numUnkInt > 0 )
+            uint unkInt[numUnkInt];
+        Ref unkRef;
+    }
     uint numBlocks;
     uint arrayGrowBy;
     if ( numBlocks > 0 )
-        ControlledBlock block[numBlocks];
+        if ( version < V10_2_0_0 ) // Should not be optimized < 10.2
+            ControlledBlock block[numBlocks] <optimize=false>;
+        else
+            ControlledBlock block[numBlocks] <optimize=true>;
+
     float weight;
     Ref textKey;
     CycleType cycleType;
     float frequency;
+    if ( version < Version(10, 3, 0, 1) )
+        float phase;
     float beginKeyTime;
     float endKeyTime;
     Ref owner; // NiControllerManager
     STRING accumRootName;
-    if ( stream <= 28 )
+    if ( version >= Version(20, 3, 0, 8) )
+        uint flags;
+    if ( version >= Version(10, 1, 0, 113) && version < Version(20, 1, 0, 1) )
+        Ref palette; // NiStringPalette
+
+    if ( BSStream() && stream <= 28 )
         Ref animNotes; // BSAnimNotes
-    if ( stream > 28 )
+    else if ( stream > 28 )
         RefArray16 animNotes( "Anim Notes" ) <optimize=false>; // BSAnimNotes.. Multidimensional?
 } NiControllerSequence <name="NiControllerSequence">;
 
@@ -99,6 +130,11 @@ typedef struct {
     RefArray sequence( "Sequence" ); // NiSequence
     Ref objectPalette;
 } NiControllerMgr <name="NiControllerManager">;
+
+typedef struct {
+    BinaryData data;
+    uint dataEnd;
+} NiStringPalette <name="NiStringPalette">;
 
 typedef struct {
     NITIMECTLR controller;

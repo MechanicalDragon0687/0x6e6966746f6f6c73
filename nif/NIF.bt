@@ -291,6 +291,9 @@ struct FILE {
                 case "NiControllerSequence":
                     NiControllerSequence data;
                     break;
+                case "NiStringPalette":
+                    NiStringPalette data;
+                    break;
                 case "NiTransformController":
                     NiTransCtlr data;
                     break;
