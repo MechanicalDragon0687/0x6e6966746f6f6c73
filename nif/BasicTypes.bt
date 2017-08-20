@@ -526,6 +526,10 @@ string ReadSSSTRING8( SSTRING8 &s )
 
 // Undecoded Block
 typedef struct (int i) {
+    // Cannot fallback to block size < 20.2.0.5
+    if ( version < V20_2_0_5 )
+        Exit( R_UNKBLOCKS );
+
     local int index <hidden=true> = i;
     byte data[header.blocksize[i]] <open=suppress>;
     local string s = file.header.btype[file.header.btypeindex[i].index].str;

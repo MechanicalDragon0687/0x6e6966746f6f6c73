@@ -138,7 +138,7 @@ struct FILE {
     local uint stream = header.stream;
     local int unkBlocks <hidden=true> = 0;
 
-    Assert( version >= V20_2_0_7, "This NIF version is not supported." );
+    Assert( version >= V20_0_0_4, "This NIF version is not supported." );
 
     struct BLOCKS {
         local int i <hidden=true>;
@@ -151,7 +151,13 @@ struct FILE {
 
         for ( i = 0 ; i < header.numblocks; i++ )
         {
-            str = header.btype[header.btypeindex[i].index].str;
+            if ( version > V10_1_0_0 ) {
+                str = header.btype[header.btypeindex[i].index].str;
+            } else {
+                SSTRING blockString;
+                str = blockString.str;
+            }
+
             if ( Strstr( str, "NiDataStream" ) == 0 ) {
                 // e.g. split "NiDataStream\0011\00118" to "NiDataStream", "1", "18"
                 // and convert "1" and "18" to integers

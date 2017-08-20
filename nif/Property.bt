@@ -42,9 +42,20 @@ typedef struct {
 
 typedef struct {
     NiProperty prop;
-    ushort flags;
-    uint ref;
-    uint mask;
+    if ( version < Version(20, 1, 0, 2) ) {
+        bool enable;
+        uint testFunction; // ENUM
+        uint ref;
+        uint mask;
+        uint stencilFailAction; // ENUM
+        uint stencilPassZFailAction; // ENUM
+        uint stencilPassAction; // ENUM
+        uint drawMode; // ENUM
+    } else {
+        ushort flags;
+        uint ref;
+        uint mask;
+    }
 } NiStencilProperty <name="NiStencilProperty">;
 
 typedef struct {
@@ -90,7 +101,8 @@ typedef struct {
     AlphaFormat alphaFormat;
     bool isStatic;
     bool directRender;
-    bool persistentRenderData;
+    if ( version >= Version(20, 2, 0, 4) )
+        bool persistentRenderData;
 } NiSourceTexture <name="NiSourceTexture">;
 
 typedef NiSourceTexture NiSourceCubeMap <name="NiSourceCubeMap">;
@@ -105,7 +117,14 @@ typedef struct {
 
 typedef struct {
     Ref source;
-    ushort flags;
+    if ( version < Version(20, 1, 0, 2) ) {
+        ClampMode clampMode;
+        FilterMode filterMode;
+        uint texCoordIndex;
+    } else {
+        ushort flags;
+    }
+
     if ( version >= Version(20, 5, 0, 4) )
         ushort maxAnisotropy;
     bool hasTexTransform;
@@ -123,7 +142,11 @@ typedef struct {
 
 typedef struct {
     NiProperty prop;
-    ushort flags;
+    if ( version < Version(20, 1, 0, 2) )
+        uint applyMode; // ENUM
+    else
+        ushort flags;
+
     uint textureCount;
     bool hasBaseTex;
     if ( hasBaseTex )
@@ -147,18 +170,26 @@ typedef struct {
         float lumaOffset;
         Vec4 bumpMatrix;
     }
-    bool hasNormalTex;
-    if ( hasNormalTex )
-        Tex normalTex;
-    bool hasUnkTex;
-    if ( hasUnkTex ) {
-        Tex unkTex;
-        float unkFloat;
+
+    if ( textureCount > 6 ) {
+        bool hasNormalTex;
+        if ( hasNormalTex )
+            Tex normalTex;
     }
-    
-    bool hasDecalTex0;
-    if ( hasDecalTex0 )
-        Tex decalTex0;
+
+    if ( textureCount > 7 ) {
+        bool hasUnkTex;
+        if ( hasUnkTex ) {
+            Tex unkTex;
+            float unkFloat;
+        }
+    }
+
+    if ( textureCount > 8 ) {
+        bool hasDecalTex0;
+        if ( hasDecalTex0 )
+            Tex decalTex0;
+    }
     
     if ( textureCount > 9 ) {
         bool hasDecalTex1;

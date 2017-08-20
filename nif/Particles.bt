@@ -41,31 +41,31 @@ typedef struct {
 } BSMasterParticleSystem <name="BSMasterParticleSystem">;
 
 typedef struct {
-    if ( BSStream() )
+    if ( BS_202 )
         local bool IS_PSYS = true;
     NiGeometryData base;
     local ushort numVerts = base.numVerts;
 
     bool hasRadii;
-    if ( !BSStream() && hasRadii && numVerts )
+    if ( !BS_202 && hasRadii && numVerts )
         float radii[numVerts];
     
     ushort numActiveVerts;
     bool hasSizes;
-    if ( !BSStream() && hasSizes && numVerts )
+    if ( !BS_202 && hasSizes && numVerts )
         float sizes[numVerts];
 
     bool hasRotations;
-    if ( !BSStream() && hasRotations && numVerts )
+    if ( !BS_202 && hasRotations && numVerts )
         Quat rotations[numVerts];
     bool hasRotationAngles;
-    if ( !BSStream() && hasRotationAngles && numVerts )
+    if ( !BS_202 && hasRotationAngles && numVerts )
         float rotationAngles[numVerts];
     bool hasRotationAxes;
-    if ( !BSStream() && hasRotationAxes && numVerts )
+    if ( !BS_202 && hasRotationAxes && numVerts )
         Vec3 rotationAxes[numVerts];
 
-    if ( BSStream() ) {
+    if ( BS_202 ) {
         bool hasTextureIndices; // NOT the bool for subtexoffsets
         
         local uint numOffsets = 0;
@@ -97,7 +97,7 @@ typedef struct {
     NiParticlesData data;
     local ushort numVerts = data.base.numVerts;
     
-    if ( !BSStream() && numVerts > 0 ) {
+    if ( !BS_202 && numVerts > 0 ) {
         struct {
             Vec3 velocity;
             if ( version < Version(10, 3, 0, 5) )
@@ -112,10 +112,10 @@ typedef struct {
     }
 
     bool hasRotationSpeeds;
-    if ( !BSStream() && hasRotationSpeeds && numVerts )
+    if ( !BS_202 && hasRotationSpeeds && numVerts )
         float rotationSpeeds[numVerts];
 
-    if ( !BSStream() ) {
+    if ( !BS_202 ) {
         ushort numAddedParticles;
         ushort addedParticlesBase;
     }

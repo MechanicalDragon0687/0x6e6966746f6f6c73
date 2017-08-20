@@ -13,7 +13,7 @@
 
 // NiObject
 typedef struct {
-    if ( version < V10_1_0_114 )
+    if ( version >= V10_0_0_0 && version < V10_1_0_114 )
         uint groupID;
 } NiObject <name="NiObject">;
 

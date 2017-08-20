@@ -15,14 +15,24 @@ typedef struct {
     NiAVObject base;
     Ref data; // NiGeometryData
     Ref skin; // NiSkinInstance
-    uint nummaterials;
-    if ( nummaterials > 0 ) {
-        uint materialstring;
-        uint material[nummaterials];
+    if ( version >= Version(20, 2, 0, 5) ) {
+        uint nummaterials;
+        if ( nummaterials > 0 ) {
+            struct {
+                STRING materialName;
+                uint materialExtraData;
+            } materials[nummaterials];
+        }
+        uint activematerial;
+    } else {
+        bool shader;
+        if ( shader ) {
+            STRING shaderName;
+            uint implementation;
+        }
     }
-
-    uint activematerial;
-    byte defaultMatNeedsUpdateFlag;
+    if ( version >= Version(20, 2, 0, 7) )
+        byte defaultMatNeedsUpdateFlag;
 
     if ( stream > 34 ) {
         Ref bsprop1;
@@ -79,7 +89,7 @@ typedef struct {
     ushort dataFlags;
 
     local ushort nbtMethod = dataFlags & 0xF000;
-    Assert( (nbtMethod >> 12) <= 1, "Unsupported NBT method" );
+    Assert( (nbtMethod >> 12) <= 3, "Unsupported NBT method" );
 
     local ubyte numTextureSets = dataFlags & 0x3F; // The max UV Sets is 63
     if ( stream >= 34 )

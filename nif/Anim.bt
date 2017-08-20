@@ -121,7 +121,7 @@ typedef struct {
     if ( version >= Version(10, 1, 0, 113) && version < Version(20, 1, 0, 1) )
         Ref palette; // NiStringPalette
 
-    if ( BSStream() && stream <= 28 )
+    if ( stream > 11 && stream <= 28 )
         Ref animNotes; // BSAnimNotes
     else if ( stream > 28 )
         RefArray16 animNotes( "Anim Notes" ) <optimize=false>; // BSAnimNotes.. Multidimensional?
@@ -497,6 +497,8 @@ typedef struct {
 
 typedef struct ( uint numVerts ) {
     STRING frameName;
+    if ( !BS_OBL && version < Version(20, 1, 0, 3) )
+        float weight;
     if ( numVerts > 0 )
         Vec3 vector[numVerts];
 } Morph;
@@ -507,7 +509,7 @@ typedef struct {
     uint numVertices;
     bool relativeTargets;
     if ( numMorphs > 0 )
-        Morph morph(numVertices)[numMorphs] <optimize=true>;
+        Morph morph(numVertices)[numMorphs] <optimize=false>;
 } NiMorphData <name="NiMorphData">;
 
 typedef struct {
@@ -520,12 +522,24 @@ typedef struct {
     ushort flags; // flags & 1 == updateNormals
     Ref data; // NiMorphData
     bool alwaysUpdate;
-    uint numTargets;
-    if ( numTargets > 0 )
-        struct {
-            Ref interpolator;
-            float weight;
-        } interpItem[numTargets];
+
+    if ( version >= Version(10, 1, 0, 104) ) {
+        if ( version < Version(20, 1, 0, 3) ) {
+            RefArray interpolators( "Interpolator" ); // NiInterpolator
+            if ( BS_OBL ) {
+                uint numUnk;
+                if ( numUnk > 0 )
+                    float unk[numUnk];
+            }
+        } else {
+            uint numTargets;
+            if ( numTargets > 0 )
+                struct {
+                    Ref interpolator;
+                    float weight;
+                } interpItem[numTargets];
+        }
+    }
 } NiGeomMorpherCtlr <name="NiGeomMorpherController">;
 
 typedef struct {
