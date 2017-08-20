@@ -131,18 +131,25 @@ typedef struct {
     if ( numBones > 0 )
         RefArray nodeSets( "Bone" )[numBones] <optimize=false>; // NiNode
     
-    uint numSkins;
-    if ( numSkins > 0 ) {
-        struct {
-            uint size;
-            if ( size > 0 ) {
-                Ref skinGeometry[size]; // NiTriBasedGeom
-                Ref skinInstance[size]; // NiSkinInstance
-            }
-        } skinInfos[numSkins] <optimize=false>;
+    // There are no signs of a minimum version for these values in Gamebryo
+    // but they are not present in Bethesda NIFs. The XML uses == 20.3.0.9
+    // which is incorrect because Gamebryo says it should always be present.
+    if ( !BSStream() ) {
+        uint numSkins;
+        if ( numSkins > 0 ) {
+            struct {
+                uint size;
+                if ( size > 0 ) {
+                    Ref skinGeometry[size]; // NiTriBasedGeom
+                    Ref skinInstance[size]; // NiSkinInstance
+                }
+            } skinInfos[numSkins] <optimize=false>;
+        }
+        RefArray skins( "Skin" ); // NiTriBasedGeom
     }
-    RefArray skins( "Skin" ); // NiTriBasedGeom
 } NiBoneLODController <name="NiBoneLODController">;
+
+typedef NiBoneLODController NiBSBoneLODCtlr <name="NiBSBoneLODController">;
 
 typedef struct {
     NITIMECTLR controller;
@@ -174,23 +181,6 @@ typedef NiAlphaCtlr BSNiAlphaCtlr <name="BSNiAlphaPropertyTestRefController", op
 
 typedef NIFLOATINTERPCTLR NiLightRadiusCtlr <name="NiLightRadiusController", open=false>;
 typedef NIFLOATINTERPCTLR NiLightDimmerCtlr <name="NiLightDimmerController", open=false>;
-
-// NiBoneLODController
-typedef struct {
-    NITIMECTLR controller;
-    uint LOD;
-    uint numLODs;
-    uint boneArraySize;
-    if ( boneArraySize > 0 ) {
-        struct {
-            struct {
-                RefArray node( "Node" );
-            } nodeSet[boneArraySize] <optimize=false>;
-        } boneArray;
-    }
-} NiBoneLODCtlr <name="NiBoneLODController">;
-
-typedef NiBoneLODCtlr NiBSBoneLODCtlr <name="NiBSBoneLODController">;
 
 // BSLagBoneController
 typedef struct {
