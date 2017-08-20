@@ -429,6 +429,15 @@ struct FILE {
                 case "NiPathInterpolator":
                     NiPathInterp data;
                     break;
+                case "NiBSplineCompFloatInterpolator":
+                    NiBSplineCompFloatInterpolator data;
+                    break;
+                case "NiBSplineCompTransformInterpolator":
+                    NiBSplineCompTransformInterpolator data;
+                    break;
+                case "NiBSplineCompPoint3Interpolator":
+                    NiBSplineCompPoint3Interpolator data;
+                    break;
                 case "NiFloatData":
                     NiFloatData data;
                     break;
@@ -443,6 +452,12 @@ struct FILE {
                     break;
                 case "NiPosData":
                     NiPosData data;
+                    break;
+                case "NiBSplineData":
+                    NiBSplineData data;
+                    break;
+                case "NiBSplineBasisData":
+                    NiBSplineBasisData data;
                     break;
                 case "NiCollisionObject":
                     NiCollisionObject data;

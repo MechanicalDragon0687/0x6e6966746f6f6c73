@@ -291,6 +291,19 @@ typedef struct {
     FloatKeyGrp data;
 } NiFloatData <name="NiFloatData">;
 
+typedef struct {
+    uint numControlPoints;
+    if ( numControlPoints > 0 )
+        float controlPoints[numControlPoints];
+    uint numCompactControlPoints;
+    if ( numCompactControlPoints > 0 )
+        short compactControlPoints[numCompactControlPoints];
+} NiBSplineData <name="NiBSplineData">;
+
+typedef struct {
+    uint quantity;
+} NiBSplineBasisData <name="NiBSplineBasisData">;
+
 
 // INTERPOLATORS
 
@@ -392,6 +405,49 @@ typedef struct {
     Ref pathData; // NiPosData
     Ref percentData; // NiFloatData
 } NiPathInterp <name="NiPathInterpolator">;
+
+// NiBSplineInterpolator
+typedef struct {
+    float startTime;
+    float endTime;
+    Ref data; // NiBSplineData
+    Ref basisData; // NiBSplineBasisData
+} NiBSplineInterpolator <name="NiPathInterpolator">;
+
+typedef struct {
+    NiBSplineInterpolator base;
+    float value;
+    uint valueHandle;
+} NiBSplineFloatInterpolator <name="NiBSplineFloatInterpolator">;
+
+typedef struct {
+    NiBSplineInterpolator base;
+    NiQuatTransform transform;
+    uint transCPHandle;
+    uint rotationCPHandle;
+    uint scaleCPHandle;
+} NiBSplineTransformInterpolator <name="NiBSplineTransformInterpolator">;
+
+typedef struct {
+    NiBSplineInterpolator base;
+    Vec3 value;
+    uint valueHandle;
+} NiBSplinePoint3Interpolator <name="NiBSplinePoint3Interpolator">;
+
+typedef struct {
+    NiBSplineFloatInterpolator base;
+    float compScalars[2];
+} NiBSplineCompFloatInterpolator <name="NiBSplineCompFloatInterpolator">;
+
+typedef struct {
+    NiBSplineTransformInterpolator base;
+    float compScalars[6];
+} NiBSplineCompTransformInterpolator <name="NiBSplineCompTransformInterpolator">;
+
+typedef struct {
+    NiBSplinePoint3Interpolator base;
+    float compScalars[2];
+} NiBSplineCompPoint3Interpolator <name="NiBSplineCompPoint3Interpolator">;
 
 
 // Legacy Anim
