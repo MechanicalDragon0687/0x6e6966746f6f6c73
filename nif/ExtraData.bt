@@ -55,8 +55,12 @@ typedef struct {
 typedef struct {
     NiExtraData data;
     uint numKeys;
-    if ( numKeys > 0 )
-        StringKey keys(1)[numKeys] <optimize=true>;
+    if ( numKeys > 0 ) {
+        if ( version < V20_1_0_1 )
+            StringKey keys(1)[numKeys] <optimize=false>;
+        else
+            StringKey keys(1)[numKeys] <optimize=true>;
+    }
 } NiTextKeyED <name="NiTextKeyExtraData">;
 
 typedef struct {

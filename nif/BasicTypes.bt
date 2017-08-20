@@ -459,7 +459,7 @@ string ReadSSTRING( SSTRING &s )
 // STRING (Combine STRINGINDEX and SSTRING)
 typedef struct {
     local string nameStr;
-    if ( version < Version(20, 1, 0, 1) ) {
+    if ( version < V20_1_0_1 ) {
         SSTRING name;
         nameStr = ReadSSTRING( name );
     } else {
