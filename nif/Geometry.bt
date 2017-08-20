@@ -107,6 +107,13 @@ typedef struct {
         Vec3 bitangents[numVerts] <open=suppress>;
     }
 
+    if ( DIV2 ) {
+        bool hasUnkFloats;
+        if ( hasUnkFloats ) {
+            float unkFloats[numVerts];
+        }
+    }
+
     NiBound boundingSphere;
 
     bool hasVertColors;

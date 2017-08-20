@@ -248,6 +248,10 @@ typedef struct {
 typedef struct {
     Vec3 center;
     float radius;
+    // Occurs in Divinity 2 only after NiBound
+    // so assumed to be part of the class
+    if ( DIV2 )
+        ushort unkShorts[13];
 } NiBound;
 
 typedef struct {
