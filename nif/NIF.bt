@@ -798,6 +798,9 @@ struct FILE {
                 case "WaterShaderProperty":
                     WaterShaderProperty data;
                     break;
+                case "NiDitherProperty":
+                    NiDitherProperty data;
+                    break;
                 case "NiFogProperty":
                     NiFogProperty data;
                     break;

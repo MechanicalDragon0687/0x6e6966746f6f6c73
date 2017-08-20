@@ -16,6 +16,11 @@ typedef NiObjectNET NiTexture <name="NiTexture">;
 
 typedef struct {
     NiProperty prop;
+    ushort flags;
+} NiDitherProperty <name="NiDitherProperty">;
+
+typedef struct {
+    NiProperty prop;
     ushort flags; // SetFog true == flags |= 1, GetFogFunction == (flags >> 1) & 3
     float depth;
     Color3 color;
