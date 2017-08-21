@@ -82,6 +82,11 @@ typedef struct {
 typedef struct {
     NiProperty prop;
     ushort flags;
+} NiWireframeProperty <name="NiWireframeProperty">;
+
+typedef struct {
+    NiProperty prop;
+    ushort flags;
     if ( version < Version(20, 1, 0, 2) )
         enum <uint> {
             TEST_ALWAYS,

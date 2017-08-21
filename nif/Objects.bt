@@ -73,6 +73,14 @@ typedef struct {
     float quadraticAtten;
 } NiPointLight <name="NiPointLight">;
 
+// NiSpotLight
+typedef struct {
+    NiPointLight light;
+    float outerSpotAngle;
+    if ( version >= Version(20, 2, 0, 5) )
+        float innerSpotAngle;
+    float spotExponent;
+} NiSpotLight <name="NiSpotLight">;
 
 // NiTextureEffect
 typedef struct {

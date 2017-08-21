@@ -408,6 +408,9 @@ struct FILE {
                 case "NiTransformInterpolator":
                     NiTransformInterp data;
                     break;
+                case "NiBlendTransformInterpolator":
+                    NiBlendTransformInterp data;
+                    break;
                 case "NiPoint3Interpolator":
                     NiPoint3Interp data;
                     break;
@@ -639,6 +642,9 @@ struct FILE {
                 case "NiPointLight":
                     NiPointLight data;
                     break;
+                case "NiSpotLight":
+                    NiSpotLight data;
+                    break;
                 case "NiAmbientLight":
                     NiAmbientLight data;
                     break;
@@ -818,6 +824,9 @@ struct FILE {
                     break;
                 case "NiVertexColorProperty":
                     NiVertexColorProperty data;
+                    break;
+                case "NiWireframeProperty":
+                    NiWireframeProperty data;
                     break;
                 case "NiZBufferProperty":
                     NiZBufferProperty data;

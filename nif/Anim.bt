@@ -387,6 +387,10 @@ typedef struct {
 } NiTransformInterp <name="NiTransformInterpolator">;
 
 typedef struct {
+    NIBLENDINTERP
+} NiBlendTransformInterp <name="NiBlendTransformInterpolator">;
+
+typedef struct {
     NIKBINTERP
     Vec3 point;
     Ref data; // NiPosData
