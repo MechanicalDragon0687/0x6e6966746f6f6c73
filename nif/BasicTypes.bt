@@ -119,45 +119,48 @@ string VertexDescRead( VertexDesc& f )
 
 typedef ubyte bool;
 
+// A float that has been encoded into a single byte
+typedef byte bytefloat;
+
 typedef struct {
     float X;
     float Y;
     float Z;
-} Vec3 <read=ReadVec3, open=suppress>;
+} Vec3 <read=ReadVec3, open=suppress, size=12>;
 
 typedef struct {
     hfloat X;
     hfloat Y;
     hfloat Z;
-} HalfVec3 <read=ReadHalfVec3, open=suppress>;
+} HalfVec3 <read=ReadHalfVec3, open=suppress, size=6>;
 
 typedef struct {
-    byte X;
-    byte Y;
-    byte Z;
-} ByteVec3;
+    bytefloat X;
+    bytefloat Y;
+    bytefloat Z;
+} ByteVec3 <read=ReadByteVec3, open=suppress, size=3>;
 
 typedef struct {
     float X;
     float Y;
     float Z;
     float W;
-} Vec4 <read=ReadVec4, open=suppress>;
+} Vec4 <read=ReadVec4, open=suppress, size=16>;
 
 typedef struct ( string str ) {
     local string sW = str;
-    byte X;
-    byte Y;
-    byte Z;
-    byte W;
-} ByteVec4 <read=ReadByteVec4, open=suppress>;
+    bytefloat X;
+    bytefloat Y;
+    bytefloat Z;
+    bytefloat W;
+} ByteVec4 <read=ReadByteVec4, open=suppress, size=4>;
 
 typedef struct {
     float W;
     float X;
     float Y;
     float Z;
-} Quat;
+} Quat <size=16>;
 
 typedef Vec4 QuatXYZW;
 
@@ -165,64 +168,64 @@ typedef struct {
     float R;
     float G;
     float B;
-} Color3;
+} Color3 <size=12>;
 
 typedef struct {
     float R;
     float G;
     float B;
     float A;
-} Color4;
+} Color4 <size=16>;
 
 typedef struct {
     ubyte R;
     ubyte G;
     ubyte B;
     ubyte A;
-} ByteColor4;
+} ByteColor4 <size=4>;
 
 typedef struct {
     Vec3 _1;
     Vec3 _2;
     Vec3 _3;
-} Matrix33;
+} Matrix33 <size=36>;
 
 typedef struct {
     Vec3 _1;
     Vec3 _2;
     Vec3 _3;
     Vec3 _4;
-} Matrix34;
+} Matrix34 <size=48>;
 
 typedef struct {
     Vec4 _1;
     Vec4 _2;
     Vec4 _3;
-} Matrix43;
+} Matrix43 <size=48>;
 
 typedef struct {
     Vec4 _1;
     Vec4 _2;
     Vec4 _3;
     Vec4 _4;
-} Matrix44;
+} Matrix44 <size=64>;
 
 typedef struct {
     Matrix33 rotation;
     Vec3 translation;
     float scale;
-} NiTransform <open=true, name="Transform">;
+} NiTransform <open=true, name="Transform", size=52>;
 
 typedef struct {
     Vec3 translation;
     Quat rotation;
     float scale;
-} NiQuatTransform <open=true, name="Transform">;
+} NiQuatTransform <open=true, name="Transform", size=32>;
 
 typedef struct {
     float U;
     float V;
-} TexCoord <name="UV", read=ReadTexCoord>;
+} TexCoord <name="UV", read=ReadTexCoord, size=8>;
 
 typedef struct ( uint numVerts ) {
     TexCoord uv[numVerts];
@@ -231,19 +234,23 @@ typedef struct ( uint numVerts ) {
 typedef struct {
     hfloat U;
     hfloat V;
-} HalfTexCoord <name="UV", read=ReadHalfTexCoord>;
+} HalfTexCoord <name="UV", read=ReadHalfTexCoord, size=4>;
+
+typedef struct ( uint numVerts ) {
+    HalfTexCoord uv[numVerts];
+} HalfTexCoordArray <name="UVs">;
 
 typedef struct {
     ushort A;
     ushort B;
     ushort C;
-} Triangle <read=ReadTriangle, open=suppress>;
+} Triangle <read=ReadTriangle, open=suppress, size=6>;
 
 typedef struct {
     float t;
     float b;
     float c;
-} TBC;
+} TBC <size=12>;
 
 typedef struct {
     Vec3 center;
@@ -543,8 +550,7 @@ typedef struct (int i) {
 string BlockComment( Block& b )
 {
     string s;
-    string str = file.header.btype[file.header.btypeindex[b.index].index].str;
-    SPrintf(s, "%s", str);
+    SPrintf(s, "%s", file.header.btype[file.header.btypeindex[b.index].index].str);
     return s;
 }
 
@@ -561,9 +567,7 @@ typedef struct  {
 
 string ReadBLOCKTYPEINDEX( BLOCKTYPEINDEX &b )
 {
-    string s;
-    SPrintf(s, "%s", file.header.btype[b.index].str);
-    return s;
+    return file.header.btype[b.index].str;
 }
 
 // Ref
@@ -571,11 +575,10 @@ typedef uint Ref <read=ReadREF, open=suppress>;
 
 string ReadREF ( Ref &r )
 {
-    if ( r == 4294967295 )
+    if ( r == 0xFFFFFFFF )
         return "None";
 
     string n;
-    string t = file.header.btype[file.header.btypeindex[r].index].str;
     if ( exists(file.blocks.data[r].base.name.nameStr) ) {
         n = file.blocks.data[r].base.name.nameStr;
     } else if ( exists(file.blocks.data[r].base.nameStr) ) {
@@ -583,8 +586,7 @@ string ReadREF ( Ref &r )
     }
 
     string s;
-    SPrintf(s, "%s [%u] (%s)", t, r, n);
-
+    SPrintf(s, "%s [%u] (%s)", file.header.btype[file.header.btypeindex[r].index].str, r, n);
     return s;
 }
 
@@ -665,16 +667,23 @@ string ReadHalfVec3( HalfVec3& vec )
     return s;
 }
 
+string ReadByteVec3( ByteVec3& vec )
+{
+    string s;
+    SPrintf(s, "X %f Y %f Z %f", (float)(vec.X / 255.0),
+                                 (float)(vec.Y / 255.0),
+                                 (float)(vec.Z / 255.0));
+    return s;
+}
+
 string ReadByteVec4( ByteVec4& vec )
 {
     string s;
-    float x, y, z, w;
-    x = (vec.X / 255.0);
-    y = (vec.Y / 255.0);
-    z = (vec.Z / 255.0);
-    w = (vec.W / 255.0);
-
-    SPrintf(s, "X %f Y %f Z %f | %s: %f", x, y, z, vec.sW, w);
+    SPrintf(s, "X %f Y %f Z %f | %s: %f", (float)(vec.X / 255.0),
+                                          (float)(vec.Y / 255.0),
+                                          (float)(vec.Z / 255.0),
+                                          vec.sW,
+                                          (float)(vec.W / 255.0));
     return s;
 }
 
