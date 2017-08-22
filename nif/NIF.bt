@@ -25,7 +25,8 @@
 typedef enum {
     R_OK = 0x1,
     R_UNKBLOCKS = 0x2,
-    R_EOF = 0x4
+    R_EOF = 0x4,
+    R_HDR = 0x8
 } ReturnCodes;
 
 // DECODED BLOCKS
@@ -47,15 +48,24 @@ struct FILE {
         local string hdr = ReadLine(0);
         char HeaderString[Strlen(hdr)] <open=suppress>;
 
-        // Obtain the version string from the header string
-        local int result, size;
-        result = RegExSearch( hdr, versionRegex, size );
-        // Convert the version string into an integer
-        local uint verFromStr = GetVersionFromString( SubStr( hdr, result, size - 1 ) );
+        if ( Strstr( hdr, GAMEBRYO ) == -1 && Strstr( hdr, NETIMMERSE ) == -1 )
+            Exit( R_HDR );
+        
+        local uint verFromStr <format=hex> = MISSING;
+        if ( Strstr( hdr, VERSTR ) > 0 ) {
+            // Obtain the version string from the header string
+            local int result, size;
+            result = RegExSearch( hdr, versionRegex, size );
+            // Convert the version string into an integer
+            verFromStr = GetVersionFromString( SubStr( hdr, result, size - 1 ) );
+            if ( verFromStr == 0 )
+                Exit( R_HDR );
+        }
 
         if ( verFromStr > V3_1 ) {
             uint version <format=hex>;
-            Assert( version == verFromStr, "Numeric version does not match version obtained from header string" );
+            if ( verFromStr != MISSING )
+                Assert( version == verFromStr, "Numeric version does not match version obtained from header string" );
         } else {
             local uint version = verFromStr;
             local int i = 0;
@@ -151,7 +161,7 @@ struct FILE {
 
         for ( i = 0 ; i < header.numblocks; i++ )
         {
-            if ( version > V10_1_0_0 ) {
+            if ( version >= V5_0_0_1 ) {
                 str = header.btype[header.btypeindex[i].index].str;
             } else {
                 SSTRING blockString;
