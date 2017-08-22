@@ -53,7 +53,7 @@ typedef union {
         if ( _unused > 0 )
             Printf( "Last 8 NiAVObject flag bits set at offset %u\r\n", FTell() );
     } bitflags;
-} NiAVObjectFlags <name="Flags", read=NiAVFlagsRead, open=true>;
+} NiAVObjectFlags <name="Flags", read=NiAVFlagsRead, open=true, size=4>;
 
 string NiAVFlagsRead( NiAVObjectFlags& f )
 {
@@ -121,7 +121,7 @@ typedef union {
         ushort UpdateControllers     : 1;
         ushort                       : 14;
     } bitflags;
-} NiSwitchFlags <name="Flags", read=NiSwitchFlagsRead, open=true>;
+} NiSwitchFlags <name="Flags", read=NiSwitchFlagsRead, open=true, size=2>;
 
 string NiSwitchFlagsRead( NiSwitchFlags& f )
 {
@@ -143,7 +143,7 @@ typedef union {
         byte UsePlayerAdjust : 1;
         byte                 : 6;
     } bitflags;
-} BSValueNodeFlags <name="Flags", read=BSValueNodeFlagsRead, open=true>;
+} BSValueNodeFlags <name="Flags", read=BSValueNodeFlagsRead, open=true, size=1>;
 
 string BSValueNodeFlagsRead( BSValueNodeFlags& f )
 {
@@ -175,7 +175,7 @@ typedef union {
         ushort unk      : 1;
         ushort fullprec : 1;
     } bitflags;
-} VertexFlags <name="Vertex Flags", read=VertexFlagsRead, open=false>;
+} VertexFlags <name="Vertex Flags", read=VertexFlagsRead, size=2>;
 
 string VertexFlagsRead( VertexFlags& f )
 {
@@ -230,7 +230,7 @@ typedef union {
         VertexFlags vertexFlags;
         byte unused;
     } bits <open=true>;
-} VertexDesc <read=VertexDescRead, open=true>;
+} VertexDesc <read=VertexDescRead, open=true, size=8>;
 
 string VertexDescRead( VertexDesc& f )
 {
@@ -294,7 +294,7 @@ typedef union {
         ushort computeScaledTime : 1;
         ushort forcedUpdate      : 1;
     } bits;
-} TimeControllerFlags <name="Flags", read=TimeControllerFlagsRead, open=false>;
+} TimeControllerFlags <name="Flags", read=TimeControllerFlagsRead, size=2>;
 
 string TimeControllerFlagsRead( TimeControllerFlags& f )
 {
@@ -329,7 +329,7 @@ typedef union {
         ubyte useOnlyHighestWeight     : 1;
         ubyte computeNormalizedWeights : 1;
     } bits;
-} BlendInterpFlags <name="Flags", read=BlendInterpFlagsRead, open=false>;
+} BlendInterpFlags <name="Flags", read=BlendInterpFlagsRead, size=1>;
 
 string BlendInterpFlagsRead( BlendInterpFlags& f )
 {
@@ -385,7 +385,7 @@ typedef union {
         Assert( srcBlend < BLEND_MAX_MODES, "Unknown NiAlphaProperty Flags value" );
         Assert( dstBlend < BLEND_MAX_MODES, "Unknown NiAlphaProperty Flags value" );
     } bits;
-} AlphaFlags <name="Flags", read=AlphaFlagsRead, open=false>;
+} AlphaFlags <name="Flags", read=AlphaFlagsRead, size=2>;
 
 string AlphaFlagsRead( AlphaFlags& f )
 {
@@ -424,7 +424,7 @@ typedef union {
         eFogFlags fog    : 1;
         FogFunction fogFunction  : 2;
     } bits;
-} FogFlags <name="Flags", read=FogFlagsRead, open=false>;
+} FogFlags <name="Flags", read=FogFlagsRead, size=2>;
 
 string FogFlagsRead( FogFlags& f )
 {
@@ -461,7 +461,7 @@ typedef union {
         StencilDrawMode drawMode  : 2;
         TestFunction testFunc     : 3;
     } bits;
-} StencilFlags <name="Flags", read=StencilFlagsRead, open=false>;
+} StencilFlags <name="Flags", read=StencilFlagsRead, size=2>;
 
 string StencilFlagsRead( StencilFlags& f )
 {
@@ -495,7 +495,7 @@ typedef union {
         ushort decalCount    : 8;
         Assert( applyMode < APPLY_MAX_MODES, "Unknown NiTexturingProperty Flags value" );
     } bits;
-} TexturingFlags <name="Flags", read=TexturingFlagsRead, open=false>;
+} TexturingFlags <name="Flags", read=TexturingFlagsRead, size=2>;
 
 string TexturingFlagsRead( TexturingFlags& f )
 {
@@ -537,7 +537,7 @@ typedef union {
         Assert( filterMode < FILTER_MAX_MODES, "Unknown NiTexturingProperty::Map Flags value" );
         Assert( clampMode < CLAMP_MAX_MODES, "Unknown NiTexturingProperty::Map Flags value" );
     } bits;
-} MapFlags <name="Flags", read=MapFlagsRead, open=false>;
+} MapFlags <name="Flags", read=MapFlagsRead, size=2>;
 
 string MapFlagsRead( MapFlags& f )
 {
@@ -570,7 +570,7 @@ typedef union {
         SourceVertexMode sourceMode : 2;
         Assert( sourceMode < SOURCE_MAX_MODES, "Unknown NiVertexColorProperty Flags value" );
     } bits;
-} VertexColorFlags <name="Flags", read=VertexColorFlagsRead, open=false>;
+} VertexColorFlags <name="Flags", read=VertexColorFlagsRead, size=2>;
 
 string VertexColorFlagsRead( VertexColorFlags& f )
 {
@@ -590,7 +590,7 @@ typedef union {
         ushort doWrite : 1;
         TestFunction testFunc : 3;
     } bits;
-} ZBufferFlags <name="Flags", read=ZBufferFlagsRead, open=false>;
+} ZBufferFlags <name="Flags", read=ZBufferFlagsRead, size=2>;
 
 string ZBufferFlagsRead( ZBufferFlags& f )
 {
@@ -618,7 +618,7 @@ typedef union {
         ushort useSoftwareSkinning : 1;
         ushort recomputeBounds : 1;
     } bitflags;
-} SkinningModifierFlags <name="Flags", read=SkinningModifierFlagsRead, open=false>;
+} SkinningModifierFlags <name="Flags", read=SkinningModifierFlagsRead, size=2>;
 
 string SkinningModifierFlagsRead( SkinningModifierFlags& f )
 {
@@ -656,7 +656,7 @@ typedef union {
         ubyte skinned         : 1;
         ubyte swSkinned       : 1;
     } bitflags;
-} MorphModifierFlags <name="Flags", read=MorphModifierFlagsRead, open=false>;
+} MorphModifierFlags <name="Flags", read=MorphModifierFlagsRead, size=1>;
 
 string MorphModifierFlagsRead( MorphModifierFlags& f )
 {
@@ -697,7 +697,7 @@ typedef union {
         ushort yAxis : 1;
         ushort zAxis : 1;
     } bitflags;
-} LookAtFlags <name="Flags", read=LookAtFlagsRead, open=false>;
+} LookAtFlags <name="Flags", read=LookAtFlagsRead, size=2>;
 
 string LookAtFlagsRead( LookAtFlags& f )
 {
@@ -739,7 +739,7 @@ typedef union {
         ushort follow           : 1;
         ushort flip             : 1;
     } bitflags;
-} PathFlags <name="Flags", read=PathFlagsRead, open=false>;
+} PathFlags <name="Flags", read=PathFlagsRead, size=2>;
 
 string PathFlagsRead( PathFlags& f )
 {
