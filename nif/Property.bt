@@ -110,7 +110,8 @@ typedef struct {
     MipMapFormat mipMapFormat;
     AlphaFormat alphaFormat;
     bool isStatic;
-    bool directRender;
+    if ( version >= Version(10, 1, 0, 103) )
+        bool directRender;
     if ( version >= Version(20, 2, 0, 4) )
         bool persistentRenderData;
 } NiSourceTexture <name="NiSourceTexture">;
@@ -118,11 +119,15 @@ typedef struct {
 typedef NiSourceTexture NiSourceCubeMap <name="NiSourceCubeMap">;
 
 typedef struct {
-    TexCoord translation <name="Translation?">;
-    TexCoord tiling <name="Tiling?">;
-    float wRotation;
-    uint transformType;
-    TexCoord offset <name="Offset?">;
+    TexCoord translation;
+    TexCoord scale;
+    float rotation;
+    enum TransformMethod {
+        MAYA_DEPRECATED_TRANSFORM = 0,
+        MAX_TRANSFORM,
+        MAYA_TRANSFORM
+    } transformMethod;
+    TexCoord center;
 } TexTransform;
 
 typedef struct {
@@ -131,6 +136,8 @@ typedef struct {
         ClampMode clampMode;
         FilterMode filterMode;
         uint texCoordIndex;
+        if ( version < Version(10, 3, 0, 4) )
+            short LandK[2];
     } else {
         ushort flags;
     }

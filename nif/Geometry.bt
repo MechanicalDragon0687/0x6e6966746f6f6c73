@@ -135,7 +135,8 @@ typedef struct {
 
     Assert( consistencyType == (consistencyType & CONSISTENCY_MASK), "Consistency Type is invalid for this NIF version." );
 
-    Ref additionalGeomData;
+    if ( version >= Version(10, 3, 0, 7) )
+        Ref additionalGeomData;
 } NiGeometryData <open=true>; // Abstract
 
 // NiAdditionalGeometryData
@@ -387,7 +388,8 @@ typedef struct {
 typedef struct {
     NIOBJECT
     Ref data; // NiSkinData
-    Ref partition; // NiSkinPartition
+    if ( version >= Version(10, 1, 0, 101) )
+        Ref partition; // NiSkinPartition
     Ref root; // NiNode
     RefArray bone( "Bone" ); // NiNode
 } NiSkinInstance <name="NiSkinInstance">;
@@ -416,6 +418,8 @@ typedef struct {
     NIOBJECT
     NiTransform transform;
     uint numBones;
+    if ( version < Version(10, 1, 0, 101) )
+        Ref partition; // NiSkinPartition
     bool hasWeights;
     if ( numBones > 0 )
         struct {
