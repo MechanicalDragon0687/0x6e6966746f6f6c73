@@ -1,0 +1,420 @@
+//------------------------------------------------
+//--- 010 Editor v8.0 Binary Template
+//
+//      File: Bitflags.bt
+//   Authors: jonwd7
+//   Version: 
+//   Purpose: 
+//  Category: 
+// File Mask: 
+//  ID Bytes: 
+//   History: 
+//------------------------------------------------
+
+
+// NiAVObject Flags
+//  These bits appear to have the same function across all supported NIFs (34, 83, 100, 130),
+//  though these values were obtained from version 130.
+//  For Oblivion these values may differ.
+//  For Morrowind the flags are completely different.
+typedef union {
+    int value;
+    struct {
+        int hidden                  : 1;
+        int selectiveUpdate         : 1; // Always set at runtime
+        int selectiveUpdateTrans    : 1; // Always set at runtime
+        int selectiveUpdateCtlr     : 1; // Always set at runtime
+        int selectiveUpdateRigid    : 1; // Always unset at runtime
+        int displayObject           : 1;
+        int disableSorting          : 1;
+        int selUpdTransOverride     : 1;
+        int UNUSED                  : 1;
+        int saveExternalGeomData    : 1;
+        int noDecals                : 1;
+        int alwaysDraw              : 1;
+        int meshLOD                 : 1; // Always unset at runtime when stream < 83
+        int fixedBound              : 1;
+        int topFadeNode             : 1;
+        int ignoreFade              : 1;
+        int noAnimSyncX             : 1;
+        int noAnimSyncY             : 1;
+        int noAnimSyncZ             : 1;
+        int noAnimSyncS             : 1;
+        int noDismember             : 1;
+        int noDismemberValid        : 1;
+        int renderUse               : 1;
+        int materialsApplied        : 1;
+        int _unused                 : 8 <hidden=true>;
+        // Only the first 24 bits are read from the file
+        // Note: This may only apply to FO4, as some NIFs have the last 8 bits set
+        if ( _unused > 0 )
+            Printf( "Last 8 NiAVObject flag bits set at offset %u\r\n", FTell() );
+    } bitflags;
+} NiAVObjectFlags <name="Flags", read=NiAVFlagsRead, open=true>;
+
+string NiAVFlagsRead( NiAVObjectFlags& f )
+{
+    string s;
+    
+    if ( f.value & 0x1 )
+        s += "hidden | ";
+    if ( f.value & 0x2 )
+        s += "selectiveUpdate | ";
+    if ( f.value & 0x4 )
+        s += "selectiveUpdateTrans | ";
+    if ( f.value & 0x8 )
+        s += "selectiveUpdateCtlr | ";
+    if ( f.value & 0x10 )
+        s += "selectiveUpdateRigid | ";
+    if ( f.value & 0x20 )
+        s += "displayObject | ";
+    if ( f.value & 0x40 )
+        s += "disableSorting | ";
+    if ( f.value & 0x80 )
+        s += "selUpdTransOverride | ";
+    if ( f.value & 0x100 )
+        s += "UNUSED | ";
+    if ( f.value & 0x200 )
+        s += "saveExternalGeomData | ";
+    if ( f.value & 0x400 )
+        s += "noDecals | ";
+    if ( f.value & 0x800 )
+        s += "alwaysDraw | ";
+    if ( f.value & 0x1000 )
+        s += "isMeshLOD | ";
+    if ( f.value & 0x2000 )
+        s += "fixedBound | ";
+    if ( f.value & 0x4000 )
+        s += "topFadeNode | ";
+    if ( f.value & 0x8000 )
+        s += "ignoreFade | ";
+    if ( f.value & 0x10000 )
+        s += "noAnimSyncX | ";
+    if ( f.value & 0x20000 )
+        s += "noAnimSyncY | ";
+    if ( f.value & 0x40000 )
+        s += "noAnimSyncZ | ";
+    if ( f.value & 0x80000 )
+        s += "noAnimSyncS | ";
+    if ( f.value & 0x100000 )
+        s += "noDismember | ";
+    if ( f.value & 0x200000 )
+        s += "noDismemberValid | ";
+    if ( f.value & 0x400000 )
+        s += "renderUse | ";
+    if ( f.value & 0x800000 )
+        s += "materialsApplied | ";
+
+    SPrintf(s, "%s (%u)", s, f.value );
+    
+    return s;
+}
+
+// NiSwitchNode Flags
+typedef union {
+    ushort value;
+    struct {
+        ushort UpdateOnlyActiveChild : 1;
+        ushort UpdateControllers     : 1;
+        ushort                       : 14;
+    } bitflags;
+} NiSwitchFlags <name="Flags", read=NiSwitchFlagsRead, open=true>;
+
+string NiSwitchFlagsRead( NiSwitchFlags& f )
+{
+    string s;
+    if ( f.value & 0x1 )
+        s += "UpdateOnlyActiveChild | ";
+    if ( f.value & 0x2 )
+        s += "UpdateControllers | ";
+
+    SPrintf(s, "%s (%u)", s, f.value );
+    return s;
+}
+
+// BSValueNode Flags
+typedef union {
+    byte value;
+    struct {
+        byte BillboardWorldZ : 1;
+        byte UsePlayerAdjust : 1;
+        byte                 : 6;
+    } bitflags;
+} BSValueNodeFlags <name="Flags", read=BSValueNodeFlagsRead, open=true>;
+
+string BSValueNodeFlagsRead( BSValueNodeFlags& f )
+{
+    string s;
+    if ( f.value & 0x1 )
+        s += "BillboardWorldZ | ";
+    if ( f.value & 0x2 )
+        s += "UsePlayerAdjust | ";
+
+    SPrintf(s, "%s (%u)", s, f.value );
+    return s;
+}
+
+// BSVertexData
+
+typedef union {
+    ushort value;
+    struct {
+        ushort : 4;
+        ushort vertex   : 1;
+        ushort uv1      : 1;
+        ushort uv2      : 1;
+        ushort normal   : 1;
+        ushort tangent  : 1;
+        ushort color    : 1;
+        ushort skinned  : 1;
+        ushort landData : 1;
+        ushort eyeData  : 1;
+        ushort unk      : 1;
+        ushort fullprec : 1;
+    } bitflags;
+} VertexFlags <name="Vertex Flags", read=VertexFlagsRead, open=false>;
+
+string VertexFlagsRead( VertexFlags& f )
+{
+    string s;
+
+    ushort vf = f.value >> 4;
+    
+    if ( vf & VF_VERTEX )
+        s += "VERTEX | ";
+    if ( vf & VF_UV )
+        s += "UV_1 | ";
+    if ( vf & VF_UV_2 )
+        s += "UV_2 | ";
+    if ( vf & VF_NORMAL )
+        s += "NORMAL | ";
+    if ( vf & VF_TANGENT )
+        s += "TANGENT | ";
+    if ( vf & VF_COLORS )
+        s += "COLOR | ";
+    if ( vf & VF_SKINNED )
+        s += "SKINNED | ";
+    if ( vf & VF_LANDDATA )
+        s += "LANDDATA | ";
+    if ( vf & VF_EYEDATA )
+        s += "EYEDATA | ";
+    if ( vf & 0x200 )
+        s += " UNKNOWN | ";
+    if ( vf & VF_FULLPREC )
+        s += "FULLPREC | ";
+
+    SPrintf(s, "%s (%u)", s, f.value );
+    
+    return s;
+}
+
+typedef union {
+    uint64 value <format=hex>;
+    local uint64 flags = value >> 44;
+    struct
+    {
+        // Sizes and Offsets are all multiplied by 4
+        byte szVertexData : 4;
+        byte szVertex : 4;
+        byte oTexCoord0 : 4;
+        byte oTexCoord1 : 4;
+        byte oNormal : 4;
+        byte oTangent : 4;
+        byte oColor : 4;
+        byte oSkinningData : 4;
+        byte oLandscapeData : 4;
+        byte oEyeData : 4;
+        VertexFlags vertexFlags;
+        byte unused;
+    } bits <open=true>;
+} VertexDesc <read=VertexDescRead, open=true>;
+
+string VertexDescRead( VertexDesc& f )
+{
+    string s;
+    
+    SPrintf(s, "%s: %u", "Size", f.bits.szVertexData * 4);
+
+    SPrintf(s, "%s | OFFSETS", s );
+    
+    if ( f.bits.szVertex > 0 )
+        SPrintf(s, "%s | Vertex: DYNAMIC", s);
+    else if ( f.flags & VF_VERTEX )
+        SPrintf(s, "%s | %s: %u", s, "Vertex", f.bits.szVertex * 4);
+    if ( f.flags & VF_UV )
+        SPrintf(s, "%s | %s: %u", s, "UV1", f.bits.oTexCoord0 * 4);
+    if ( f.flags & VF_UV_2 )
+        SPrintf(s, "%s | %s: %u", s, "UV2", f.bits.oTexCoord1 * 4);
+    if ( f.flags & VF_NORMAL )
+        SPrintf(s, "%s | %s: %u", s, "Normal", f.bits.oNormal * 4);
+    if ( f.flags & VF_TANGENT )
+        SPrintf(s, "%s | %s: %u", s, "Tangent", f.bits.oTangent * 4);
+    if ( f.flags & VF_COLORS )
+        SPrintf(s, "%s | %s: %u", s, "Color", f.bits.oColor * 4);
+    if ( f.flags & VF_SKINNED )
+        SPrintf(s, "%s | %s: %u", s, "Skin", f.bits.oSkinningData * 4);
+    if ( f.flags & VF_LANDDATA )
+        SPrintf(s, "%s | %s: %u", s, "Land", f.bits.oLandscapeData * 4);
+    if ( f.flags & VF_EYEDATA )
+        SPrintf(s, "%s | %s: %u", s, "Eye", f.bits.oEyeData * 4);
+    return s;
+}
+
+// NiSkinningMeshModifier Flags
+
+typedef enum <ushort> {
+    USE_SOFTWARE_SKINNING  = 0x01,
+    RECOMPUTE_BOUNDS = 0x02
+} eSkinningModifierFlags;
+
+typedef union {
+    ushort value;
+    struct {
+        ushort useSoftwareSkinning : 1;
+        ushort recomputeBounds : 1;
+    } bitflags;
+} SkinningModifierFlags <name="Flags", read=SkinningModifierFlagsRead, open=false>;
+
+string SkinningModifierFlagsRead( SkinningModifierFlags& f )
+{
+    string s;
+    if ( f.value & USE_SOFTWARE_SKINNING )
+        s += "Software Skinning | ";
+    if ( f.value & RECOMPUTE_BOUNDS )
+        s += "Recompute Bounds | ";
+
+    SPrintf(s, "%s (%u)", s, f.value );
+    
+    return s;
+}
+
+// NiMorphMeshModifier Flags
+
+typedef enum <ubyte> {
+    MORPH_RELATIVETARGETS = 0x01,
+    MORPH_UPDATENORMALS   = 0x02,
+    MORPH_NEEDSUPDATE     = 0x04,
+    MORPH_ALWAYSUPDATE    = 0x08,
+    MORPH_NEEDSCOMPLETION = 0x10,
+    MORPH_SKINNED         = 0x20,
+    MORPH_SWSKINNED       = 0x40
+} eMorphModifierFlags;
+
+typedef union {
+    ubyte value;
+    struct {
+        ubyte relativeTargets : 1;
+        ubyte updateNormals   : 1;
+        ubyte needsUpdate     : 1;
+        ubyte alwaysUpdate    : 1;
+        ubyte needsCompletion : 1;
+        ubyte skinned         : 1;
+        ubyte swSkinned       : 1;
+    } bitflags;
+} MorphModifierFlags <name="Flags", read=MorphModifierFlagsRead, open=false>;
+
+string MorphModifierFlagsRead( MorphModifierFlags& f )
+{
+    string s;
+    if ( f.value & MORPH_RELATIVETARGETS )
+        s += "RelativeTargets | ";
+    if ( f.value & MORPH_UPDATENORMALS )
+        s += "UpdateNormals | ";
+    if ( f.value & MORPH_NEEDSUPDATE )
+        s += "NeedsUpdate | ";
+    if ( f.value & MORPH_ALWAYSUPDATE )
+        s += "AlwaysUpdate | ";
+    if ( f.value & MORPH_NEEDSCOMPLETION )
+        s += "NeedsCompletion | ";
+    if ( f.value & MORPH_SKINNED )
+        s += "Skinned | ";
+    if ( f.value & MORPH_SWSKINNED )
+        s += "SWSkinned | ";
+
+    SPrintf(s, "%s (%u)", s, f.value );
+    
+    return s;
+}
+
+// NiLookAtInterpolator Flags
+
+typedef enum <ushort> {
+    LOOK_X_AXIS = 0,
+    LOOK_FLIP   = 0x1,
+    LOOK_Y_AXIS = 0x2,
+    LOOK_Z_AXIS = 0x4
+} eLookAtFlags;
+
+typedef union {
+    ushort value;
+    struct {
+        ushort flip  : 1;
+        ushort yAxis : 1;
+        ushort zAxis : 1;
+    } bitflags;
+} LookAtFlags <name="Flags", read=LookAtFlagsRead, open=false>;
+
+string LookAtFlagsRead( LookAtFlags& f )
+{
+    string s;
+    if ( !(f.value & LOOK_Y_AXIS) & !(f.value & LOOK_Z_AXIS) )
+        s += "X Axis | ";
+    if ( f.value & LOOK_Y_AXIS )
+        s += "Y Axis | ";
+    else if ( f.value & LOOK_Z_AXIS )
+        s += "Z Axis | ";
+    if ( f.value & LOOK_FLIP )
+        s += "Flipped | ";
+
+    SPrintf(s, "%s (%u)", s, f.value );
+    
+    return s;
+}
+
+// NiPathInterpolator Flags
+
+typedef enum <ushort> {
+    PATH_CV_DATA_NEEDS_UPDATE = 0x1,
+    PATH_CURVE_TYPE_OPEN = 0x2,
+    PATH_ALLOW_FLIP = 0x4,
+    PATH_BANK = 0x8,
+    PATH_CONSTANT_VEL = 0x10,
+    PATH_FOLLOW = 0x20,
+    PATH_FLIP = 0x40
+} ePathFlags;
+
+typedef union {
+    ushort value;
+    struct {
+        ushort CVDataNeedsUpdate : 1;
+        ushort curveTypeOpen    : 1;
+        ushort allowFlip        : 1;
+        ushort bank             : 1;
+        ushort constantVelocity : 1;
+        ushort follow           : 1;
+        ushort flip             : 1;
+    } bitflags;
+} PathFlags <name="Flags", read=PathFlagsRead, open=false>;
+
+string PathFlagsRead( PathFlags& f )
+{
+    string s;
+    if ( f.value & PATH_CV_DATA_NEEDS_UPDATE )
+        s += "CVDataNeedsUpdate | ";
+    if ( f.value & PATH_CURVE_TYPE_OPEN )
+        s += "CurveTypeOpen | ";
+    if ( f.value & PATH_ALLOW_FLIP )
+        s += "AllowFlip | ";
+    if ( f.value & PATH_BANK )
+        s += "Bank | ";
+    if ( f.value & PATH_CONSTANT_VEL )
+        s += "ConstantVelocity | ";
+    if ( f.value & PATH_FOLLOW )
+        s += "Follow | ";
+    if ( f.value & PATH_FLIP )
+        s += "Flip | ";
+
+    SPrintf(s, "%s (%u)", s, f.value );
+    
+    return s;
+}

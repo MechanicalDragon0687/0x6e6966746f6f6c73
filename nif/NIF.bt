@@ -18,6 +18,7 @@
 // DATATYPES
 
 #include "Enums.bt"
+#include "Bitflags.bt"
 #include "BasicTypes.bt"
 #include "AnimTypes.bt"
 #include "SkinTypes.bt"

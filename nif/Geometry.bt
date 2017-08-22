@@ -558,15 +558,7 @@ typedef struct {
 
 typedef struct {
     NiMeshModifier base;
-    enum <ubyte> { // Needs bitflag
-        FLAG_RELATIVETARGETS = 0x01,
-        FLAG_UPDATENORMALS   = 0x02,
-        FLAG_NEEDSUPDATE     = 0x04,
-        FLAG_ALWAYSUPDATE    = 0x08,
-        FLAG_NEEDSCOMPLETION = 0x10,
-        FLAG_SKINNED         = 0x20,
-        FLAG_SWSKINNED       = 0x40,
-    } flags;
+    MorphModifierFlags flags;
     ushort numTargets;
     uint numElements;
     if ( numElements > 0 ) {
@@ -580,18 +572,14 @@ typedef struct {
 
 typedef struct {
     NiMeshModifier base;
-    enum <ushort> { // Needs bitflag
-        USE_SOFTWARE_SKINNING  = 0x0001,
-        RECOMPUTE_BOUNDS = 0x0002
-    } flags;
-
+    SkinningModifierFlags flags;
     Ref rootBone; // NiAVObject
     NiTransform parentToSkinTransform;
     uint numBones;
     if ( numBones > 0 ) {
         Ref bone[numBones];
         NiTransform boneTransform[numBones] <open=false>;
-        if ( flags & RECOMPUTE_BOUNDS )
+        if ( flags.value & RECOMPUTE_BOUNDS )
             NiBound boneBound[numBones];
     }
 } NiSkinningMeshModifier <name="NiSkinningMeshModifier">;

@@ -403,12 +403,7 @@ typedef struct {
 
 typedef struct {
     NIKBINTERP
-    enum <ushort> {
-        LOOK_X_AXIS = 0,
-        LOOK_FLIP = 1,
-        LOOK_Y_AXIS = 2,
-        LOOK_Z_AXIS = 4
-    } flags; // Should be a bitfield for flip toggle
+    LookAtFlags flags;
     Ref lookAt;
     STRING lookAtName;
     NiQuatTransform transform;
@@ -416,17 +411,6 @@ typedef struct {
     Ref rollInterp;
     Ref scaleInterp;
 } NiLookAtInterp <name="NiLookAtInterpolator">;
-
-// TODO: Needs to be changed to bitfield
-typedef enum <ushort> {
-    CVDataNeedsUpdate = 0x1,
-    CurveTypeOpen = 0x2,
-    AllowFlip = 0x4,
-    Bank = 0x8,
-    ConstantVelocity = 0x10,
-    Follow = 0x20,
-    Flip = 0x40
-} PathFlags;
 
 // NiPathInterpolator
 typedef struct {
