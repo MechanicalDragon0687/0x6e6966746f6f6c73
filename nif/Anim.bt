@@ -27,7 +27,7 @@ typedef struct {
 typedef struct {
     NIOBJECT
     Ref nextController;
-    ushort flags;
+    TimeControllerFlags flags;
     float frequency;
     float phase;
     float startTime;
@@ -87,8 +87,6 @@ typedef struct {
     }
 } ControlledBlock <name="Controlled Block">;
 
-typedef enum <uint> { LOOP, REVERSE, CLAMP, MAX_CYCLE_TYPES } CycleType;
-
 typedef struct {
     NIOBJECT
     STRING name;
@@ -108,7 +106,7 @@ typedef struct {
 
     float weight;
     Ref textKey;
-    CycleType cycleType;
+    CycleType cycleType ENUM16_PAD32;
     float frequency;
     if ( version < Version(10, 3, 0, 1) )
         float phase;
@@ -325,10 +323,10 @@ typedef struct {
 
 typedef struct {
     NIINTERP
-    enum <byte> { MANAGER_CONTROLLED = 1 } flags;
+    BlendInterpFlags flags;
     byte arraySize;
     float weightThreshold;
-    if ( !(flags & 1) ) {
+    if ( !(flags.value & BI_MANAGER_CONTROLLED) ) {
         byte interpCount;
         byte singleIndex;
         char highPriority;
@@ -508,7 +506,9 @@ typedef struct {
 
 typedef struct {
     NiInterpController controller;
-    ushort flags; // flags & 1 == updateNormals
+    enum <ushort> {
+        GMC_UPDATE_NORMALS = 0x1
+    } flags;
     Ref data; // NiMorphData
     bool alwaysUpdate;
 

@@ -263,6 +263,88 @@ string VertexDescRead( VertexDesc& f )
     return s;
 }
 
+// NiTimeController Flags
+typedef enum <ushort> {
+    APP_TIME,
+    APP_INIT
+} AnimType;
+
+typedef enum <ushort> {
+    LOOP,
+    REVERSE,
+    CLAMP
+} CycleType;
+
+typedef enum <ubyte> {
+    TC_ACTIVE            = 0x08,
+    TC_PLAYBACKWARDS     = 0x10,
+    TC_MANAGERCONTROLLED = 0x20,
+    TC_COMPUTESCALEDTIME = 0x40,
+    TC_FORCEUDPATE       = 0x80
+} eTimeControllerFlags;
+
+typedef union {
+    ushort value;
+    struct {
+        AnimType animType        : 1;
+        CycleType cycleType      : 2;
+        ushort active            : 1;
+        ushort playBackwards     : 1;
+        ushort managerControlled : 1;
+        ushort computeScaledTime : 1;
+        ushort forcedUpdate      : 1;
+    } bits;
+} TimeControllerFlags <name="Flags", read=TimeControllerFlagsRead, open=false>;
+
+string TimeControllerFlagsRead( TimeControllerFlags& f )
+{
+    string s = SPrintf(s, "%s | %s | ", EnumToString(f.bits.animType), EnumToString(f.bits.cycleType));
+    if ( f.value & TC_ACTIVE )
+        s += "Active | ";
+    if ( f.value & TC_PLAYBACKWARDS )
+        s += "Backwards | ";
+    if ( f.value & TC_MANAGERCONTROLLED )
+        s += "Manager Controlled | ";
+    if ( f.value & TC_COMPUTESCALEDTIME )
+        s += "Scaled Time | ";
+    if ( f.value & TC_FORCEUDPATE )
+        s += "Forced Update | ";
+    
+    SPrintf(s, "%s(%u)", s, f.value);
+    return s;
+}
+
+// NiBlendInterpolator Flags
+
+typedef enum <ubyte> {
+    BI_MANAGER_CONTROLLED         = 0x01,
+    BI_ONLY_USE_HIGHEST_WEIGHT    = 0x02,
+    BI_COMPUTE_NORMALIZED_WEIGHTS = 0x04
+} eBlendInterpFlags;
+
+typedef union {
+    ubyte value;
+    struct {
+        ubyte managerControlled        : 1;
+        ubyte useOnlyHighestWeight     : 1;
+        ubyte computeNormalizedWeights : 1;
+    } bits;
+} BlendInterpFlags <name="Flags", read=BlendInterpFlagsRead, open=false>;
+
+string BlendInterpFlagsRead( BlendInterpFlags& f )
+{
+    string s;
+    if ( f.value & BI_MANAGER_CONTROLLED )
+        s += "Manager Controlled | ";
+    if ( f.value & BI_ONLY_USE_HIGHEST_WEIGHT )
+        s += "Use Only Highest Weight | ";
+    if ( f.value & BI_COMPUTE_NORMALIZED_WEIGHTS )
+        s += "Compute Normalized Weights | ";
+
+    SPrintf(s, "%s(%u)", s, f.value);
+    return s;
+}
+
 // NiAlphaProperty Flags
 
 typedef enum <ushort> {
