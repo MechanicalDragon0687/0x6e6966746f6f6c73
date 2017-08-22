@@ -406,7 +406,8 @@ typedef struct {
     LookAtFlags flags;
     Ref lookAt;
     STRING lookAtName;
-    NiQuatTransform transform;
+    if ( version < Version(20, 4, 0, 13) )
+        NiQuatTransform transform;
     Ref translateInterp;
     Ref rollInterp;
     Ref scaleInterp;
