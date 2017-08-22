@@ -16,12 +16,19 @@ typedef struct {
     float weight;
 } SkinWeight <name="Weights", open=suppress>;
 
+typedef struct {
+    ushort index;
+    hfloat weight;
+} SkinWeightHalf <name="Weights", open=suppress>;
+
 typedef struct ( bool hasWeights )  {
     NiTransform transform;
     NiBound boundingSphere;
     ushort numVerts;
-    if ( hasWeights && numVerts )
+    if ( hasWeights == 1 && numVerts )
         SkinWeight weights[numVerts];
+    else if ( hasWeights == 0xF && numVerts )
+        SkinWeightHalf weights[numVerts];
 } SkinData <optimize=false>;
 
 typedef struct {
@@ -37,8 +44,12 @@ typedef struct {
         ushort map[numVerts];
 
     bool hasWeights;
-    if ( hasWeights && numWeights && numVerts )
+    if ( hasWeights == 1 && numWeights && numVerts )
         FloatArray weights(numWeights, "Weight")[numVerts] <name="Bone Weights", optimize=true>;
+    if ( hasWeights == 0xF && numWeights && numVerts )
+        struct {
+            hfloat weight[numWeights];
+        } weights[numVerts] <name="Bone Weights", optimize=true>;
     
     if ( numStrips ) {
         ushort stripLength[numStrips] <optimize=true>;

@@ -83,7 +83,9 @@ typedef struct {
 
     bool hasVerts;
     if ( hasVerts == 1 && !isPSys )
-       Vec3 vertices[numVerts] <open=suppress>;
+        Vec3 vertices[numVerts] <open=suppress>;
+    else if ( hasVerts == 0xF )
+        HalfVec3 vertices[numVerts] <open=suppress>;
 
     // NBT Method is uppermost 4 bits, Num UV Sets is lowest 4 bits
     ushort dataFlags;
@@ -101,10 +103,15 @@ typedef struct {
     bool hasNormals;
     if ( hasNormals == 1 && !isPSys )
         Vec3 normals[numVerts] <open=suppress>;
-    
+    else if ( hasNormals == 6 )
+        ByteVec3 normals[numVerts];
+
     if ( hasNormals == 1 && nbtMethod && !isPSys ) {
         Vec3 tangents[numVerts] <open=suppress>;
         Vec3 bitangents[numVerts] <open=suppress>;
+    } else if ( hasNormals == 6 && nbtMethod ) {
+        ByteVec3 tangents[numVerts];
+        ByteVec3 bitangents[numVerts];
     }
 
     if ( DIV2 ) {
@@ -120,9 +127,13 @@ typedef struct {
     if ( numVerts > 0 && !isPSys ) {
         if ( hasVertColors == 1 )
             Color4 vertColors[numVerts] <open=suppress>;
-    
-        if ( numTextureSets > 0 )
+        else if ( hasVertColors == 7 )
+            ByteColor4 vertColors[numVerts] <open=suppress>;
+
+        if ( hasVerts == 1 && numTextureSets > 0 )
             TexCoordArray UVSets(numVerts)[numTextureSets] <open=suppress, optimize=true>;
+        else if ( hasVerts == 0xF && numTextureSets > 0 )
+            HalfTexCoordArray UVs(numVerts)[numTextureSets] <open=suppress, optimize=true>;
     }
 
     // Consistency Type is only the upper 4 bits (& 0xF000)
