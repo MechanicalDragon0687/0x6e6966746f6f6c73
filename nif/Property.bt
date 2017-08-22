@@ -16,12 +16,23 @@ typedef NiObjectNET NiTexture <name="NiTexture">;
 
 typedef struct {
     NiProperty prop;
-    ushort flags;
+    AlphaFlags flags;
+    ubyte threshold;
+    if ( version == Version(20, 3, 1, 1) )
+        ushort unk;
+} NiAlphaProperty <name="NiAlphaProperty">;
+
+typedef struct {
+    NiProperty prop;
+    enum <ushort> {
+        DITHER_FALSE,
+        DITHER_TRUE
+    } flags;
 } NiDitherProperty <name="NiDitherProperty">;
 
 typedef struct {
     NiProperty prop;
-    ushort flags; // SetFog true == flags |= 1, GetFogFunction == (flags >> 1) & 3
+    FogFlags flags;
     float depth;
     Color3 color;
 } NiFogProperty <name="NiFogProperty">;
@@ -42,22 +53,33 @@ typedef struct {
 
 typedef struct {
     NiProperty prop;
-    ushort flags;
+    enum <ushort> {
+        SMOOTH_FALSE,
+        SMOOTH_TRUE
+    } flags;
+} NiShadeProperty <name="NiShadeProperty">;
+
+typedef struct {
+    NiProperty prop;
+    enum <ushort> {
+        SPECULAR_FALSE,
+        SPECULAR_TRUE
+    } flags;
 } NiSpecularProperty <name="NiSpecularProperty">;
 
 typedef struct {
     NiProperty prop;
     if ( version < Version(20, 1, 0, 2) ) {
         bool enable;
-        uint testFunction; // ENUM
+        TestFunction testFunction ENUM16_PAD32;
         uint ref;
         uint mask;
-        uint stencilFailAction; // ENUM
-        uint stencilPassZFailAction; // ENUM
-        uint stencilPassAction; // ENUM
-        uint drawMode; // ENUM
+        StencilAction stencilFailAction ENUM16_PAD32;
+        StencilAction stencilPassZFailAction ENUM16_PAD32;
+        StencilAction stencilPassAction ENUM16_PAD32;
+        StencilDrawMode drawMode ENUM16_PAD32;
     } else {
-        ushort flags;
+        StencilFlags flags;
         uint ref;
         uint mask;
     }
@@ -65,39 +87,27 @@ typedef struct {
 
 typedef struct {
     NiProperty prop;
-    ushort flags;
+    VertexColorFlags flags;
     if ( version < Version(20, 1, 0, 2) ) {
-        enum <uint> {
-            SOURCE_IGNORE,
-            SOURCE_EMISSIVE,
-            SOURCE_AMB_DIFF
-        } sourceVertexMode;
-        enum <uint> {
-            LIGHTING_E,
-            LIGHTING_E_A_D
-        } lightingMode;
+        SourceVertexMode sourceVertexMode ENUM16_PAD32;
+        LightingMode lightingMode ENUM16_PAD32;
     }
 } NiVertexColorProperty <name="NiVertexColorProperty">;
 
 typedef struct {
     NiProperty prop;
-    ushort flags;
+    enum <ushort> {
+        WIREFRAME_FALSE,
+        WIREFRAME_TRUE
+    } flags;
 } NiWireframeProperty <name="NiWireframeProperty">;
 
 typedef struct {
     NiProperty prop;
-    ushort flags;
-    if ( version < Version(20, 1, 0, 2) )
-        enum <uint> {
-            TEST_ALWAYS,
-            TEST_LESS,
-            TEST_EQUAL,
-            TEST_LESSEQUAL,
-            TEST_GREATER,
-            TEST_NOTEQUAL,
-            TEST_GREATEREQUAL,
-            TEST_NEVER
-        } testFunction;
+    ZBufferFlags flags;
+    if ( version < Version(20, 1, 0, 2) ) {
+        TestFunction testFunction ENUM16_PAD32;
+    }
 } NiZBufferProperty <name="NiZBufferProperty">;
 
 typedef struct {
@@ -133,13 +143,13 @@ typedef struct {
 typedef struct {
     Ref source;
     if ( version < Version(20, 1, 0, 2) ) {
-        ClampMode clampMode;
-        FilterMode filterMode;
+        ClampMode clampMode ENUM16_PAD32;
+        FilterMode filterMode ENUM16_PAD32;
         uint texCoordIndex;
         if ( version < Version(10, 3, 0, 4) )
             short LandK[2];
     } else {
-        ushort flags;
+        MapFlags flags;
     }
 
     if ( version >= Version(20, 5, 0, 4) )
@@ -147,42 +157,43 @@ typedef struct {
     bool hasTexTransform;
     if ( hasTexTransform )
         TexTransform transform;
-} Tex;
+} Map;
 
 typedef struct {
     bool isUsed;
     if ( isUsed ) {
-        Tex data;
+        Map data;
         uint mapIndex;
     }
-} ShaderTex;
+} ShaderMap;
 
 typedef struct {
     NiProperty prop;
-    if ( version < Version(20, 1, 0, 2) )
-        uint applyMode; // ENUM
-    else
-        ushort flags;
+    if ( version < Version(20, 1, 0, 2) ) {
+        ApplyMode applyMode ENUM16_PAD32;
+    } else {
+        TexturingFlags flags;
+    }
 
     uint textureCount;
     bool hasBaseTex;
     if ( hasBaseTex )
-        Tex baseTex;
+        Map baseTex;
     bool hasDarkTex;
     if ( hasDarkTex )
-        Tex darkTex;
+        Map darkTex;
     bool hasDetailTex;
     if ( hasDetailTex )
-        Tex detailTex;
+        Map detailTex;
     bool hasGlossTex;
     if ( hasGlossTex )
-        Tex glossTex;
+        Map glossTex;
     bool hasGlowTex;
     if ( hasGlowTex )
-        Tex glowTex;
+        Map glowTex;
     bool hasBumpTex;
     if ( hasBumpTex ) {
-        Tex bumpTex;
+        Map bumpTex;
         float lumaScale;
         float lumaOffset;
         Vec4 bumpMatrix;
@@ -191,13 +202,13 @@ typedef struct {
     if ( textureCount > 6 ) {
         bool hasNormalTex;
         if ( hasNormalTex )
-            Tex normalTex;
+            Map normalTex;
     }
 
     if ( textureCount > 7 ) {
         bool hasUnkTex;
         if ( hasUnkTex ) {
-            Tex unkTex;
+            Map unkTex;
             float unkFloat;
         }
     }
@@ -205,27 +216,27 @@ typedef struct {
     if ( textureCount > 8 ) {
         bool hasDecalTex0;
         if ( hasDecalTex0 )
-            Tex decalTex0;
+            Map decalTex0;
     }
     
     if ( textureCount > 9 ) {
         bool hasDecalTex1;
         if ( hasDecalTex1 )
-            Tex decalTex1;
+            Map decalTex1;
     }
     if ( textureCount > 10 ) {
         bool hasDecalTex2;
         if ( hasDecalTex2 )
-            Tex decalTex2;
+            Map decalTex2;
     }
     if ( textureCount > 11 ) {
         bool hasDecalTex3;
         if ( hasDecalTex3 )
-            Tex decalTex3;
+            Map decalTex3;
     }
     
     uint numShaderTex;
     if ( numShaderTex > 0 ) {
-        ShaderTex shaderTex[numShaderTex] <optimize=false>;
+        ShaderMap shaderTex[numShaderTex] <optimize=false>;
     }
 } NiTexturingProperty <name="NiTexturingProperty">;

@@ -491,23 +491,6 @@ typedef enum <uint> {
 } AlphaFormat <name="Alpha Format">;
 
 typedef enum <uint> {
-    FILTER_NEAREST,
-    FILTER_BILERP,
-    FILTER_TRILERP,
-    FILTER_NEAREST_MIPNEAREST,
-    FILTER_NEAREST_MIPLERP,
-    FILTER_BILERP_MIPNEAREST,
-    FILTER_ANISOTROPIC
-} FilterMode;
-
-typedef enum <uint> {
-    CLAMP_S_CLAMP_T,
-    CLAMP_S_WRAP_T,
-    WRAP_S_CLAMP_T,
-    WRAP_S_WRAP_T
-} ClampMode;
-
-typedef enum <uint> {
     PX_FMT_RGB = 0,
     PX_FMT_RGBA,
     PX_FMT_PAL,

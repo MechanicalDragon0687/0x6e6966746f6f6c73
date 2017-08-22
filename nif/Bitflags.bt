@@ -11,6 +11,9 @@
 //   History: 
 //------------------------------------------------
 
+// Avoid redefining <ushort> enums here as <uint> for < 20.1.0.2
+// CANNOT be used with braceless if/else
+#define ENUM16_PAD32 : 16; ushort : 16;
 
 // NiAVObject Flags
 //  These bits appear to have the same function across all supported NIFs (34, 83, 100, 130),
@@ -257,6 +260,266 @@ string VertexDescRead( VertexDesc& f )
         SPrintf(s, "%s | %s: %u", s, "Land", f.bits.oLandscapeData * 4);
     if ( f.flags & VF_EYEDATA )
         SPrintf(s, "%s | %s: %u", s, "Eye", f.bits.oEyeData * 4);
+    return s;
+}
+
+// NiAlphaProperty Flags
+
+typedef enum <ushort> {
+    BLEND_ONE,
+    BLEND_ZERO,
+    BLEND_SRCCOLOR,
+    BLEND_INVSRCCOLOR,
+    BLEND_DESTCOLOR,
+    BLEND_INVDESTCOLOR,
+    BLEND_SRCALPHA,
+    BLEND_INVSRCALPHA,
+    BLEND_DESTALPHA,
+    BLEND_INVDESTALPHA,
+    BLEND_SRCALPHASAT,
+    BLEND_MAX_MODES
+} BlendFunction;
+
+typedef enum <ushort> {
+    TEST_ALWAYS,
+    TEST_LESS,
+    TEST_EQUAL,
+    TEST_LESSEQUAL,
+    TEST_GREATER,
+    TEST_NOTEQUAL,
+    TEST_GREATEREQUAL,
+    TEST_NEVER
+} TestFunction;
+
+typedef union {
+    ushort value;
+    struct {
+        ushort doBlending      : 1;
+        BlendFunction srcBlend : 4;
+        BlendFunction dstBlend : 4;
+        ushort doTesting       : 1;
+        TestFunction testFunc  : 3;
+        ushort noSorter        : 1;
+        Assert( srcBlend < BLEND_MAX_MODES, "Unknown NiAlphaProperty Flags value" );
+        Assert( dstBlend < BLEND_MAX_MODES, "Unknown NiAlphaProperty Flags value" );
+    } bits;
+} AlphaFlags <name="Flags", read=AlphaFlagsRead, open=false>;
+
+string AlphaFlagsRead( AlphaFlags& f )
+{
+    string s;
+    if ( f.bits.doBlending ) {
+        s += EnumToString( f.bits.srcBlend ) + " | ";
+        s += EnumToString( f.bits.dstBlend ) + " | ";
+    }
+
+    if ( f.bits.doTesting )
+        s += EnumToString( f.bits.testFunc );
+
+    if ( f.bits.noSorter )
+        s += " NO SORT";
+
+    SPrintf(s, "%s (%u)", s, f.value );
+    return s;
+}
+
+// NiFogProperty Flags
+
+typedef enum <ushort> {
+    FOG_FALSE,
+    FOG_TRUE
+} eFogFlags;
+
+typedef enum <ushort> {
+    FOG_Z_LINEAR,
+    FOG_RANGE_SQ,
+    FOG_VERTEX_ALPHA
+} FogFunction <name="Fog Function">;
+
+typedef union {
+    ushort value;
+    struct {
+        eFogFlags fog    : 1;
+        FogFunction fogFunction  : 2;
+    } bits;
+} FogFlags <name="Flags", read=FogFlagsRead, open=false>;
+
+string FogFlagsRead( FogFlags& f )
+{
+    return EnumToString(f.bits.fog) + " | " + EnumToString(f.bits.fogFunction);
+}
+
+// NiStencilProperty Flags
+
+typedef enum <ushort> {
+    ACTION_KEEP,
+    ACTION_ZERO,
+    ACTION_REPLACE,
+    ACTION_INCREMENT,
+    ACTION_DECREMENT,
+    ACTION_INVERT,
+    ACTION_MAX
+} StencilAction;
+
+typedef enum <ushort> {
+    DRAW_CCW_OR_BOTH,
+    DRAW_CCW,
+    DRAW_CW,
+    DRAW_BOTH,
+    DRAW_MAX
+} StencilDrawMode;
+
+typedef union {
+    ushort value;
+    struct {
+        ushort enable             : 1;
+        StencilAction failAction  : 3;
+        StencilAction ZFailAction : 3;
+        StencilAction passAction  : 3;
+        StencilDrawMode drawMode  : 2;
+        TestFunction testFunc     : 3;
+    } bits;
+} StencilFlags <name="Flags", read=StencilFlagsRead, open=false>;
+
+string StencilFlagsRead( StencilFlags& f )
+{
+    string s;
+    SPrintf(s, "%s | %s %s | %s %s | %s %s | %s | %s (%u)",
+            (f.bits.enable) ? "Enabled" : "Disabled",
+            "Fail:", SubStr(EnumToString(f.bits.failAction), 7),
+            "Z Fail:", SubStr(EnumToString(f.bits.ZFailAction), 7),
+            "Pass:", SubStr(EnumToString(f.bits.passAction), 7),
+            EnumToString(f.bits.drawMode),
+            EnumToString(f.bits.testFunc), f.value );
+    return s;
+}
+
+// NiTexturingProperty Flags
+
+typedef enum <ushort> {
+    APPLY_REPLACE,
+    APPLY_DECAL,
+    APPLY_MODULATE,
+    APPLY_DEPRECATED,
+    APPLY_DEPRECATED2,
+    APPLY_MAX_MODES
+} ApplyMode <name="Apply Mode">;
+
+typedef union {
+    ushort value;
+    struct {
+        ushort multitexture  : 1;
+        ApplyMode applyMode  : 3;
+        ushort decalCount    : 8;
+        Assert( applyMode < APPLY_MAX_MODES, "Unknown NiTexturingProperty Flags value" );
+    } bits;
+} TexturingFlags <name="Flags", read=TexturingFlagsRead, open=false>;
+
+string TexturingFlagsRead( TexturingFlags& f )
+{
+    string s;
+    SPrintf(s, "Multitexture: %s | %s | Decal Count: %u (%u)",
+            (f.bits.multitexture) ? "Yes" : "No",
+            EnumToString(f.bits.applyMode), f.bits.decalCount, f.value );
+    return s;
+}
+
+// NiTexturingProperty::Map Flags
+
+typedef enum <ushort> {
+    FILTER_NEAREST,
+    FILTER_BILERP,
+    FILTER_TRILERP,
+    FILTER_NEAREST_MIPNEAREST,
+    FILTER_NEAREST_MIPLERP,
+    FILTER_BILERP_MIPNEAREST,
+    FILTER_ANISOTROPIC,
+    FILTER_MAX_MODES
+} FilterMode <name="Filter Mode">;
+
+typedef enum <ushort> {
+    CLAMP_S_CLAMP_T,
+    CLAMP_S_WRAP_T,
+    WRAP_S_CLAMP_T,
+    WRAP_S_WRAP_T,
+    CLAMP_MAX_MODES
+} ClampMode <name="Clamp Mode">;
+
+
+typedef union {
+    ushort value;
+    struct {
+        ushort texcoordIndex  : 8;
+        FilterMode filterMode : 4;
+        ClampMode clampMode   : 4;
+        Assert( filterMode < FILTER_MAX_MODES, "Unknown NiTexturingProperty::Map Flags value" );
+        Assert( clampMode < CLAMP_MAX_MODES, "Unknown NiTexturingProperty::Map Flags value" );
+    } bits;
+} MapFlags <name="Flags", read=MapFlagsRead, open=false>;
+
+string MapFlagsRead( MapFlags& f )
+{
+    string s;
+    SPrintf(s, "Texcoord Index: %u | %s | %s (%u)", f.bits.texcoordIndex,
+            EnumToString(f.bits.filterMode),
+            EnumToString(f.bits.clampMode), f.value );
+    return s;
+}
+
+// NiVertexColorProperty Flags
+
+typedef enum <ushort> {
+    SOURCE_IGNORE,
+    SOURCE_EMISSIVE,
+    SOURCE_AMB_DIFF,
+    SOURCE_MAX_MODES
+} SourceVertexMode <name="Source Vertex Mode">;
+
+typedef enum <ushort> {
+    LIGHTING_E,
+    LIGHTING_E_A_D
+} LightingMode <name="Lighting Mode">;
+
+typedef union {
+    ushort value;
+    struct {
+        ushort colorMode            : 3; // Unknown
+        LightingMode lightingMode   : 1;
+        SourceVertexMode sourceMode : 2;
+        Assert( sourceMode < SOURCE_MAX_MODES, "Unknown NiVertexColorProperty Flags value" );
+    } bits;
+} VertexColorFlags <name="Flags", read=VertexColorFlagsRead, open=false>;
+
+string VertexColorFlagsRead( VertexColorFlags& f )
+{
+    string s;
+    SPrintf(s, "Color Mode: %u | %s | %s (%u)", f.bits.colorMode,
+            EnumToString(f.bits.lightingMode),
+            EnumToString(f.bits.sourceMode), f.value );
+    return s;
+}
+
+// NiZBufferProperty Flags
+
+typedef union {
+    ushort value;
+    struct {
+        ushort doTest  : 1;
+        ushort doWrite : 1;
+        TestFunction testFunc : 3;
+    } bits;
+} ZBufferFlags <name="Flags", read=ZBufferFlagsRead, open=false>;
+
+string ZBufferFlagsRead( ZBufferFlags& f )
+{
+    string s;
+    if ( f.bits.doTest )
+        s += "ZBuffer Test | ";
+
+    if ( f.bits.doWrite )
+        s += "ZBuffer Write | ";
+
+    SPrintf(s, "%s %s (%u)", s, EnumToString(f.bits.testFunc), f.value );
     return s;
 }
 

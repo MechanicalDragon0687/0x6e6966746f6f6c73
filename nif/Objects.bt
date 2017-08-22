@@ -87,10 +87,10 @@ typedef struct {
     NiDynamicEffect base;
     Matrix33 modelProjectionMatrix;
     Vec3 modelProjectionTrans;
-    FilterMode filterMode;
+    FilterMode filterMode ENUM16_PAD32;
     if ( version >= Version(20, 5, 0, 4) )
         ushort maxAnisotropy;
-    ClampMode clampMode;
+    ClampMode clampMode ENUM16_PAD32;
     TextureType textureType;
     CoordGenType coordGenType;
     Ref texture; // NiTexture
