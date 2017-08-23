@@ -824,6 +824,9 @@ struct FILE {
                 case "NiMaterialProperty":
                     NiMaterialProperty data;
                     break;
+                case "NiShadeProperty":
+                    NiShadeProperty data;
+                    break;
                 case "NiSpecularProperty":
                     NiSpecularProperty data;
                     break;
