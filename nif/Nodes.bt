@@ -104,3 +104,21 @@ typedef struct {
 typedef BSRangeNode BSDebrisNode <name="BSDebrisNode">;
 typedef BSRangeNode BSBlastNode <name="BSBlastNode">;
 typedef BSBlastNode BSDamageStage <name="BSDamageStage">;
+
+// NiRoom/NiRoomGroup
+typedef struct {
+    NiNode node <open=true>;
+    uint numWalls;
+    if ( numWalls > 0 )
+        NiPlane wall[numWalls];
+    
+    RefArray inPortals( "In Portal" ); // NiPortal
+    RefArray outPortals( "Out Portal" ); // NiPortal
+    RefArray fixtures( "Fixture" ); // NiAVObject
+} NiRoom <name="NiRoom">;
+
+typedef struct {
+    NiNode node <open=true>;
+    Ref shell; // NiAVObject
+    RefArray rooms( "Room" ); // NiRoom
+} NiRoomGroup <name="NiRoomGroup">;

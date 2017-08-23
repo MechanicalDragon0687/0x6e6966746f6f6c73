@@ -148,6 +148,11 @@ typedef struct {
 } TBC <size=12>;
 
 typedef struct {
+    Vec3 normal;
+    float constant;
+} NiPlane <size=16>;
+
+typedef struct {
     Vec3 center;
     float radius;
     // Occurs in Divinity 2 only after NiBound

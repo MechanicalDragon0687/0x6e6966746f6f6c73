@@ -299,6 +299,15 @@ struct FILE {
                 case "BSValueNode":
                     BSValueNode data;
                     break;
+                case "NiPortal":
+                    NiPortal data;
+                    break;
+                case "NiRoom":
+                    NiRoom data;
+                    break;
+                case "NiRoomGroup":
+                    NiRoomGroup data;
+                    break;
                 case "NiDefaultAVObjectPalette":
                     NiAVObjPalette data;
                     break;

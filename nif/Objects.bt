@@ -44,6 +44,25 @@ typedef struct {
 } NiAVObject <name="NiAVObject", open=true>;
 
 
+// NiPortal 
+typedef struct {
+    NiAVObject base;
+    local string nameStr = base.nameStr;
+
+    enum <ushort> {
+        PORTAL_ACTIVE = 0x1,
+        PORTAL_MARKED = 0x2,
+        PORTAL_ACTIVE_MARKED = (PORTAL_ACTIVE | PORTAL_MARKED)
+    } flags;
+    ushort unusedPlaneCount;
+
+    ushort numVertices;
+    if ( numVertices > 0 )
+        Vec3 modelVertex[numVertices];
+    
+    Ref adjoiner; // NiAVObject 
+} NiPortal <name="NiPortal", open=false>;
+
 // NiDynamicEffect 
 typedef struct {
     NiAVObject base;
@@ -95,8 +114,7 @@ typedef struct {
     CoordGenType coordGenType;
     Ref texture; // NiTexture
     bool planeEnable;
-    Vec3 planeNormal;
-    float planeConstant;
+    NiPlane plane;
     if ( version < Version(10, 3, 0, 4) )
         uint landK;
 
@@ -248,8 +266,7 @@ typedef struct {
             struct NiBoundingVolume boundingVolumes[numBV];
             break;
         case HALFSPACE_BV:
-            Vec3 planeNormal;
-            float planeConstant;
+            NiPlane plane;
             Vec3 center;
             break;
     }
