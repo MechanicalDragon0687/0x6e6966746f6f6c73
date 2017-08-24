@@ -230,6 +230,9 @@ struct FILE {
                 case "BSSegmentedTriShape":
                     BSSegmentedTriShape data;
                     break;
+                case "NiParticles":
+                    NiParticles data;
+                    break;
                 case "NiParticleSystem":
                     NiParticleSys data;
                     break;
@@ -320,6 +323,9 @@ struct FILE {
                 case "NiStringPalette":
                     NiStringPalette data;
                     break;
+                case "NiKeyframeController":
+                    NiKeyframeCtlr data;
+                    break;
                 case "NiTransformController":
                     NiTransCtlr data;
                     break;
@@ -340,6 +346,15 @@ struct FILE {
                     break;
                 case "NiFloatExtraDataController":
                     NiFloatEDCtlr data;
+                    break;
+                case "NiFloatsExtraDataController":
+                    NiFloatsEDCtlr data;
+                    break;
+                case "NiFloatsExtraDataPoint3Controller":
+                    NiFloatsEDPoint3Ctlr data;
+                    break;
+                case "NiColorExtraDataController":
+                    NiColorEDCtlr data;
                     break;
                 case "NiPSysModifierActiveCtlr":
                     NiPSysActiveCtlr data;
@@ -382,6 +397,9 @@ struct FILE {
                     break;
                 case "NiPSysInitialRotSpeedVarCtlr":
                     NiPSysInitialRotSpeedVarCtlr data;
+                    break;
+                case "NiPSysResetOnLoopCtlr":
+                    NiPSysResetOnLoopCtlr data;
                     break;
                 case "BSStripParticleSystem":
                     BSStripParticleSys data;
@@ -437,6 +455,12 @@ struct FILE {
                 case "NiBlendPoint3Interpolator":
                     NiBlendPoint3 data;
                     break;
+                case "NiColorInterpolator":
+                    NiColorInterp data;
+                    break;
+                case "NiBlendColorInterpolator":
+                    NiBlendColor data;
+                    break;
                 case "NiFloatInterpolator":
                     NiFloatInterp data;
                     break;
@@ -473,7 +497,7 @@ struct FILE {
                 case "NiBoolData":
                     NiBoolData data;
                     break;
-                case "NiKeyFrameData":
+                case "NiKeyframeData":
                     NiKFData data;
                     break;
                 case "NiTransformData":
@@ -715,6 +739,9 @@ struct FILE {
                     break;
                 case "NiPSysPositionModifier":
                     NiPSPositionMod data;
+                    break;
+                case "NiPSysMeshUpdateModifier":
+                    NiPSysMeshUpdateMod data;
                     break;
                 case "NiPSysBoundUpdateModifier":
                     NiPSBoundUpdateMod data;

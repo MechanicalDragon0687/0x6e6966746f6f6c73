@@ -11,6 +11,8 @@
 //   History: 
 //------------------------------------------------
 
+typedef NiGeometry NiParticles <name="NiParticles", open=false>;
+
 typedef struct {
     if ( stream >= 100 )
         BSGeometry base;
@@ -249,6 +251,12 @@ typedef struct {
 // NiPSysPositionModifier
 typedef NiPSysModifier NiPSPositionMod <name="NiPSysPositionModifier", open=false>;
 
+// NiPSysMeshUpdateModifier
+typedef struct {
+    NiPSysModifier base;
+    RefArray meshes( "Mesh" ); // NiAVObject
+} NiPSysMeshUpdateMod <name="NiPSysMeshUpdateModifier">;
+
 // NiPSysBoundUpdateModifier
 typedef struct {
     NiPSysModifier base;
@@ -426,6 +434,7 @@ typedef NiPSysModifierFloatCtlr NiPSEmitDeclinationCtlr <name="NiPSysEmitterDecl
 typedef NiPSysModifierFloatCtlr NiPSEmitDeclinationVarCtlr <name="NiPSysEmitterDeclinationVarCtlr", open=false>;
 typedef NiPSysModifierFloatCtlr NiPSysInitialRotSpeedCtlr <name="NiPSysInitialRotSpeedCtlr", open=false>;
 typedef NiPSysModifierFloatCtlr NiPSysInitialRotSpeedVarCtlr <name="NiPSysInitialRotSpeedVarCtlr", open=false>;
+typedef NiTimeController NiPSysResetOnLoopCtlr <name="NiPSysResetOnLoopCtlr", open=false>;
 
 typedef struct {
     NiPSysModifierCtlr controller;

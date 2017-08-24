@@ -44,7 +44,7 @@ typedef struct {
 
 typedef NiSingleInterpController NiFloatInterpController <open=true>; // Abstract
 typedef NiSingleInterpController NiBoolInterpController <open=true>; // Abstract
-typedef NiSingleInterpController NiExtraDataController <open=true>; // Abstract
+
 
 typedef enum <ushort> { TC_AMBIENT, TC_DIFFUSE, TC_SPECULAR, TC_SELF_ILLUM } TargetColor;
 
@@ -55,10 +55,28 @@ typedef struct {
 
 typedef NiBoolInterpController NiVisCtlr <name="NiVisController", open=false>;
 
+// Extra Data Controllers
+
+typedef struct {
+    NiSingleInterpController controller;
+    STRING extraDataName;
+} NiExtraDataController <open=true>; // Abstract
+
 typedef struct {
     NiExtraDataController controller;
-    STRING extraData;
 } NiFloatEDCtlr <name="NiFloatExtraDataController">;
+
+typedef struct {
+    NiExtraDataController controller;
+    int extraDataIndex;
+} NiFloatsEDCtlr <name="NiFloatsExtraDataController">;
+
+typedef NiFloatsEDCtlr NiFloatsEDPoint3Ctlr <name="NiFloatsExtraDataPoint3Controller">;
+
+typedef struct {
+    NiExtraDataController controller;
+} NiColorEDCtlr <name="NiColorExtraDataController">;
+
 
 typedef struct {
     // NiControllerSequence::InterpArrayItem
@@ -140,8 +158,11 @@ typedef struct {
 
 typedef struct {
     NiTimeController controller;
-    Ref interpolator; // NiKeyframeData
-} NiTransCtlr <name="NiTransformController">;
+    Ref interpolator; // NiKeyframeData/NiTransformData
+} NiKeyframeCtlr <name="NiKeyframeController">;
+
+// Renamed to NiTransformController in 10.2
+typedef NiKeyframeCtlr NiTransCtlr <name="NiTransformController">;
 
 typedef struct {
     NiInterpController controller;
@@ -277,9 +298,8 @@ typedef struct {
     FloatKeyGrp scales;
 } NiKFData <name="NiKeyFrameData">;
 
-typedef struct {
-    NiKFData data;
-} NiTransformData <name="NiTransformData">;
+// Renamed to NiTransformData in 10.2
+typedef NiKFData NiTransformData <name="NiTransformData">;
 
 typedef struct {
     NIOBJECT
@@ -398,6 +418,17 @@ typedef struct {
     NIBLENDINTERP
     Vec3 point;
 } NiBlendPoint3 <name="NiBlendPoint3Interpolator">;
+
+typedef struct {
+    NIKBINTERP
+    Color4 color;
+    Ref data; // NiColorData
+} NiColorInterp <name="NiColorInterpolator">;
+
+typedef struct {
+    NIBLENDINTERP
+    Color4 color;
+} NiBlendColor <name="NiBlendColorInterpolator">;
 
 typedef struct {
     NIKBINTERP
