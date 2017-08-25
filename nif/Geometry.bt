@@ -31,6 +31,10 @@ typedef struct {
             uint implementation;
         }
     }
+
+    if ( WORLDSHIFT_10_4 || WORLDSHIFT_10_3 )
+        uint unk;
+
     if ( version >= Version(20, 2, 0, 7) )
         byte defaultMatNeedsUpdateFlag;
 
@@ -146,7 +150,7 @@ typedef struct {
 
     Assert( consistencyType == (consistencyType & CONSISTENCY_MASK), "Consistency Type is invalid for this NIF version." );
 
-    if ( version >= Version(10, 3, 0, 7) )
+    if ( version >= Version(10, 3, 0, 7) && !WORLDSHIFT_10_4 )
         Ref additionalGeomData;
 } NiGeometryData <open=true>; // Abstract
 

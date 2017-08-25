@@ -60,12 +60,15 @@ typedef struct {
     bool hasRotations;
     if ( !BS_202 && hasRotations && numVerts )
         Quat rotations[numVerts];
-    bool hasRotationAngles;
-    if ( !BS_202 && hasRotationAngles && numVerts )
-        float rotationAngles[numVerts];
-    bool hasRotationAxes;
-    if ( !BS_202 && hasRotationAxes && numVerts )
-        Vec3 rotationAxes[numVerts];
+
+    if ( version >= Version(10, 3, 0, 5) && !WORLDSHIFT_10_4 ) {
+        bool hasRotationAngles;
+        if ( !BS_202 && hasRotationAngles && numVerts )
+            float rotationAngles[numVerts];
+        bool hasRotationAxes;
+        if ( !BS_202 && hasRotationAxes && numVerts )
+            Vec3 rotationAxes[numVerts];
+    }
 
     if ( BS_202 ) {
         bool hasTextureIndices; // NOT the bool for subtexoffsets
@@ -102,7 +105,7 @@ typedef struct {
     if ( !BS_202 && numVerts > 0 ) {
         struct {
             Vec3 velocity;
-            if ( version < Version(10, 3, 0, 5) )
+            if ( version < Version(10, 3, 0, 5) || WORLDSHIFT_10_4 )
                 Vec3 rotationAxis;
 
             float age;
@@ -113,9 +116,11 @@ typedef struct {
         } particleInfo[numVerts];
     }
 
-    bool hasRotationSpeeds;
-    if ( !BS_202 && hasRotationSpeeds && numVerts )
-        float rotationSpeeds[numVerts];
+    if ( version >= Version(20, 0, 0, 2) ) {
+        bool hasRotationSpeeds;
+        if ( !BS_202 && hasRotationSpeeds && numVerts )
+            float rotationSpeeds[numVerts];
+    }
 
     if ( !BS_202 ) {
         ushort numAddedParticles;
@@ -143,6 +148,13 @@ typedef struct {
     bool doZPrepass;
 } BSStripPSysData <name="BSStripPSysData">;
 
+// DEPRECATED
+// NiPSysEmitterCtlrData
+typedef struct {
+    NIOBJECT
+    FloatKeyGrp birthRateKeys;
+    BoolKeyGrp activeEmitterKeys;
+} NiPSysEmitterCtlrData <name="NiPSysEmitterCtlrData">;
 
 // MODIFIERS
 
@@ -168,6 +180,8 @@ typedef struct {
     float percentSpawned;
     ushort minSpawned;
     ushort maxSpawned;
+    if ( WORLDSHIFT_ALL )
+        uint unk; // Always 0x80000000?
     float spawnSpeedVariation;
     float spawnDirVariation;
     float lifeSpan;
@@ -198,10 +212,12 @@ typedef struct {
 typedef struct {
     NiPSysModifier base;
     float initialSpeed;
-    float initialSpeedVariation;
-    float initialAngle;
-    float initialAngleVariation;
-    bool randomSpeedSign;
+    if ( version >= Version(20, 0, 0, 2) ) {
+        float initialSpeedVariation;
+        float initialAngle;
+        float initialAngleVariation;
+        bool randomSpeedSign;
+    }
     bool randomInitialAxis;
     Vec3 initialAxis;
 } NiPSRotationMod <name="NiPSysRotationModifier">;
@@ -346,7 +362,8 @@ typedef struct {
     float planarAngleVariation;
     Color4 color;
     float radius;
-    float radiusVariation;
+    if ( version >= Version(10, 3, 0, 2) )
+        float radiusVariation;
     float lifeSpan;
     float lifeSpanVariation;
 } NiPSysEmitter <open=true>; // Abstract
@@ -422,7 +439,11 @@ typedef struct {
 typedef NiPSysModifierCtlr NiPSysModifierBoolCtlr <name="NiPSysModifierBoolCtlr", open=true>; // Abstract
 typedef NiPSysModifierBoolCtlr NiPSysActiveCtlr <name="NiPSysModifierActiveCtlr", open=false>;
 
-typedef NiPSysModifierCtlr NiPSysModifierFloatCtlr <name="NiPSysModifierFloatCtlr", open=true>; // Abstract
+typedef struct {
+    NiPSysModifierCtlr controller;
+    DATAREF_10_1
+} NiPSysModifierFloatCtlr <name="NiPSysModifierFloatCtlr", open=true>; // Abstract
+
 typedef NiPSysModifierFloatCtlr NiPSysGravStrCtlr <name="NiPSysGravityStrengthCtlr", open=false>;
 typedef NiPSysModifierFloatCtlr NiPSysInitRotSpeedCtlr <name="NiPSysInitialRotSpeedCtlr", open=false>;
 typedef NiPSysModifierFloatCtlr NiPSEmitSpeedCtlr <name="NiPSysEmitterSpeedCtlr", open=false>;
@@ -465,6 +486,16 @@ typedef struct {
     if ( stream >= 34 )
         float baseScale;
 } NiPSysGrowFadeMod <name="NiPSysGrowFadeModifier">;
+
+// WorldShift
+// NiPSysPartSpawnModifier
+typedef struct {
+    Assert( WORLDSHIFT_ALL, "NiPSysPartSpawnModifier unrecognized version." );
+    NiPSysModifier base;
+    float unkFloat1;
+    float unkFloat2;
+    Ref spawnModifier; // NiPSysSpawnModifier
+} NiPSysPartSpawnMod <name="NiPSysPartSpawnModifier">;
 
 
 // New Particles

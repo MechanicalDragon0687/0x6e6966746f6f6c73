@@ -81,16 +81,21 @@ typedef struct ( KeyType i ) {
     }
     if ( i == 3 )
         TBC tbc;
-} ByteKey <name="Byte Key">;
+} BoolKey <name="Bool Key">;
 
 typedef struct {
     uint numKeys;
     if ( numKeys > 0 ) {
-        KeyType interpolation;
+        // Do not read KeyType for < 10.1.0.104
+        if ( version >= Version(10, 1, 0, 104) )
+            KeyType interpolation;
+        else
+            local KeyType interpolation = CONST_KEY;
+
         if ( numKeys > 0 )
-            ByteKey key(interpolation)[numKeys] <optimize=true>;
+            BoolKey key(interpolation)[numKeys] <optimize=true>;
     }
-} ByteKeyGrp <name="Keys">;
+} BoolKeyGrp <name="Keys">;
 
 typedef struct ( KeyType i ) {
     float time;

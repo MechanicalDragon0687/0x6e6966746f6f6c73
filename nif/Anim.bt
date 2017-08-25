@@ -39,7 +39,8 @@ typedef NiTimeController NiInterpController <open=true>; // Abstract
 
 typedef struct {
     NiTimeController controller;
-    Ref interpolator;
+    if ( version >= Version(10, 1, 0, 104) )
+        Ref interpolator;
 } NiSingleInterpController <open=true>; // Abstract
 
 typedef NiSingleInterpController NiFloatInterpController <open=true>; // Abstract
@@ -51,9 +52,13 @@ typedef enum <ushort> { TC_AMBIENT, TC_DIFFUSE, TC_SPECULAR, TC_SELF_ILLUM } Tar
 typedef struct {
     NiSingleInterpController controller;
     TargetColor targetColor;
+    DATAREF_10_1 // NiPosData
 } NiLightColorCtlr <name="NiLightColorController">;
 
-typedef NiBoolInterpController NiVisCtlr <name="NiVisController", open=false>;
+typedef struct {
+    NiBoolInterpController controller;
+    DATAREF_10_1 // NiVisData
+} NiVisCtlr <name="NiVisController", open=false>;
 
 // Extra Data Controllers
 
@@ -64,17 +69,20 @@ typedef struct {
 
 typedef struct {
     NiExtraDataController controller;
+    DATAREF_10_1 // NiFloatData
 } NiFloatEDCtlr <name="NiFloatExtraDataController">;
 
 typedef struct {
     NiExtraDataController controller;
     int extraDataIndex;
+    DATAREF_10_1 // NiFloatData
 } NiFloatsEDCtlr <name="NiFloatsExtraDataController">;
 
 typedef NiFloatsEDCtlr NiFloatsEDPoint3Ctlr <name="NiFloatsExtraDataPoint3Controller">;
 
 typedef struct {
     NiExtraDataController controller;
+    DATAREF_10_1 // NiColorData
 } NiColorEDCtlr <name="NiColorExtraDataController">;
 
 
@@ -146,8 +154,9 @@ typedef struct {
 typedef struct {
     NiTimeController controller;
     bool cumulativeAnim;
-    RefArray sequence( "Sequence" ); // NiSequence
-    Ref objectPalette;
+    RefArray sequence( "Sequence" ); // NiControllerSequence
+    if ( version >= Version(10, 1, 0, 104) )
+        Ref objectPalette; // NiDefaultAVObjectPalette
 } NiControllerMgr <name="NiControllerManager">;
 
 typedef struct {
@@ -158,7 +167,10 @@ typedef struct {
 
 typedef struct {
     NiTimeController controller;
-    Ref interpolator; // NiKeyframeData/NiTransformData
+    if ( version < Version(10, 1, 0, 104) )
+        Ref data; // NiKeyframeData/NiTransformData
+    else
+        Ref interpolator; // NiInterpolator
 } NiKeyframeCtlr <name="NiKeyframeController">;
 
 // Renamed to NiTransformController in 10.2
@@ -172,6 +184,10 @@ typedef struct {
 typedef struct {
     NiFloatInterpController controller;
     uint affectedMap;
+    if ( version < Version(10, 1, 0, 104) ) {
+        float startTime;
+        float secondsPerFrame;
+    }
     RefArray textures( "Texture" ); // NiTexture
 } NiFlipController <name="NiFlipController">;
 
@@ -208,7 +224,15 @@ typedef struct {
     }
 } NiBoneLODController <name="NiBoneLODController">;
 
-typedef NiBoneLODController NiBSBoneLODCtlr <name="NiBSBoneLODController">;
+typedef struct {
+    NiFloatInterpController controller;
+    DATAREF_10_1 // NiFloatData
+} NiAlphaController <name="NiAlphaController", open=false>;
+
+typedef NiFloatInterpController NiLightRadiusCtlr <name="NiLightRadiusController", open=false>;
+typedef NiFloatInterpController NiLightDimmerCtlr <name="NiLightDimmerController", open=false>;
+
+// BETHESDA
 
 typedef struct {
     NiTimeController controller;
@@ -235,11 +259,8 @@ typedef struct {
     BSESPControlledColor controlledColor;
 } BSESPColorCtlr <name="BSEffectShaderPropertyColorController">;
 
-typedef NiFloatInterpController NiAlphaCtlr <name="NiAlphaController", open=false>;
-typedef NiAlphaCtlr BSNiAlphaCtlr <name="BSNiAlphaPropertyTestRefController", open=false>;
-
-typedef NiFloatInterpController NiLightRadiusCtlr <name="NiLightRadiusController", open=false>;
-typedef NiFloatInterpController NiLightDimmerCtlr <name="NiLightDimmerController", open=false>;
+typedef NiAlphaController BSNiAlphaCtlr <name="BSNiAlphaPropertyTestRefController", open=false>;
+typedef NiBoneLODController NiBSBoneLODCtlr <name="NiBSBoneLODController">;
 
 // BSLagBoneController
 typedef struct {
@@ -308,9 +329,8 @@ typedef struct {
 
 typedef struct {
     NIOBJECT
-    ByteKeyGrp data;
-} NiByteData;
-typedef NiByteData NiBoolData <name="NiBoolData">;
+    BoolKeyGrp data;
+} NiBoolData <name="NiBoolData">;
 
 typedef struct {
     NIOBJECT
@@ -501,7 +521,6 @@ typedef struct {
 
 // Legacy Anim
 
-typedef NiFloatInterpController NiAlphaController <name="NiAlphaController", open=false>;
 typedef NiFloatInterpController BSMatEmitMultCtlr <name="BSMaterialEmittanceMultController", open=false>;
 typedef NiFloatInterpController BSRefractionStrCtlr <name="BSRefractionStrengthController", open=false>;
 typedef NiLightColorCtlr NiMaterialColorCtlr <name="NiMaterialColorController">;
@@ -511,12 +530,18 @@ typedef struct {
     byte unkByte;
     uint texType;
     uint texTransType;
+    DATAREF_10_1 // NiFloatData
 } NiTextureTransformCtlr <name="NiTextureTransformController">;
 
 typedef struct ( uint numVerts ) {
-    STRING frameName;
-    if ( !BS_OBL && version < Version(20, 1, 0, 3) )
-        float weight;
+    if ( version >= Version(10, 1, 0, 104) ) {
+        STRING frameName;
+        if ( version < Version(20, 1, 0, 3) && !BS_OBL )
+            float weight;
+    } else {
+        FloatKeyGrp morphKeys;
+    }
+
     if ( numVerts > 0 )
         Vec3 vector[numVerts];
 } Morph;

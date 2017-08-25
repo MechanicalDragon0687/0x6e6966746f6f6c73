@@ -146,7 +146,7 @@ typedef struct {
         ClampMode clampMode ENUM16_PAD32;
         FilterMode filterMode ENUM16_PAD32;
         uint texCoordIndex;
-        if ( version < Version(10, 3, 0, 4) )
+        if ( version < Version(10, 3, 0, 4) || WORLDSHIFT_10_4 )
             short LandK[2];
     } else {
         MapFlags flags;

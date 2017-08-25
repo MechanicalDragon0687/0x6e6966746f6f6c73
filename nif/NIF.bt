@@ -710,6 +710,9 @@ struct FILE {
                 case "BSFrustumFOVController":
                     BSFrustumCtlr data;
                     break;
+                case "NiPSysEmitterCtlrData":
+                    NiPSysEmitterCtlrData data;
+                    break;
                 case "NiPSysAgeDeathModifier":
                     NiPSAgeDeathMod data;
                     break;
@@ -745,6 +748,9 @@ struct FILE {
                     break;
                 case "NiPSysBoundUpdateModifier":
                     NiPSBoundUpdateMod data;
+                    break;
+                case "NiPSysPartSpawnModifier":
+                    NiPSysPartSpawnMod data;
                     break;
                 case "BSPSysSubTexModifier":
                     BSPSysSubTexMod data;

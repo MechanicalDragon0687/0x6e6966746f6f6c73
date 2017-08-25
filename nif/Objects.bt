@@ -146,7 +146,7 @@ typedef struct {
 
 typedef struct {
     PixelFormat format;
-    if ( version < Version(10, 3, 0, 3) ) {
+    if ( version < Version(10, 3, 0, 3) || WORLDSHIFT_10_4 ) {
         uint colorMasks[4];
         uint bpp;
         uint oldFastCompare[2];
@@ -185,7 +185,7 @@ typedef struct {
     }
     uint dataSize;
 
-    if ( version < Version(10, 3, 0, 6) )
+    if ( version < Version(10, 3, 0, 6) || WORLDSHIFT_10_4 )
         local uint faces = 1;
     else
         uint faces;
