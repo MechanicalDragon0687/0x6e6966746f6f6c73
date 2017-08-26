@@ -62,6 +62,32 @@ RTTICode BethRTTI( string str, uint stream )
         BSMultiBoundOBB data;
         return RTTI_FOUND;
 
+// NODES
+    case "BSValueNode":
+        BSValueNode data;
+        return RTTI_FOUND;
+    case "BSLeafAnimNode":
+        BSLeafAnimNode data;
+        return RTTI_FOUND;
+    case "BSTreeNode":
+        BSTreeNode data;
+        return RTTI_FOUND;
+    case "BSOrderedNode":
+        BSOrderedNode data;
+        return RTTI_FOUND;
+    case "BSMultiBoundNode":
+        BSMultiBoundNode data;
+        return RTTI_FOUND;
+    case "BSDebrisNode":
+        BSDebrisNode data;
+        return RTTI_FOUND;
+    case "BSBlastNode":
+        BSBlastNode data;
+        return RTTI_FOUND;
+    case "BSDamageStage":
+        BSDamageStage data;
+        return RTTI_FOUND;
+
 // PROPERTIES
     case "BSShaderTextureSet":
         BSShaderTextureSet data;
