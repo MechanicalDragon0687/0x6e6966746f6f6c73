@@ -125,13 +125,13 @@ struct FILE {
             int embedDataSize;
             local int dataPassed = 0;
             while ( dataPassed < embedDataSize ) {
-                uint embedCount;
+                uint tag;
                 dataPassed += 4;
                 struct {
                     uint embedSize;
                     dataPassed += embedSize + 4;
                     byte data[embedSize];
-                } embed[embedCount] <optimize=false>;
+                } embed;
             }
         } else {
             local int stream = 0; // Fake stream version
