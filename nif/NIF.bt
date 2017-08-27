@@ -162,7 +162,7 @@ struct FILE {
     local uint stream = header.stream;
     local int unkBlocks <hidden=true> = 0;
 
-    Assert( version >= V20_0_0_4, "This NIF version is not supported." );
+    Assert( version >= V10_1_0_0, "This NIF version is not supported." );
 
     struct BLOCKS {
         local int i <hidden=true>;
