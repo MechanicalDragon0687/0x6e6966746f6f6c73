@@ -59,7 +59,7 @@ struct FILE {
         local string hdr = ReadLine(0);
         char HeaderString[Strlen(hdr)] <open=suppress>;
 
-        if ( Strstr( hdr, GAMEBRYO ) == -1 && Strstr( hdr, NETIMMERSE ) == -1 )
+        if ( !IS_GAMEBRYO && !IS_NETIMMERSE && !IS_NDS )
             Exit( R_HDR );
         
         local uint verFromStr <format=hex> = MISSING;
@@ -73,10 +73,13 @@ struct FILE {
                 Exit( R_HDR );
         }
 
-        if ( verFromStr > V3_1 ) {
+        if ( verFromStr > V3_1 && !IS_NDS ) {
             uint version <format=hex>;
             if ( verFromStr != MISSING )
                 Assert( version == verFromStr, "Numeric version does not match version obtained from header string" );
+        } else if ( IS_NDS ) {
+            uint versionHdr; // Unknown
+            local uint version = verFromStr;
         } else {
             local uint version = verFromStr;
             local int i = 0;

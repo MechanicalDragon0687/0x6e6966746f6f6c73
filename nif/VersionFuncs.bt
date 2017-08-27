@@ -14,7 +14,11 @@
 #define GAMEBRYO   "Gamebryo File Format"
 #define NETIMMERSE "NetImmerse File Format"
 #define NDS        "NDSNIF....@....@...."
-#define VERSTR ", Version "
+#define VERSTR     ", Version "
+
+#define IS_GAMEBRYO   (Strstr( hdr, GAMEBRYO ) == 0)
+#define IS_NETIMMERSE (Strstr( hdr, NETIMMERSE ) == 0)
+#define IS_NDS        (Strstr( hdr, NDS ) == 0)
 
 // NIF Header Versions
 typedef enum <uint> {
