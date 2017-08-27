@@ -305,19 +305,9 @@ typedef struct {
 
 typedef struct {
     NIOBJECT
-    uint numRotKeys;
-    if ( numRotKeys > 0 )
-    {
-        KeyType rotType;
-        if ( rotType != XYZ_ROTATION_KEY )
-            Vec4Key rotations(rotType)[numRotKeys] <optimize=true>;
-        else if ( rotType == XYZ_ROTATION_KEY ) {
-            FloatKeyGrp rotations[3] <optimize=false>;
-        }
-            
-    }
-    Vec3KeyGrp translations;
-    FloatKeyGrp scales;
+    RotKeyGrp rotations;
+    Vec3KeyGrp translations( "Translation" );
+    FloatKeyGrp scales( "Scale" );
 } NiKFData <name="NiKeyFrameData">;
 
 // Renamed to NiTransformData in 10.2
@@ -325,17 +315,17 @@ typedef NiKFData NiTransformData <name="NiTransformData">;
 
 typedef struct {
     NIOBJECT
-    Vec3KeyGrp positions;
+    Vec3KeyGrp positions( "Position" );
 } NiPosData <name="NiPosData">;
 
 typedef struct {
     NIOBJECT
-    BoolKeyGrp data;
+    BoolKeyGrp data( "Bool" );
 } NiBoolData <name="NiBoolData">;
 
 typedef struct {
     NIOBJECT
-    FloatKeyGrp data;
+    FloatKeyGrp data( "Float" );
 } NiFloatData <name="NiFloatData">;
 
 typedef struct {
@@ -555,7 +545,7 @@ typedef struct ( uint numVerts ) {
         if ( version < Version(20, 1, 0, 3) && !BS_OBL )
             float weight;
     } else {
-        FloatKeyGrp morphKeys;
+        FloatKeyGrp morphKeys( "Morph" );
     }
 
     if ( numVerts > 0 )
@@ -573,7 +563,7 @@ typedef struct {
 
 typedef struct {
     NIOBJECT
-    Vec4KeyGrp data; // Color4
+    Vec4KeyGrp data( "Color" ); // Color4
 } NiColorData <name="NiColorData">;
 
 typedef struct {

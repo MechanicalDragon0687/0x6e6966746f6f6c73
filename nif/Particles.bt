@@ -152,8 +152,8 @@ typedef struct {
 // NiPSysEmitterCtlrData
 typedef struct {
     NIOBJECT
-    FloatKeyGrp birthRateKeys;
-    BoolKeyGrp activeEmitterKeys;
+    FloatKeyGrp birthRateKeys( "Birth Rate" );
+    BoolKeyGrp activeEmitterKeys( "Active Emitter" );
 } NiPSysEmitterCtlrData <name="NiPSysEmitterCtlrData">;
 
 // MODIFIERS

@@ -14,76 +14,93 @@
 typedef struct ( KeyType i ) {
     float time;
     Vec3 value;
-    if ( i == 2 ) {
+    if ( i == QUADRATIC_KEY ) {
         Vec3 forward;
         Vec3 backward;
     }
-    if ( i == 3 )
+    if ( i == TBC_KEY )
         TBC tbc;
 } Vec3Key <name="Vector3 Key">;
 
-typedef struct {
+typedef struct ( string str ) {
+    local string name <hidden=true> = str;
     uint numKeys;
     if ( numKeys > 0 ) {
         KeyType interpolation;
-        if ( numKeys > 0 )
-            Vec3Key key(interpolation)[numKeys] <optimize=true>;
+        Vec3Key key(interpolation)[numKeys] <optimize=true>;
     }
-} Vec3KeyGrp <name="Keys">;
+} Vec3KeyGrp <name=Vec3KeyGrpName>;
 
 typedef struct ( KeyType i ) {
     float time;
     Vec4 value;
-    if ( i == 2 ) {
+    if ( i == QUADRATIC_KEY ) {
         Vec4 forward;
         Vec4 backward;
     }
-    if ( i == 3 )
+    if ( i == TBC_KEY )
         TBC tbc;
 } Vec4Key <name="Vector4 Key">;
 
-typedef struct {
+typedef struct ( string str ) {
+    local string name <hidden=true> = str;
     uint numKeys;
     if ( numKeys > 0 ) {
         KeyType interpolation;
-        if ( numKeys > 0 )
-            Vec4Key key(interpolation)[numKeys] <optimize=true>;
+        Vec4Key key(interpolation)[numKeys] <optimize=true>;
     }
-} Vec4KeyGrp <name="Keys">;
+} Vec4KeyGrp <name=Vec4KeyGrpName>;
 
 typedef struct ( KeyType i ) {
     float time;
     float value;
-    if ( i == 2 ) {
+    if ( i == QUADRATIC_KEY ) {
         float forward;
         float backward;
     }
-    if ( i == 3 )
+    if ( i == TBC_KEY )
         TBC tbc;
 } FloatKey <name="Float Key">;
 
-typedef struct {
+typedef struct ( string str ) {
+    local string name <hidden=true> = str;
     uint numKeys;
     if ( numKeys > 0 ) {
         KeyType interpolation;
-        if ( numKeys > 0 )
-            FloatKey key(interpolation)[numKeys] <optimize=true>;
+        FloatKey key(interpolation)[numKeys] <optimize=true>;
     }
 
-} FloatKeyGrp <name="Keys">;
+} FloatKeyGrp <name=FloatKeyGrpName>;
+
+typedef struct {
+    uint numRotKeys;
+    if ( numRotKeys > 0 ) {
+        KeyType rotType;
+        if ( rotType != XYZ_ROTATION_KEY ) {
+            Vec4Key rotations(rotType)[numRotKeys] <optimize=true>;
+        } else if ( rotType == XYZ_ROTATION_KEY ) {
+            if ( version < Version(10, 1, 0, 104) )
+                int order;
+            FloatKeyGrp rotationX( "X" );
+            FloatKeyGrp rotationY( "Y" );
+            FloatKeyGrp rotationZ( "Z" );
+        }
+    }
+} RotKeyGrp <name="Rotation Keys">;
 
 typedef struct ( KeyType i ) {
     float time;
     byte value;
-    if ( i == 2 ) {
+    if ( i == QUADRATIC_KEY ) {
         byte forward;
         byte backward;
     }
-    if ( i == 3 )
+    if ( i == TBC_KEY )
         TBC tbc;
 } BoolKey <name="Bool Key">;
 
-typedef struct {
+typedef struct ( string str ) {
+    local string name <hidden=true> = str;
     uint numKeys;
     if ( numKeys > 0 ) {
         // Do not read KeyType for < 10.1.0.104
@@ -95,24 +112,52 @@ typedef struct {
         if ( numKeys > 0 )
             BoolKey key(interpolation)[numKeys] <optimize=true>;
     }
-} BoolKeyGrp <name="Keys">;
+} BoolKeyGrp <name=BoolKeyGrpName>;
 
 typedef struct ( KeyType i ) {
     float time;
     STRING value;
-    if ( i == 2 ) {
+    if ( i == QUADRATIC_KEY ) {
         STRING forward;
         STRING backward;
     }
-    if ( i == 3 )
+    if ( i == TBC_KEY )
         TBC tbc;
 } StringKey <name="String Key">;
 
-typedef struct {
+typedef struct ( string str ) {
+    local string name <hidden=true> = str;
     uint numKeys;
     if ( numKeys > 0 ) {
         KeyType interpolation;
         if ( numKeys > 0 )
             StringKey key(interpolation)[numKeys] <optimize=true>;
     }
-} StringKeyGrp <name="Keys">;
+} StringKeyGrp <name=StringKeyGrpName>;
+
+// NAME FUNCTIONS
+
+string Vec3KeyGrpName ( Vec3KeyGrp& g )
+{
+    return g.name + " Keys";
+}
+
+string Vec4KeyGrpName ( Vec4KeyGrp& g )
+{
+    return g.name + " Keys";
+}
+
+string FloatKeyGrpName ( FloatKeyGrp& g )
+{
+    return g.name + " Keys";
+}
+
+string BoolKeyGrpName ( BoolKeyGrp& g )
+{
+    return g.name + " Keys";
+}
+
+string StringKeyGrpName ( StringKeyGrp& g )
+{
+    return g.name + " Keys";
+}
