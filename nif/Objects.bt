@@ -165,7 +165,7 @@ typedef struct {
             PixelRepresentation representation;
             uchar bitsPerComponent;
             bool isSigned;
-        } component[NUM_COMPS];
+        } component[NUM_COMPS] <OPTOPEN>;
     }
 } NiPixelFormat <name="NiPixelFormat">;
 
@@ -181,7 +181,7 @@ typedef struct {
             uint width;
             uint height;
             uint offsetInBytes;
-        } mip[mipMapLevels];
+        } mip[mipMapLevels] <OPTARRAY>;
     }
     uint dataSize;
 

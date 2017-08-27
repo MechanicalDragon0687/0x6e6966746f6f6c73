@@ -113,7 +113,7 @@ typedef struct {
             float lastUpdate;
             ushort generation;
             ushort code;
-        } particleInfo[numVerts];
+        } particleInfo[numVerts] <OPTARRAY>;
     }
 
     if ( version >= Version(20, 0, 0, 2) ) {

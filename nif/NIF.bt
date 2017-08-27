@@ -15,6 +15,11 @@
 
 #include "VersionFuncs.bt"
 
+// 010 Attribute defines
+#define OPT optimize=true
+#define OPTOPEN open=true, optimize=true
+#define OPTARRAY open=suppress, optimize=true
+
 // DATATYPES
 
 #include "Enums.bt"

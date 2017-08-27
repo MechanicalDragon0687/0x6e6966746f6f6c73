@@ -14,12 +14,12 @@
 typedef struct {
     ushort index;
     float weight;
-} SkinWeight <name="Weights", open=suppress>;
+} SkinWeight <name="Weights", open=suppress, size=6>;
 
 typedef struct {
     ushort index;
     hfloat weight;
-} SkinWeightHalf <name="Weights", open=suppress>;
+} SkinWeightHalf <name="Weights", open=suppress, size=4>;
 
 typedef struct ( bool hasWeights )  {
     NiTransform transform;
@@ -52,7 +52,7 @@ typedef struct {
         } weights[numVerts] <name="Bone Weights", optimize=true>;
     
     if ( numStrips ) {
-        ushort stripLength[numStrips] <optimize=true>;
+        ushort stripLength[numStrips];
         bool hasFaces;
         if ( hasFaces ) {
             struct {
@@ -89,11 +89,11 @@ typedef struct {
 typedef struct {
     ushort partFlag;
     ushort partType;
-} BSBodyPartList;
+} BSBodyPartList <open=true, size=4>;
 
 // Stream 130
 
 typedef struct {
     NiBound boundingSphere;
     NiTransform transform;
-} BSSkinBoneTrans <open=true>;
+} BSSkinBoneTrans <open=true, optimize=true, size=68>;

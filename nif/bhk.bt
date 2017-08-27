@@ -23,14 +23,14 @@ typedef struct {
         OblivionLayer layer;
     BipedPart flags;
     ushort group;
-} HavokFilter <name="Filter", open=true>;
+} HavokFilter <name="Filter", open=true, size=4>;
 
 
 typedef struct {
     uint data;
     uint size;
     uint capacityAndFlags; // capacity = n & 0x3FFFFFFF
-} hkWorldObjCinfoProperty;
+} hkWorldObjCinfoProperty <size=12>;
 
 typedef struct {
     Ref shape;
@@ -41,7 +41,7 @@ typedef struct {
     byte unkBytes[3];
     hkWorldObjCinfoProperty prop;
     // end hkWorldObjectCinfo
-} bhkWorldObject <open=true>;
+} bhkWorldObject <open=true, size=28>;
 
 typedef struct {
     bhkWorldObject obj;
@@ -133,14 +133,14 @@ typedef struct {
     NiCollisionObject base <open=true>;
     ushort flags;
     Ref body;
-} bhkCollisionObj <name="bhkCollisionObject">;
+} bhkCollisionObj <name="bhkCollisionObject", size=10>;
 
 typedef struct {
     NiCollisionObject base <open=true>;
     ushort flags;
     Ref data;
     uint bodyID;
-} bhkNPCollObj <name="bhkNPCollisionObject">;
+} bhkNPCollObj <name="bhkNPCollisionObject", size=14>;
 
 typedef bhkCollisionObj bhkSPCollObj <name="bhkSPCollisionObject">;
 typedef bhkCollisionObj bhkPCollObj <name="bhkPCollisionObject">;
@@ -149,7 +149,7 @@ typedef struct {
     bhkCollisionObj base <open=true>;
     float heirGain;
     float velGain;
-} bhkBlendCollisionObj <name="bhkBlendCollisionObject">;
+} bhkBlendCollisionObj <name="bhkBlendCollisionObject", size=18>;
 
 
 // SHAPES
@@ -168,7 +168,7 @@ typedef struct {
 typedef struct {
     uint HavokMaterial; // enum
     float radius;
-} bhkConvexShape <open=true>; // Abstract
+} bhkConvexShape <open=true, size=8>; // Abstract
 
 typedef struct {
     uint HavokMaterial;
@@ -177,7 +177,7 @@ typedef struct {
     float constant;
     Vec4 halfExtents;
     Vec4 center;
-} bhkPlaneShape <name="bhkPlaneShape">;
+} bhkPlaneShape <name="bhkPlaneShape", size=64>;
 
 typedef bhkConvexShape bhkSphereShape <name="bhkSphereShape", open=false>;
 
@@ -186,7 +186,7 @@ typedef struct {
     uint64 padding; // The following hkVector4 wants to be aligned at 16 bytes
     Vec3 dimensions;
     float radius;
-} bhkBoxShape <name="bhkBoxShape">;
+} bhkBoxShape <name="bhkBoxShape", size=32>;
 
 typedef struct {
     bhkConvexShape shape;
@@ -195,13 +195,13 @@ typedef struct {
     float radius1;
     Vec3 point2;
     float radius2;
-} bhkCapsuleShape <name="bhkCapsuleShape">;
+} bhkCapsuleShape <name="bhkCapsuleShape", size=48>;
 
 typedef struct {
     bhkWorldObject obj;
     uint64 padding;
     Matrix44 transform;
-} bhkSSPhantom <name="bhkSimpleShapePhantom">;
+} bhkSSPhantom <name="bhkSimpleShapePhantom", size=100>;
 
 typedef struct {
     bhkConvexShape shape;
@@ -210,11 +210,11 @@ typedef struct {
     // hkArray<hkFourTransposedPointsf,hkContainerHeapAllocator> m_rotatedVertices;
     uint numVerts;
     if ( numVerts > 0 )
-        Vec4 verts[numVerts] <optimize=true>;
+        Vec4 verts[numVerts];
     // hkArray<hkVector4f,hkContainerHeapAllocator> m_planeEquations;
     uint numNormals;
     if ( numNormals > 0 )
-        Vec4 normals[numNormals] <optimize=true>;
+        Vec4 normals[numNormals];
 } bhkCVS <name="bhkConvexVerticesShape">;
 
 typedef struct {
@@ -223,9 +223,9 @@ typedef struct {
     float radius;
     uint64 padding;
     Matrix44 transform;
-} bhkTS <name="bhkTransformShape">;
+} bhkTS <name="bhkTransformShape", size=84>;
 
-typedef bhkTS bhkCTS <name="bhkConvexTransformShape">;
+typedef bhkTS bhkCTS <name="bhkConvexTransformShape", size=84>;
 
 typedef struct {
     // Cinfo size 48
@@ -271,17 +271,17 @@ typedef struct {
     float radius;
     Vec4 scaling;
     Ref data;
-} bhkCMS <name="bhkCompressedMeshShape">;
+} bhkCMS <name="bhkCompressedMeshShape", size=56>;
 
 typedef struct {
     uint material;
     HavokFilter filter;
-} bhkBSMaterial;
+} bhkBSMaterial <size=8>;
 
 typedef struct {
     Vec4 translation;
     QuatXYZW rotation;
-} bhkCMSDTrans;
+} bhkCMSDTrans <size=32>;
 
 typedef struct {
     ushort triA;
@@ -289,7 +289,7 @@ typedef struct {
     ushort triC;
     uint material;
     ushort weldingInfo;
-} bhkCMSDBT;
+} bhkCMSDBT <size=12>;
 
 typedef struct {
     Vec4 translation;
@@ -298,18 +298,18 @@ typedef struct {
     ushort transformIndex;
     uint numVerts;
     if ( numVerts > 0 )
-        ushort verts[numVerts] <optimize=false>;
+        ushort verts[numVerts];
     uint numIndices;
     if ( numIndices > 0 )
-        ushort indices[numIndices] <optimize=false>;
+        ushort indices[numIndices];
     uint numStrips;
     if ( numStrips > 0 )
-        ushort strips[numStrips] <optimize=false>;
+        ushort strips[numStrips];
     uint numWeldingInfo;
     if ( numWeldingInfo > 0 )
-        ushort weldingInfo[numWeldingInfo] <optimize=false>;
+        ushort weldingInfo[numWeldingInfo];
     
-} bhkCMSDChunk;
+} bhkCMSDChunk <optimize=false>;
 
 typedef struct {
     uint bitsPerIndex;
@@ -324,13 +324,13 @@ typedef struct {
     // Mat32A, Mat16A, and Mat8A do not appear to ever be used
     uint numMat32;
     if ( numMat32 > 0 )
-        uint mat32[numMat32] <optimize=true>;
+        uint mat32[numMat32];
     uint numMat16;
     if ( numMat16 > 0 )
-        uint mat16[numMat16] <optimize=true>;
+        uint mat16[numMat16];
     uint numMat8;
     if ( numMat8 > 0 )
-        uint mat8[numMat8] <optimize=true>;
+        uint mat8[numMat8];
 
     uint numMaterials;
     bhkBSMaterial materials[numMaterials] <optimize=false>;
@@ -341,18 +341,18 @@ typedef struct {
 
     uint numTransforms;
     if ( numTransforms > 0 )
-        bhkCMSDTrans transforms[numTransforms] <optimize=false>;
+        bhkCMSDTrans transforms[numTransforms];
 
     uint numBigVerts;
     if ( numBigVerts > 0 )
-        Vec4 bigVerts[numBigVerts] <optimize=false>;
+        Vec4 bigVerts[numBigVerts];
 
     uint numBigTris;
     if ( numBigTris > 0 )
-        bhkCMSDBT bigTris[numBigTris] <optimize=false>;
+        bhkCMSDBT bigTris[numBigTris];
 
     uint numChunks;
-    bhkCMSDChunk chunks[numChunks] <optimize=false>;
+    bhkCMSDChunk chunks[numChunks];
 
     // ConvexPiece does not appear to ever be used
     uint numConvexPieceA;
@@ -679,7 +679,7 @@ typedef struct {
     float strength;
     float damping;
     uint64 padding;
-} bhkOrientHingedBodyAction <name="bhkOrientHingedBodyAction">;
+} bhkOrientHingedBodyAction <name="bhkOrientHingedBodyAction", size=68>;
 
 typedef struct {
     uint userData;
@@ -710,7 +710,7 @@ typedef struct {
     if ( stream <= 11 ) {
         ushort partCount;
         if ( partCount > 0 )
-            hkSubPartData data[partCount] <optimize=true>;
+            hkSubPartData data[partCount] <OPTARRAY>;
     }
     uint userData;
     uint unused1; // Pointer/garbage
@@ -725,7 +725,7 @@ typedef struct {
 typedef struct {
     uint keyCount;
     if ( keyCount > 0 )
-        hkTriangleData triData[keyCount];
+        hkTriangleData triData[keyCount] <OPTARRAY>;
 
     uint numVerts;
 
@@ -738,7 +738,7 @@ typedef struct {
     if ( stream > 11 ) {
         ushort partCount;
         if ( partCount > 0 )
-            hkSubPartData data[partCount] <optimize=true>;
+            hkSubPartData data[partCount] <OPTARRAY>;
     }
 } hkPackedNiTriStripsData <name="hkPackedNiTriStripsData">;
 
@@ -746,7 +746,7 @@ typedef struct {
 typedef struct {
     uint numBones;
     if ( numBones > 0 )
-        STRING bones[numBones];
+        STRING bones[numBones] <OPTARRAY>;
     uint numPoses;
     if ( numPoses > 0 )
         struct {

@@ -21,7 +21,7 @@ typedef struct {
             struct {
                 STRING materialName;
                 uint materialExtraData;
-            } materials[nummaterials];
+            } materials[nummaterials] <OPTARRAY>;
         }
         uint activematerial;
     } else {
@@ -87,9 +87,9 @@ typedef struct {
 
     bool hasVerts;
     if ( hasVerts == 1 && !isPSys )
-        Vec3 vertices[numVerts] <open=suppress>;
+        Vec3 vertices[numVerts] <OPTARRAY>;
     else if ( hasVerts == 0xF )
-        HalfVec3 vertices[numVerts] <open=suppress>;
+        HalfVec3 vertices[numVerts] <OPTARRAY>;
 
     // NBT Method is uppermost 4 bits, Num UV Sets is lowest 4 bits
     ushort dataFlags;
@@ -106,16 +106,16 @@ typedef struct {
     
     bool hasNormals;
     if ( hasNormals == 1 && !isPSys )
-        Vec3 normals[numVerts] <open=suppress>;
+        Vec3 normals[numVerts] <OPTARRAY>;
     else if ( hasNormals == 6 )
-        ByteVec3 normals[numVerts];
+        ByteVec3 normals[numVerts] <OPTARRAY>;
 
     if ( hasNormals == 1 && nbtMethod && !isPSys ) {
-        Vec3 tangents[numVerts] <open=suppress>;
-        Vec3 bitangents[numVerts] <open=suppress>;
+        Vec3 tangents[numVerts] <OPTARRAY>;
+        Vec3 bitangents[numVerts] <OPTARRAY>;
     } else if ( hasNormals == 6 && nbtMethod ) {
-        ByteVec3 tangents[numVerts];
-        ByteVec3 bitangents[numVerts];
+        ByteVec3 tangents[numVerts] <OPTARRAY>;
+        ByteVec3 bitangents[numVerts] <OPTARRAY>;
     }
 
     if ( DIV2 ) {
@@ -130,14 +130,14 @@ typedef struct {
     bool hasVertColors;
     if ( numVerts > 0 && !isPSys ) {
         if ( hasVertColors == 1 )
-            Color4 vertColors[numVerts] <open=suppress>;
+            Color4 vertColors[numVerts] <OPTARRAY>;
         else if ( hasVertColors == 7 )
-            ByteColor4 vertColors[numVerts] <open=suppress>;
+            ByteColor4 vertColors[numVerts] <OPTARRAY>;
 
         if ( hasVerts == 1 && numTextureSets > 0 )
-            TexCoordArray UVSets(numVerts)[numTextureSets] <open=suppress, optimize=true>;
+            TexCoordArray UVSets(numVerts)[numTextureSets] <OPTARRAY>;
         else if ( hasVerts == 0xF && numTextureSets > 0 )
-            HalfTexCoordArray UVs(numVerts)[numTextureSets] <open=suppress, optimize=true>;
+            HalfTexCoordArray UVs(numVerts)[numTextureSets] <OPTARRAY>;
     }
 
     // Consistency Type is only the upper 4 bits (& 0xF000)
@@ -168,7 +168,7 @@ typedef struct {
             uint blockIndex;
             uint blockOffset;
             byte flags;
-        } NiAGDDataStream[dataStreamCount];
+        } NiAGDDataStream[dataStreamCount] <OPTARRAY>;
     uint dataBlockCount;
     if ( dataBlockCount > 0 )
         struct {
@@ -183,7 +183,7 @@ typedef struct {
                     uint dataSize[numData];
                 UByteArray data(blockSize, "Data")[numData];
             }
-        } NiAGDDataBlock[dataBlockCount];
+        } NiAGDDataBlock[dataBlockCount] <optimize=false>;
 } NiAdditionalGeometryData <name="NiAdditionalGeometryData">;
 
 // NiTriShapeData
@@ -195,7 +195,7 @@ typedef struct {
 
     bool hasTris;
     if ( hasTris == 1 )
-        Triangle tris[numTris] <open=suppress>;
+        Triangle tris[numTris] <OPTARRAY>;
 
     ushort numSharedNormals;
     if ( numSharedNormals > 0 ) {
@@ -203,7 +203,11 @@ typedef struct {
             Assert( false, "Shared Normals are not expected for this NIF version" );
 
         struct {
-            UShortArraySz normal("Shared Normal", 2)[numSharedNormals] <open=suppress, optimize=false>;
+            struct {
+                ushort size;
+                if ( size > 0 )
+                    ushort normal[size];
+            } sharedNormals[numSharedNormals] <open=suppress, optimize=false>;
         } sharedNormalsArray <open=suppress>;
     }
 
@@ -215,7 +219,7 @@ typedef struct {
     ushort numTris;
     ushort numStrips;
     if ( numStrips ) {
-        ushort stripLength[numStrips] <optimize=true>;
+        ushort stripLength[numStrips];
         bool hasFaces;
         if ( hasFaces ) {
             struct {
@@ -309,7 +313,7 @@ typedef struct {
 
     uint dataSize;
     if ( dataSize > 0 )
-        BSVertexData vertexData(vertexDesc.value)[numVerts] <open=suppress, optimize=true>;
+        BSVertexData vertexData(vertexDesc.value)[numVerts] <OPTARRAY>;
     if ( dataSize > 0 && numTris > 0 )
         Triangle triangles[numTris];
 
@@ -463,7 +467,7 @@ typedef struct {
         //local uint64 fakeDesc = (uint64)(vertexSize / 4) << 64;
 
         if ( dataSize > 0 )
-            BSVertexData vertexData(vertexDesc.value)[dataSize/vertexSize] <open=suppress, optimize=true>;
+            BSVertexData vertexData(vertexDesc.value)[dataSize/vertexSize] <OPTARRAY>;
         SkinPartition parts[numParts] <optimize=false>;
     }   
 } NiSkinPartition <name="NiSkinPartition">;
@@ -473,23 +477,23 @@ typedef struct {
 
 typedef struct {
     Ref data; // BSMultiBoundData
-} BSMultiBound <name="BSMultiBound">;
+} BSMultiBound <name="BSMultiBound", size=4>;
 
 typedef struct {
     Vec3 center;
     Vec3 size;
     Matrix33 rotation;
-} BSMultiBoundOBB <name="BSMultiBoundOBB">;
+} BSMultiBoundOBB <name="BSMultiBoundOBB", size=60>;
 
 typedef struct {
     Vec3 center;
     Vec3 halfExtents;
-} BSMultiBoundAABB <name="BSMultiBoundAABB">;
+} BSMultiBoundAABB <name="BSMultiBoundAABB", size=24>;
 
 typedef struct {
     Vec3 center;
     float radius;
-} BSMultiBoundSphere <name="BSMultiBoundSphere">;
+} BSMultiBoundSphere <name="BSMultiBoundSphere", size=16>;
 
 
 // New Geometry (20.5+)
@@ -501,7 +505,7 @@ typedef struct {
         struct {
             STRING name;
             uint extraData;
-        } material[numMaterials];
+        } material[numMaterials] <optimize=true>;
     }
     uint activeMaterial;
     bool materialNeedsUpdateDefault;
@@ -525,7 +529,7 @@ typedef struct {
                 struct {
                     STRING name;
                     uint index;
-                } elementDesc[elementDescCount] <open=true>;
+                } elementDesc[elementDescCount] <OPTOPEN>;
             }
         } dataStreamRef[dataStreamRefCount] <optimize=false, open=true>;
     }
@@ -584,6 +588,6 @@ typedef struct {
         Ref bone[numBones];
         NiTransform boneTransform[numBones] <open=false>;
         if ( flags.value & RECOMPUTE_BOUNDS )
-            NiBound boneBound[numBones];
+            NiBound boneBound[numBones] <OPTOPEN>;
     }
 } NiSkinningMeshModifier <name="NiSkinningMeshModifier">;

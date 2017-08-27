@@ -387,7 +387,7 @@ string ReadSTRING( STRING &s )
 typedef struct {
     uint size;
     if ( size > 0 )
-        STRING str[size];
+        STRING str[size] <optimize=false>;
 } StringArray;
 
 typedef struct ( uint szSize ) {
@@ -404,7 +404,7 @@ typedef struct ( uint szSize ) {
             break;
     }
     if ( size > 0 )
-        STRING str[size];
+        STRING str[size] <optimize=false>;
 } StringArraySz;
 
 // SSTRING16

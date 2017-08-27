@@ -241,21 +241,21 @@ typedef struct {
     Vec3 localNormal;
     Vec3 localAxis;
     Vec3 localAnchor;
-} NiPhysXJointActor;
+} NiPhysXJointActor <size=40>;
 
 typedef struct {
     float value;
     float restitution;
     float spring;
     float damping;
-} NxJointLimitSoftDesc;
+} NxJointLimitSoftDesc <size=16>;
 
 typedef struct {
     NxD6JointDriveType driveType;
     float restitution;
     float spring;
     float damping;
-} NxJointDriveDesc;
+} NxJointDriveDesc <size=16>;
 
 typedef struct {
     NIOBJECT
@@ -423,27 +423,27 @@ typedef struct {
     NIOBJECT
     bool active;
     bool interp;
-} NiPhysXDest <name="NiPhysXDest", open=true>; // Abstract
+} NiPhysXDest <name="NiPhysXDest", open=true, size=2>; // Abstract
 
 typedef struct {
     NiPhysXDest base;
-} NiPhysXRigidBodyDest <name="NiPhysXRigidBodyDest", open=true>; // Abstract
+} NiPhysXRigidBodyDest <name="NiPhysXRigidBodyDest", open=true, size=2>; // Abstract
 
 typedef struct {
     NiPhysXRigidBodyDest base;
     Ref target; // NiAVobject
-} NiPhysXTransformDest <name="NiPhysXTransformDest">;
+} NiPhysXTransformDest <name="NiPhysXTransformDest", size=6>;
 
 typedef struct {
     NIOBJECT
     bool active;
     bool interp;
-} NiPhysXSrc <name="NiPhysXSrc", open=true>; // Abstract
+} NiPhysXSrc <name="NiPhysXSrc", open=true, size=2>; // Abstract
 
 typedef struct {
     NiPhysXSrc base;
     Ref source; // NiAVObject
-} NiPhysXRigidBodySrc <name="NiPhysXRigidBodySrc">;
+} NiPhysXRigidBodySrc <name="NiPhysXRigidBodySrc", size=6>;
 
-typedef NiPhysXRigidBodySrc NiPhysXKinematicSrc <name="NiPhysXKinematicSrc">;
-typedef NiPhysXRigidBodySrc NiPhysXDynamicSrc <name="NiPhysXDynamicSrc">;
+typedef NiPhysXRigidBodySrc NiPhysXKinematicSrc <name="NiPhysXKinematicSrc", size=6>;
+typedef NiPhysXRigidBodySrc NiPhysXDynamicSrc <name="NiPhysXDynamicSrc", size=6>;
