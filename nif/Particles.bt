@@ -399,6 +399,10 @@ typedef struct {
     float height;
 } NiPSysCylinderEmitter <name="NiPSysCylinderEmitter">;
 
+// BETHESDA
+
+typedef NiPSysVolumeEmitter BSPSysArrayEmitter <name="BSPSysArrayEmitter", open=false>;
+
 
 // COLLIDERS
 

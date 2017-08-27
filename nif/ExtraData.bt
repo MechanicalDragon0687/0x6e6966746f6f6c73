@@ -211,6 +211,9 @@ typedef struct {
         SSTRING name[numPoints] <optimize=false>;
 } BSConnectPtChildren <name="BSConnectPoint::Children">;
 
+// BSClothExtraData
+typedef BinaryData BSClothExtraData <name="BSClothExtraData">;
+
 
 // READ FUNCTIONS
 

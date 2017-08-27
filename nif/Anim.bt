@@ -261,6 +261,7 @@ typedef struct {
 
 typedef NiAlphaController BSNiAlphaCtlr <name="BSNiAlphaPropertyTestRefController", open=false>;
 typedef NiBoneLODController NiBSBoneLODCtlr <name="NiBSBoneLODController">;
+typedef NiSingleInterpController BSRefractionFirePeriodCtlr <name="BSRefractionFirePeriodController", open=false>;
 
 // BSLagBoneController
 typedef struct {
@@ -518,6 +519,21 @@ typedef struct {
     float compScalars[2];
 } NiBSplineCompPoint3Interpolator <name="NiBSplineCompPoint3Interpolator">;
 
+// BETHESDA
+
+typedef NiTransformInterp BSRotAccumTransfInterp <name="BSRotAccumTransfInterpolator", open=false>;
+
+typedef struct {
+    NIKBINTERP
+    uint numInfo;
+    if ( numInfo > 0 )
+        struct {
+            STRING name;
+            NiQuatTransform transformA;
+            NiQuatTransform transformB;
+        } infos[numInfo] <OPTARRAY>;
+    Ref data;
+} BSTreadTransfInterp <name="BSTreadTransfInterpolator">;
 
 // Legacy Anim
 

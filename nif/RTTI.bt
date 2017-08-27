@@ -256,9 +256,6 @@ RTTICode RTTI( string str )
     case "NiLightColorController":
         NiLightColorCtlr data;
         return RTTI_FOUND;
-    case "NiLightRadiusController":
-        NiLightRadiusCtlr data;
-        return RTTI_FOUND;
     case "NiLightDimmerController":
         NiLightDimmerCtlr data;
         return RTTI_FOUND;
