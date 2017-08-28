@@ -131,11 +131,13 @@ typedef struct {
 // NiMeshPSysData
 typedef struct {
     NiPSysData data <open=true>;
-    uint defaultPoolSize; // Generally equal to data.numVerts
-    bool fillPoolsOnLoad;
-    uint numGenerations;
-    if ( numGenerations > 0 )
-        uint generationPoolSize[numGenerations];
+    if ( version > Version(10, 1, 0, 0) ) {
+        uint defaultPoolSize; // Generally equal to data.numVerts
+        bool fillPoolsOnLoad;
+        uint numGenerations;
+        if ( numGenerations > 0 )
+            uint generationPoolSize[numGenerations];
+    }
     Ref node; // NiNode
 } NiMeshPSysData <name="NiMeshPSysData">;
 
@@ -440,7 +442,10 @@ typedef struct {
     STRING modifier;
 } NiPSysModifierCtlr <name="NiPSysModifierCtlr", open=true>; // Abstract
 
-typedef NiPSysModifierCtlr NiPSysModifierBoolCtlr <name="NiPSysModifierBoolCtlr", open=true>; // Abstract
+typedef struct {
+    NiPSysModifierCtlr controller;
+    DATAREF_10_1
+} NiPSysModifierBoolCtlr <name="NiPSysModifierBoolCtlr", open=true>; // Abstract
 typedef NiPSysModifierBoolCtlr NiPSysActiveCtlr <name="NiPSysModifierActiveCtlr", open=false>;
 
 typedef struct {
@@ -463,7 +468,10 @@ typedef NiTimeController NiPSysResetOnLoopCtlr <name="NiPSysResetOnLoopCtlr", op
 
 typedef struct {
     NiPSysModifierCtlr controller;
-    Ref visInterpolator;
+    if ( version < Version(10, 1, 0, 104) )
+        Ref data;
+    else
+        Ref interpolator; // NiInterpolator
 } NiPSysEmitterCtlr <name="NiPSysEmitterCtlr">;
 
 // BSPSysMultiTargetEmitterCtlr

@@ -241,6 +241,12 @@ RTTICode RTTI( string str )
     case "NiVisController":
         NiVisCtlr data;
         return RTTI_FOUND;
+    case "NiPathController": // DEPRECATED 10.2
+        NiPathController data;
+        return RTTI_FOUND;
+    case "NiRollController": // DEPRECATED 10.2
+        NiRollController data;
+        return RTTI_FOUND;
     case "NiFloatExtraDataController":
         NiFloatEDCtlr data;
         return RTTI_FOUND;
@@ -309,6 +315,9 @@ RTTICode RTTI( string str )
         return RTTI_FOUND;
     case "NiKeyframeData":
         NiKFData data;
+        return RTTI_FOUND;
+    case "NiVisData": // DEPRECATED 10.2
+        NiVisData data;
         return RTTI_FOUND;
     case "NiBoolData":
         NiBoolData data;

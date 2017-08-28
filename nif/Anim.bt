@@ -176,6 +176,27 @@ typedef struct {
 // Renamed to NiTransformController in 10.2
 typedef NiKeyframeCtlr NiTransCtlr <name="NiTransformController">;
 
+// Deprecated in 10.2, use NiTransformController & NiPathInterpolator
+typedef struct {
+    NiTimeController controller;
+    PathFlags flags;
+    enum <uint> {
+        BANK_NEGATIVE = -1,
+        BANK_POSITIVE = 1
+    } bankDir;
+    float maxBankAngle;
+    float smoothing;
+    short followAxis;
+    Ref pathData; // NiPosData
+    Ref pctData;  // NiFloatData
+} NiPathController <name="NiPathController">;
+
+// Deprecated in 10.2, use NiTransformController & NiLookAtInterpolator
+typedef struct {
+    NiTimeController controller;
+    DATAREF_10_1 // NiFloatData
+} NiRollController <name="NiRollController">;
+
 typedef struct {
     NiInterpController controller;
     RefArray16 targets( "Target" ); // NiAVObject
@@ -318,10 +339,15 @@ typedef struct {
     Vec3KeyGrp positions( "Position" );
 } NiPosData <name="NiPosData">;
 
+
+// Deprecated in 10.2
 typedef struct {
     NIOBJECT
     BoolKeyGrp data( "Bool" );
-} NiBoolData <name="NiBoolData">;
+} NiVisData <name="NiVisData">;
+
+// Renamed to NiBoolData in 10.2
+typedef NiVisData NiBoolData <name="NiBoolData">;
 
 typedef struct {
     NIOBJECT

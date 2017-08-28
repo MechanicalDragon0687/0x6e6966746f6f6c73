@@ -67,7 +67,8 @@ typedef struct {
 typedef struct {
     NiAVObject base;
     if ( stream < 130 ) {
-        bool switchState;
+        if ( version >= Version(10, 1, 0, 102) )
+            bool switchState;
         RefArray affectedNodes( "Affected Node" ); // NiNode
     }
 } NiDynamicEffect <name="NiDynamicEffect", open=true>;
