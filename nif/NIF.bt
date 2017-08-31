@@ -13,6 +13,9 @@
 
 // FUNCTIONS
 
+// Load NetImmerse header NIFs? Comment out to remove support
+#define LEGACY_SUPPORT
+
 #include "VersionFuncs.bt"
 
 // 010 Attribute defines
@@ -32,7 +35,8 @@ typedef enum {
     R_OK = 0x1,
     R_UNKBLOCKS = 0x2,
     R_EOF = 0x4,
-    R_HDR = 0x8
+    R_HDR = 0x8,
+    R_UNSUPPORTED = 0x10
 } ReturnCodes;
 
 typedef enum {
@@ -52,6 +56,10 @@ typedef enum {
 #include "Shader.bt"
 #include "PhysX.bt"
 #include "bhk.bt"
+
+#ifdef LEGACY_SUPPORT
+    #include "NetImmerse.bt"
+#endif
 
 // RTTI
 
@@ -109,8 +117,9 @@ struct FILE {
         else
             local uint userVersion = 0;
 
-        int numblocks;
-        
+        if ( version >= Version(3, 3, 0, 13) )
+            int numblocks;
+
         if ( IsBethesda(version, userVersion) ) {
             // Bethesda BSStreamHeader
             uint stream;
@@ -167,23 +176,36 @@ struct FILE {
     local uint stream = header.stream;
     local int unkBlocks <hidden=true> = 0;
 
-    Assert( version >= V10_1_0_0, "This NIF version is not supported." );
+#ifndef LEGACY_SUPPORT
+    if ( version < V10_1_0_0 ) {
+        Warning( "Legacy NIF versions are not supported." );
+        Exit( R_UNSUPPORTED );
+    }
+#endif
 
     struct BLOCKS {
         local int i <hidden=true>;
         local int j <hidden=true>;
-        local string str <hidden=true>;
+        local string str <hidden=true> = "";
         local string strClean <hidden=true>;
         local uint args[2] <hidden=true>;
         local char argChars[2] <hidden=true>;
         local uint iArg <hidden=true> = 0;
 
-        for ( i = 0 ; i < header.numblocks; i++ )
+        local uint numBlocks = (exists(header.numblocks)) ? header.numblocks : 0;
+
+#ifdef LEGACY_SUPPORT
+        // Load NetImmerse NIFs, Version < 3.3.0.13
+        if ( !exists(header.numblocks) )
+            NetImmerse3();
+#endif
+
+        for ( i = 0 ; i < numBlocks; i++ )
         {
             if ( version >= V5_0_0_1 ) {
                 str = header.btype[header.btypeindex[i].index].str;
             } else {
-                SSTRING blockString;
+                SSTRING blockString <hidden=true>;
                 str = blockString.str;
             }
 
@@ -209,7 +231,13 @@ struct FILE {
             // Do Bethesda RTTI only for Bethesda NIFs
             if ( stream > 0 && BethRTTI( str, stream ) == RTTI_FOUND )
                 continue;
-            
+
+#ifdef LEGACY_SUPPORT
+            // For NIFs using deprecated NetImmerse blocks
+            if ( version <= V10_1_0_0 && NetImmerseRTTI( str ) == RTTI_FOUND )
+                continue;
+#endif
+
             // Official RTTI
             if ( RTTI( str ) == RTTI_FOUND )
                 continue;
@@ -224,9 +252,11 @@ struct FILE {
         
     } blocks <open=true>;
 
-    struct FOOTER {
-        RefArray root( "Root" );
-    } footer;
+    if ( exists(header.numblocks) ) {
+        struct FOOTER {
+            RefArray root( "Root" );
+        } footer;
+    }
     
     // Bully SE files are padded to the nearest 2048, do not assert EOF for them
     local uint remainder <hidden=true> = FileSize() - FTell();

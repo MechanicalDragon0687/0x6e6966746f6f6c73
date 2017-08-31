@@ -79,7 +79,12 @@ local string versionRegex <hidden=true> = "(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0
 
 // NiObject inheritance handling
 // Do not bother with declaration unless < 10.1.0.114
+// This keeps 010 from spewing warnings about empty structs
+#ifdef LEGACY_SUPPORT
+#define NIOBJECT if ( (version > V10_0_0_0 && version < V10_1_0_114) || version < V3_3_0_13 ) NiObject base;
+#else
 #define NIOBJECT if ( version < V10_1_0_114 ) NiObject base;
+#endif
 
 // Data ref handling
 #define DATAREF_10_1 if ( version < V10_1_0_104 ) Ref data;

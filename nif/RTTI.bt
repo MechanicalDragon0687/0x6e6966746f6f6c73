@@ -639,6 +639,28 @@ RTTICode RTTI( string str )
     }
 }
 
+#ifdef LEGACY_SUPPORT
+
+// NetImmerse RTTI, pre-10.1
+
+// Note: Some games use these blocks even in 10.1,
+// where they were likely deprecated and not removed.
+
+RTTICode NetImmerseRTTI( string str )
+{
+    switch( str )
+    {
+    case "Top Level Object":
+        return RTTI_FOUND;
+    case "End Of File":
+        return RTTI_FOUND;
+    default:
+        return RTTI_MISSING;
+    }
+}
+
+#endif
+
 // Custom Game RTTI, Non-Bethesda
 
 RTTICode CustomRTTI( string str )
