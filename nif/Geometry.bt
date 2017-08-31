@@ -237,6 +237,16 @@ typedef struct {
 
 } NiTriStripsData <name="NiTriStripsData">;
 
+// NiLines
+typedef NiGeometry NiLines <name="NiLines", open=false>;
+
+// NiLinesData
+typedef struct {
+    NiGeometryData base;
+    if ( base.numVerts > 0 )
+        bool vertFlags[base.numVerts];
+} NiLinesData <name="NiLinesData", open=false>;
+
 typedef struct {
     NiTriShape base <open=true>;
     struct {

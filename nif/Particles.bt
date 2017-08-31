@@ -553,6 +553,25 @@ typedef struct {
 
 typedef struct {
     NIOBJECT
+    if ( version >= Version(20, 6, 1, 0) )
+        Ref masterParticleSystem; // NiPSParticleSystem
+    
+    float percentageSpawned;
+    if ( version >= Version(20, 6, 1, 0) )
+        float spawnSpeedFactor;
+    
+    float spawnSpeedFactorVariation;
+    float spawnDirectionChaos;
+    float lifespan;
+    float lifespanVariation;
+    ushort numSpawnGenerations;
+    uint minSpawned;
+    uint maxSpawned;
+} NiPSSpawner <name="NiPSSpawner">;
+
+
+typedef struct {
+    NIOBJECT
     Ref spawner; // NiPSSpawner
     enum <uint> {
         COLLIDER_PLANAR = 0, // NiPSPlanarCollider.

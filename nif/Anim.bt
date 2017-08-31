@@ -197,6 +197,14 @@ typedef struct {
     DATAREF_10_1 // NiFloatData
 } NiRollController <name="NiRollController">;
 
+// Deprecated in 10.2, use NiTransformController & NiLookAtInterpolator
+typedef struct {
+    NiTimeController controller;
+    if ( version >= Version(10, 1, 0, 0) )
+        LookAtFlags flags;
+    Ref target; // NiAVObject
+} NiLookAtController <name="NiLookAtController">;
+
 typedef struct {
     NiInterpController controller;
     RefArray16 targets( "Target" ); // NiAVObject
@@ -244,6 +252,24 @@ typedef struct {
         RefArray skins( "Skin" ); // NiTriBasedGeom
     }
 } NiBoneLODController <name="NiBoneLODController">;
+
+typedef struct {
+    NiTimeController controller;
+    uint currentLOD;
+    RefArray bones( "Bone" );
+    RefArray skins( "Skin" );
+
+    uint numLevels;
+    if ( numLevels > 0 ) {
+        struct {
+            uint numBones;
+            uint numActiveSkins;
+            if ( numActiveSkins > 0 ) {
+                uint skin[numActiveSkins];
+            }
+        } lodLevel[numLevels] <optimize=false>;
+    }
+} NiSkinningLODController <name="NiSkinningLODController">;
 
 typedef struct {
     NiFloatInterpController controller;
@@ -571,7 +597,11 @@ typedef struct ( uint numVerts ) {
         if ( version < Version(20, 1, 0, 3) && !BS_OBL )
             float weight;
     } else {
-        FloatKeyGrp morphKeys( "Morph" );
+        uint numKeys;
+        // Key Type is read regardless of numKeys for NiMorphData
+        KeyType interpolation;
+        if ( numKeys > 0 )
+            FloatKey key(interpolation)[numKeys] <optimize=true>;
     }
 
     if ( numVerts > 0 )

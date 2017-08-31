@@ -282,3 +282,20 @@ typedef struct {
     if ( useABV )
         NiBoundingVolume ABV; 
 } NiCollisionData <name="NiCollisionData">;
+
+// NiShadowGenerator
+typedef struct {
+    NIOBJECT
+    STRING name;
+    ushort flags;
+    RefArray shadowCasters( "Caster" ); // NiNode
+    RefArray shadowReceiver( "Receiver" ); // NiNode
+    Ref effect; // NiDynamicEffect
+    float depthBias;
+    ushort sizeHint;
+    if ( version > Version(20, 3, 0, 7) ) {
+        float nearClipDistance;
+        float farClipDistance;
+        float directionalLightFrustumWidth;
+    }
+} NiShadowGenerator <name="NiShadowGenerator">;

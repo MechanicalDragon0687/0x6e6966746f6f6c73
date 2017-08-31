@@ -34,6 +34,9 @@ RTTICode RTTI( string str )
     case "NiSkinningMeshModifier":
         NiSkinningMeshModifier data;
         return RTTI_FOUND;
+    case "NiSkinningLODController":
+        NiSkinningLODController data;
+        return RTTI_FOUND;
 
 // OLD GEOMETRY
     case "NiTriShape":
@@ -59,6 +62,12 @@ RTTICode RTTI( string str )
         return RTTI_FOUND;
     case "NiSkinPartition":
         NiSkinPartition data;
+        return RTTI_FOUND;
+    case "NiLines":
+        NiLines data;
+        return RTTI_FOUND;
+    case "NiLinesData":
+        NiLinesData data;
         return RTTI_FOUND;
 
 // RENDERING
@@ -88,6 +97,9 @@ RTTICode RTTI( string str )
         return RTTI_FOUND;
     case "NiSpotLight":
         NiSpotLight data;
+        return RTTI_FOUND;
+    case "NiShadowGenerator":
+        NiShadowGenerator data;
         return RTTI_FOUND;
 
 // NODES/OBJECTS
@@ -247,6 +259,9 @@ RTTICode RTTI( string str )
     case "NiRollController": // DEPRECATED 10.2
         NiRollController data;
         return RTTI_FOUND;
+    case "NiLookAtController": // DEPRECATED 10.2
+        NiLookAtController data;
+        return RTTI_FOUND;
     case "NiFloatExtraDataController":
         NiFloatEDCtlr data;
         return RTTI_FOUND;
@@ -350,6 +365,9 @@ RTTICode RTTI( string str )
         return RTTI_FOUND;
     case "NiParticleSystem":
         NiParticleSys data;
+        return RTTI_FOUND;
+    case "NiParticlesData": // Used directly in 10.1
+        NiParticlesData data <name="NiParticlesData", open=false>;
         return RTTI_FOUND;
     case "NiPSysData":
         NiPSysData data;
@@ -466,6 +484,9 @@ RTTICode RTTI( string str )
         return RTTI_FOUND;
     case "NiPSMeshParticleSystem":
         NiPSMeshParticleSystem data;
+        return RTTI_FOUND;
+    case "NiPSSpawner":
+        NiPSSpawner data;
         return RTTI_FOUND;
     case "NiPSPlanarCollider":
         NiPSPlanarCollider data;
