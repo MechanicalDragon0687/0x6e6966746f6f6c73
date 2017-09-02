@@ -219,7 +219,7 @@ typedef BinaryData BSClothExtraData <name="BSClothExtraData">;
 
 string ReadED( NiExtraData& ed )
 {
-    return ReadSTRING(ed.name);
+    return (exists(ed.name)) ? ReadSTRING(ed.name) : "";
 }
 
 string ReadBoolED( NiBoolED& ed )
@@ -228,8 +228,9 @@ string ReadBoolED( NiBoolED& ed )
     string b = "True";
     if ( ed.boolData == 0 )
         b = "False";
-
-    SPrintf(s, "%s: %s", ReadSTRING(ed.data.name), b);
+    
+    if ( exists(ed.data.name) )
+        SPrintf(s, "%s: %s", ReadSTRING(ed.data.name), b);
 
     return s;
 }
@@ -237,34 +238,39 @@ string ReadBoolED( NiBoolED& ed )
 string ReadFloatED( NiFloatED& ed )
 {
     string s;
-    SPrintf(s, "%s: %f", ReadSTRING(ed.data.name), ed.floatData);
+    if ( exists(ed.data.name) )
+        SPrintf(s, "%s: %f", ReadSTRING(ed.data.name), ed.floatData);
     return s;
 }
 
 string ReadFloatsED( NiFloatsED& ed )
 {
     string s;
-    SPrintf(s, "%s (Size: %u)", ReadSTRING(ed.data.name), ed.floatsData.size);
+    if ( exists(ed.data.name) )
+        SPrintf(s, "%s (Size: %u)", ReadSTRING(ed.data.name), ed.floatsData.size);
     return s;
 }
 
 string ReadIntED( NiIntegerED& ed )
 {
     string s;
-    SPrintf(s, "%s: %u", ReadSTRING(ed.data.name), ed.integerData);
+    if ( exists(ed.data.name) )
+        SPrintf(s, "%s: %u", ReadSTRING(ed.data.name), ed.integerData);
     return s;
 }
 
 string ReadIntsED( NiIntegersED& ed )
 {
     string s;
-    SPrintf(s, "%s (Size:%u)", ReadSTRING(ed.data.name), ed.integersData.size);
+    if ( exists(ed.data.name) )
+        SPrintf(s, "%s (Size:%u)", ReadSTRING(ed.data.name), ed.integersData.size);
     return s;
 }
 
 string ReadStringED( NiStringED& ed )
 {
     string s;
-    SPrintf(s, "%s: %s", ReadSTRING(ed.data.name), ReadSTRING(ed.stringData));
+    if ( exists(ed.data.name) )
+        SPrintf(s, "%s: %s", ReadSTRING(ed.data.name), ReadSTRING(ed.stringData));
     return s;
 }

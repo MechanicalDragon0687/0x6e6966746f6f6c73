@@ -486,7 +486,11 @@ string ReadREF ( Ref &r )
     }
 
     string s;
-    SPrintf(s, "%s [%u] (%s)", file.header.btype[file.header.btypeindex[r].index].str, r, n);
+    if ( exists(file.header.btypeindex) )
+        SPrintf(s, "%s [%u] (%s)", file.header.btype[file.header.btypeindex[r].index].str, r, n);
+    else
+        SPrintf(s, "%u", r);
+
     return s;
 }
 
