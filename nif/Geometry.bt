@@ -69,6 +69,14 @@ typedef struct {
 } BSLODTriShape <name="BSLODTriShape">;
 
 
+// Consistency Type is only the upper 4 bits (& 0xF000)
+// Dirty mask is the lower 12 (0x0FFF) but irrelevant as only used at runtime
+typedef enum <ushort> {
+    CT_MUTABLE = 0,
+    CT_STATIC = 0x4000,
+    CT_VOLATILE = 0x8000
+} ConsistencyType;
+
 // NiGeometryData
 typedef struct {
     NIOBJECT
@@ -140,9 +148,7 @@ typedef struct {
             HalfTexCoordArray UVs(numVerts)[numTextureSets] <OPTARRAY>;
     }
 
-    // Consistency Type is only the upper 4 bits (& 0xF000)
-    // Dirty mask is the lower 12 (0x0FFF) but irrelevant as only used at runtime
-    enum <ushort> { CT_MUTABLE = 0, CT_STATIC = 0x4000, CT_VOLATILE = 0x8000 } consistencyType;
+    ConsistencyType consistencyType;
     
     local ushort CONSISTENCY_MASK = 0xF000;
     if ( stream >= 83 )
@@ -289,9 +295,9 @@ typedef struct ( uint64 f ) {
         HalfTexCoord uv;
 
     if ( vf & VF_NORMAL ) {
-        ByteVec4 normal("BitY");
+        ByteVec4 normal;
         if ( vf & VF_TANGENT )
-            ByteVec4 tangent("BitZ");
+            ByteVec4 tangent;
     }
 
     if ( vf & VF_COLORS )

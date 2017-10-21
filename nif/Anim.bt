@@ -51,7 +51,8 @@ typedef enum <ushort> { TC_AMBIENT, TC_DIFFUSE, TC_SPECULAR, TC_SELF_ILLUM } Tar
 
 typedef struct {
     NiSingleInterpController controller;
-    TargetColor targetColor;
+    if ( version >= Version(10, 1, 0, 0) )
+        TargetColor targetColor;
     DATAREF_10_1 // NiPosData
 } NiLightColorCtlr <name="NiLightColorController">;
 
@@ -99,11 +100,11 @@ typedef struct {
     // NiControllerSequence::IDTag
     if ( version >= Version(10, 2, 0, 0) && version < Version(20, 1, 0, 1) ) {
         Ref palette; // NiStringPalette
-        Ref AVObjectName;
-        Ref propertyType;
-        Ref controllerType;
-        Ref controllerID;
-        Ref interpolatorID;
+        uint AVObjectName;
+        uint propertyType;
+        uint controllerType;
+        uint controllerID;
+        uint interpolatorID;
     } else {
         STRING AVObjectName;
         STRING propertyType;
@@ -134,14 +135,14 @@ typedef struct {
     Ref textKey;
     CycleType cycleType ENUM16_PAD32;
     float frequency;
-    if ( version < Version(10, 3, 0, 1) )
+    if ( version < Version(10, 3, 0, 1) || WORLDSHIFT_10_4 )
         float phase;
     float beginKeyTime;
     float endKeyTime;
     Ref owner; // NiControllerManager
     STRING accumRootName;
     if ( version >= Version(20, 3, 0, 8) )
-        uint flags;
+        uint accumFlags;
     if ( version >= Version(10, 1, 0, 113) && version < Version(20, 1, 0, 1) )
         Ref palette; // NiStringPalette
 
@@ -179,8 +180,9 @@ typedef NiKeyframeCtlr NiTransCtlr <name="NiTransformController">;
 // Deprecated in 10.2, use NiTransformController & NiPathInterpolator
 typedef struct {
     NiTimeController controller;
-    PathFlags flags;
-    enum <uint> {
+    if ( version >= Version(10, 1, 0, 0) )
+        PathFlags flags;
+    enum <int> {
         BANK_NEGATIVE = -1,
         BANK_POSITIVE = 1
     } bankDir;
@@ -583,11 +585,19 @@ typedef NiFloatInterpController BSMatEmitMultCtlr <name="BSMaterialEmittanceMult
 typedef NiFloatInterpController BSRefractionStrCtlr <name="BSRefractionStrengthController", open=false>;
 typedef NiLightColorCtlr NiMaterialColorCtlr <name="NiMaterialColorController">;
 
+typedef enum <uint> {
+    TT_TRANSLATE_U = 0,
+    TT_TRANSLATE_V,
+    TT_ROTATE,
+    TT_SCALE_U,
+    TT_SCALE_V
+} TransformMember;
+
 typedef struct {
     NiFloatInterpController controller;
-    byte unkByte;
+    bool shaderMap;
     uint texType;
-    uint texTransType;
+    TransformMember texTransType;
     DATAREF_10_1 // NiFloatData
 } NiTextureTransformCtlr <name="NiTextureTransformController">;
 

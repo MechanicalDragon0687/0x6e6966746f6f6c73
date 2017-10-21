@@ -33,7 +33,8 @@ typedef struct {
 // NiSwitchNode
 typedef struct {
     NiNode node <open=true>;
-    NiSwitchFlags flags;
+    if ( version >= Version(10, 1, 0, 0) )
+        NiSwitchFlags flags;
     uint index;
 } NiSwitchNode <name="NiSwitchNode">;
 
@@ -57,7 +58,8 @@ typedef struct {
 // NiBillboardNode
 typedef struct {
     NiNode node <open=true>;
-    BillboardMode mode;
+    if ( version >= Version(10, 1, 0, 0) )
+        BillboardMode mode;
 } NiBBNode <name="NiBillboardNode">;
 
 // NiSortAdjustNode

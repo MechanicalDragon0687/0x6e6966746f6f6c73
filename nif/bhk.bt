@@ -521,6 +521,8 @@ typedef enum <uint> {
 typedef struct {
     hkConstraintType type;
     RefArray entities( "Entity" );
+    // Num Entities is hardcoded for ConstraintData
+    Assert( entities.size == 2, "ConstraintData has an incorrect Num Entities" );
     uint priority;
     
     switch ( type ) {

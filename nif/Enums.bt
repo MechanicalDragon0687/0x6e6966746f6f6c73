@@ -468,13 +468,23 @@ typedef enum <uint> {
 // NiProperty
 
 typedef enum <uint> {
-    PIX_LAY_PALETTISED,
-    PIX_LAY_HIGH_COLOR_16,
-    PIX_LAY_TRUE_COLOR_32,
-    PIX_LAY_COMPRESSED,
-    PIX_LAY_BUMPMAP,
-    PIX_LAY_PALETTISED_4,
-    PIX_LAY_DEFAULT
+    PX_LAY_PALETTIZED_8,
+    PX_LAY_HIGH_COLOR_16,
+    PX_LAY_TRUE_COLOR_32,
+    PX_LAY_COMPRESSED,
+    PX_LAY_BUMPMAP,
+    PX_LAY_PALETTIZED_4,
+    PX_LAY_DEFAULT,
+    PX_LAY_SINGLE_COLOR_8,
+    PX_LAY_SINGLE_COLOR_16,
+    PX_LAY_SINGLE_COLOR_32,
+    PX_LAY_DOUBLE_COLOR_32,
+    PX_LAY_DOUBLE_COLOR_64,
+    PX_LAY_FLOAT_COLOR_32,
+    PX_LAY_FLOAT_COLOR_64,
+    PX_LAY_FLOAT_COLOR_128,
+    PX_LAY_SINGLE_COLOR_4,
+    PX_LAY_DEPTH_24_X8
 } PixelLayout <name="Pixel Layout">;
 
 typedef enum <uint> {
@@ -514,6 +524,8 @@ typedef enum <uint> {
 typedef enum <uint> {
     PX_TILE_NONE = 0,
     PX_TILE_XENON,
+    PX_TILE_WII,
+    PX_TILE_NV_SWIZZLED,
     PX_TILE_MAX
 } PixelTiling;
 

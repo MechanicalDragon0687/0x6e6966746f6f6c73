@@ -166,8 +166,8 @@ typedef struct {
         float refractionPeriod;
     }
     if ( stream > 24 ) {
-        float unkFloat1;
-        float unkFloat2;
+        float parallaxMaxPasses;
+        float parallaxScale;
     }
     if ( stream > 34 )
         Color4 emissiveColor;

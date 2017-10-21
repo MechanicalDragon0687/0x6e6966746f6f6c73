@@ -42,8 +42,7 @@ typedef struct {
     float W;
 } Vec4 <read=ReadVec4, open=suppress, size=16>;
 
-typedef struct ( string str ) {
-    local string sW = str;
+typedef struct {
     bytefloat X;
     bytefloat Y;
     bytefloat Z;
@@ -71,6 +70,12 @@ typedef struct {
     float B;
     float A;
 } Color4 <size=16>;
+
+typedef struct {
+    ubyte R;
+    ubyte G;
+    ubyte B;
+} ByteColor3 <size=3>;
 
 typedef struct {
     ubyte R;
@@ -583,10 +588,9 @@ string ReadByteVec3( ByteVec3& vec )
 string ReadByteVec4( ByteVec4& vec )
 {
     string s;
-    SPrintf(s, "X %f Y %f Z %f | %s: %f", (float)(vec.X / 255.0),
+    SPrintf(s, "X %f Y %f Z %f | W: %f", (float)(vec.X / 255.0),
                                           (float)(vec.Y / 255.0),
                                           (float)(vec.Z / 255.0),
-                                          vec.sW,
                                           (float)(vec.W / 255.0));
     return s;
 }

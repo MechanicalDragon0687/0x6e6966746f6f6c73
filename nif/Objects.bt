@@ -30,7 +30,7 @@ typedef struct {
     NiObjectNET base;
     local string nameStr = base.name.nameStr;
 
-    if ( stream < 34 )
+    if ( stream <= 26 )
         ushort flags;
     else
         NiAVObjectFlags flags;
@@ -40,7 +40,8 @@ typedef struct {
     if ( stream <= 34 )
         RefArray properties( "Property" ); // NiProperty
 
-    Ref NiCollisionObject;
+    if ( version >= Version(10, 0, 1, 0) )
+        Ref NiCollisionObject;
 } NiAVObject <name="NiAVObject", open=true>;
 
 
@@ -117,21 +118,23 @@ typedef struct {
     bool planeEnable;
     NiPlane plane;
     if ( version < Version(10, 3, 0, 4) )
-        uint landK;
+        short landK[2];
 
 } NiTextureEffect <name="NiTextureEffect">;
 
 // NiCamera
 typedef struct {
     NiAVObject base;
-    ushort obsoleteFlags;
+    if ( version >= Version(10, 1, 0, 0) )
+        ushort obsoleteFlags;
     float frustumLeft;
     float frustumRight;
     float frustumTop;
     float frustumBottom;
     float frustumNear;
     float frustumFar;
-    bool useOrtho;
+    if ( version >= Version(10, 1, 0, 0) )
+        bool useOrtho;
     float viewportLeft;
     float viewportRight;
     float viewportTop;
@@ -150,8 +153,9 @@ typedef struct {
     if ( version < Version(10, 3, 0, 3) || WORLDSHIFT_10_4 ) {
         uint colorMasks[4];
         uint bpp;
-        uint oldFastCompare[2];
-        PixelTiling tiling;
+        ubyte oldFastCompare[8];
+        if ( version >= Version(10, 1, 0, 0) )
+            PixelTiling tiling;
     } else {
         uchar bitsPerPixel;
         uint rendererHint;
@@ -168,7 +172,7 @@ typedef struct {
             bool isSigned;
         } component[NUM_COMPS] <OPTOPEN>;
     }
-} NiPixelFormat <name="NiPixelFormat">;
+} NiPixelFormat <name="NiPixelFormat", open=true>;
 
 // NiPixelData
 typedef struct {
