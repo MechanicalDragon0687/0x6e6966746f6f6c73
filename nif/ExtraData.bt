@@ -13,7 +13,15 @@
 
 typedef struct {
     NIOBJECT
-    STRING name;
+    if ( version >= Version(10, 0, 1, 0) )
+        STRING name;
+    else
+        Ref nextED;
+
+    if ( version <= Version(4, 2, 2, 0) ) {
+        // Block used directly in 3.3.0.13
+        BinaryData data;
+    }
 } NiExtraData <name="NiExtraData", read=ReadED>;
 
 typedef struct {
@@ -43,7 +51,8 @@ typedef struct {
 
 typedef struct {
     NiExtraData data;
-    STRING stringData;
+    if ( version > Version(4, 2, 2, 0) )
+        STRING stringData;
 } NiStringED <name="NiStringExtraData", read=ReadStringED>;
 
 typedef struct {
@@ -73,6 +82,12 @@ typedef struct {
     NiExtraData data;
     Color4 colorData;
 } NiColorED <name="NiColorExtraData">;
+
+typedef struct {
+    NiExtraData data;
+    Vec4 colorData;
+} NiVectorED <name="NiVectorExtraData">;
+
 
 // BSXFlags
 typedef struct { 

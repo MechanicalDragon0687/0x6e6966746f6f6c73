@@ -654,6 +654,170 @@ RTTICode NetImmerseRTTI( string str )
         return RTTI_FOUND;
     case "End Of File":
         return RTTI_FOUND;
+
+// GAMEBRYO OVERRIDES
+    case "NiLODNode":
+        if ( version < V10_1_0_0 ) {
+            NiLODNode_LEGACY data;
+            return RTTI_FOUND;
+        }
+        return RTTI_MISSING;
+    case "NiTriShapeData":
+        if ( version < V10_1_0_0 ) {
+            NiTriShapeData_LEGACY data;
+            return RTTI_FOUND;
+        }
+        return RTTI_MISSING;
+    case "NiTriStripsData":
+        if ( version < V10_1_0_0 ) {
+            NiTriStripsData_LEGACY data;
+            return RTTI_FOUND;
+        }
+        return RTTI_MISSING;
+    case "NiParticlesData":
+        if ( version < V10_1_0_0 ) {
+            NiParticlesDataOLD data;
+            return RTTI_FOUND;
+        }
+        return RTTI_MISSING;
+    case "NiSourceTexture":
+        if ( version < V10_1_0_0 ) {
+            NiSourceTexture_LEGACY data;
+            return RTTI_FOUND;
+        }
+        return RTTI_MISSING;
+    case "NiSkinData":
+        if ( version < V10_1_0_0 ) {
+            NiSkinData_LEGACY data;
+            return RTTI_FOUND;
+        }
+        return RTTI_MISSING;
+    case "NiSkinPartition":
+        if ( version < V10_1_0_0 ) {
+            NiSkinPartition_LEGACY data;
+            return RTTI_FOUND;
+        }
+        return RTTI_MISSING;
+    case "NiControllerSequence":
+        if ( version < V10_1_0_104 ) {
+            NiControllerSequence_LEGACY data;
+            return RTTI_FOUND;
+        }
+        return RTTI_MISSING;
+    case "NiTexturingProperty":
+        NiTexturingPropertyOLD data(-1);
+        return RTTI_FOUND;
+    case "NiVertexColorProperty":
+        NiVertexColorPropertyOLD data;
+        return RTTI_FOUND;
+
+// NETIMMERSE
+    case "NiBone":
+        NiBone data;
+        return RTTI_FOUND;
+    case "NiSequenceStreamHelper":
+        NiSequenceStreamHelper data;
+        return RTTI_FOUND;
+    case "NiParticleSystemController":
+        NiParticleSystemController data;
+        return RTTI_FOUND;
+    case "NiRotatingParticles":
+        NiRotatingParticles data;
+        return RTTI_FOUND;
+    case "NiAutoNormalParticles":
+        NiAutoNormalParticles data;
+        return RTTI_FOUND;
+    case "NiParticleMeshes":
+        NiParticleMeshes data;
+        return RTTI_FOUND;
+    case "NiGravity":
+        NiGravity data;
+        return RTTI_FOUND;
+    case "NiParticleBomb":
+        NiParticleBomb data;
+        return RTTI_FOUND;
+    case "NiParticleColorModifier":
+        NiParticleColorModifier data;
+        return RTTI_FOUND;
+    case "NiParticleGrowFade":
+        NiParticleGrowFade data;
+        return RTTI_FOUND;
+    case "NiParticleMeshModifier":
+        NiParticleMeshModifier data;
+        return RTTI_FOUND;
+    case "NiParticleRotation":
+        NiParticleRotation data;
+        return RTTI_FOUND;
+    case "NiAutoNormalParticlesData":
+        NiAutoNormalParticlesData data;
+        return RTTI_FOUND;
+    case "NiRotatingParticlesData":
+        NiRotatingParticlesData data;
+        return RTTI_FOUND;
+    case "NiParticleMeshesData":
+        NiParticleMeshesData data;
+        return RTTI_FOUND;
+    case "NiCollisionSwitch":
+        NiCollisionSwitch data;
+        return RTTI_FOUND;
+    case "NiUVController":
+        NiUVController data;
+        return RTTI_FOUND;
+    case "NiUVData":
+        NiUVData data;
+        return RTTI_FOUND;
+    case "NiTriShapeSkinController":
+        NiTriShapeSkinController data;
+        return RTTI_FOUND;
+    case "NiVertWeightsExtraData":
+        NiVertWeightsED data;
+        return RTTI_FOUND;
+    case "NiPlanarCollider":
+        NiPlanarCollider data;
+        return RTTI_FOUND;
+    case "NiSphericalCollider":
+        NiSphericalCollider data;
+        return RTTI_FOUND;
+    case "NiPalette":
+        NiPalette data;
+        return RTTI_FOUND;
+    case "NiSequence":
+        NiSequence data;
+        return RTTI_FOUND;
+
+// MORROWIND (4.0.0.2)
+    case "AvoidNode":
+        AvoidNode data;
+        return RTTI_FOUND;
+    case "RootCollisionNode":
+        RootCollisionNode data;
+        return RTTI_FOUND;
+    case "NiBSAnimationNode":
+        NiBSAnimationNode data;
+        return RTTI_FOUND;
+    case "NiBSParticleNode":
+        NiBSParticleNode data;
+        return RTTI_FOUND;
+    case "NiBSPArrayController":
+        NiBSPArrayController data;
+        return RTTI_FOUND;
+
+// STBC, DAoC (2.3, 3.0, 3.1)
+    case "NiMultiTextureProperty":
+        NiTexturingPropertyOLD data(5) <name="NiMultiTextureProperty">;
+        return RTTI_FOUND;
+    case "NiTextureModeProperty":
+        NiTextureModeProperty data;
+        return RTTI_FOUND;
+    case "NiTextureProperty":
+        NiTextureProperty data;
+        return RTTI_FOUND;
+    case "NiImage":
+        NiImage data;
+        return RTTI_FOUND;
+    case "NiRawImageData":
+        NiRawImageData data;
+        return RTTI_FOUND;
     default:
         return RTTI_MISSING;
     }

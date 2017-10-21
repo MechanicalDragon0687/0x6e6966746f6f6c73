@@ -15,18 +15,39 @@
 typedef struct {
     if ( version >= V10_0_0_0 && version < V10_1_0_114 )
         uint groupID;
+    else if ( version <= V3_3_0_13 )
+        uint linkID;
 } NiObject <name="NiObject">;
 
 // NiObjectNET
 typedef struct {
+
+#ifdef LEGACY_SUPPORT
+    if ( version <= V4_2_2_0 ) {
+        NiObjectNETLegacy();
+        break;
+    }
+#endif
+
+    // NON-LEGACY
     NIOBJECT
     STRING name;
     RefArray extraData( "Extra Data" ); // NiExtraData
     Ref controller; // NiTimeController
 } NiObjectNET <name="NiObjectNET", open=true>; // Abstract
 
+
 // NiAVObject 
 typedef struct {
+
+#ifdef LEGACY_SUPPORT
+    if ( version <= V4_2_2_0 ) {
+        NiAVObjectLegacy();
+        break;
+    }
+#endif
+
+    // NON-LEGACY
     NiObjectNET base;
     local string nameStr = base.name.nameStr;
 
@@ -34,9 +55,11 @@ typedef struct {
         ushort flags;
     else
         NiAVObjectFlags flags;
+
     Vec3 translation;
     Matrix33 rotation;
     float scale;
+
     if ( stream <= 34 )
         RefArray properties( "Property" ); // NiProperty
 
@@ -70,7 +93,8 @@ typedef struct {
     if ( stream < 130 ) {
         if ( version >= Version(10, 1, 0, 102) )
             bool switchState;
-        RefArray affectedNodes( "Affected Node" ); // NiNode
+        if ( version <= V4_0_0_2 || version >= V10_1_0_0 )
+            RefArray affectedNodes( "Affected Node" ); // NiNode
     }
 } NiDynamicEffect <name="NiDynamicEffect", open=true>;
 
@@ -120,6 +144,10 @@ typedef struct {
     if ( version < Version(10, 3, 0, 4) )
         short landK[2];
 
+#ifdef LEGACY_SUPPORT
+    if ( version <= Version(4, 1, 0, 12) ) // UNVERIFIED MAX
+        ushort unk;
+#endif
 } NiTextureEffect <name="NiTextureEffect">;
 
 // NiCamera
@@ -142,9 +170,15 @@ typedef struct {
     float lodAdjust;
     Ref scene; // NiAVObject
     RefArray screenPolygons( "Polygon" ); // NiScreenPolygon array is always zero length on disk write
-    RefArray screenTextures( "Texture" ); // NiScreenTexture array is always zero length on disk write
     Assert( screenPolygons.size == 0, "screenPolygons is an unexpected size" );
-    Assert( screenTextures.size == 0, "screenTextures is an unexpected size" );
+    if ( version >= Version(4, 2, 2, 0) ) { // UNVERIFIED MIN
+        RefArray screenTextures( "Texture" ); // NiScreenTexture array is always zero length on disk write
+        Assert( screenTextures.size == 0, "screenTextures is an unexpected size" );
+    }
+#ifdef LEGACY_SUPPORT
+    if ( version <= Version(3, 1, 0, 0) ) // UNVERIFIED MAX
+        uint unkInt;
+#endif
 } NiCamera <name="NiCamera">;
 
 

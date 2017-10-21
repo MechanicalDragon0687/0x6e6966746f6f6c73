@@ -12,6 +12,15 @@
 //------------------------------------------------
 
 typedef struct {
+
+#ifdef LEGACY_SUPPORT
+    if ( version <= V4_2_2_0 ) {
+        NiGeometryLegacy();
+        break;
+    }
+#endif
+
+    // NON-LEGACY
     NiAVObject base;
     Ref data; // NiGeometryData
     Ref skin; // NiSkinInstance

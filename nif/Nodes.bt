@@ -14,6 +14,12 @@
 // NiNode/BSFadeNode
 typedef struct { 
     NiAVObject base;
+#ifdef LEGACY_SUPPORT
+    if ( version <= V2_3 ) {
+        uint unkInts[2];
+        byte unkByte;
+    }
+#endif
     RefArray children( "Child" ); // NiAVObject
     if ( file.header.stream < 130 )
         RefArray effect( "Effect" ); // NiDynamicEffect

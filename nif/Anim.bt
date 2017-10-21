@@ -216,7 +216,8 @@ typedef struct {
     NiFloatInterpController controller;
     uint affectedMap;
     if ( version < Version(10, 1, 0, 104) ) {
-        float startTime;
+        if ( version >= Version(3, 3, 0, 13) ) // UNVERIFIED MIN
+            float startTime;
         float secondsPerFrame;
     }
     RefArray textures( "Texture" ); // NiTexture
@@ -634,11 +635,15 @@ typedef struct {
 
 typedef struct {
     NiInterpController controller;
-    enum <ushort> {
-        GMC_UPDATE_NORMALS = 0x1
-    } flags;
+    if ( version >= Version(10, 0, 1, 2) ) {
+        enum <ushort> {
+            GMC_UPDATE_NORMALS = 0x1
+        } flags;
+    }
     Ref data; // NiMorphData
-    bool alwaysUpdate;
+
+    if ( version > V4_0_0_0 )
+        bool alwaysUpdate;
 
     if ( version >= Version(10, 1, 0, 104) ) {
         if ( version < Version(20, 1, 0, 3) ) {

@@ -13,6 +13,7 @@
 
 //typedef float float <read=ParseFloat>;
 typedef ubyte bool;
+typedef uint bool32;
 
 // A float that has been encoded into a single byte
 typedef byte bytefloat;

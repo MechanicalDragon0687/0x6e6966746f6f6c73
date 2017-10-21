@@ -20,6 +20,10 @@ typedef struct {
     ubyte threshold;
     if ( version == Version(20, 3, 1, 1) )
         ushort unk;
+    if ( version <= V2_3 ) {
+        ushort unkShort;
+        uint unkInt;
+    }
 } NiAlphaProperty <name="NiAlphaProperty">;
 
 typedef struct {
@@ -39,6 +43,7 @@ typedef struct {
 
 typedef struct {
     NiProperty prop;
+    LEGACY_FLAGS // ushort flags;
     if ( stream < 26 ) {
         Color3 ambient;
         Color3 diffuse;
@@ -69,6 +74,7 @@ typedef struct {
 
 typedef struct {
     NiProperty prop;
+    LEGACY_FLAGS // ushort flags;
     if ( version < Version(20, 1, 0, 2) ) {
         bool enable;
         TestFunction testFunction ENUM16_PAD32;
@@ -105,7 +111,8 @@ typedef struct {
 typedef struct {
     NiProperty prop;
     ZBufferFlags flags;
-    if ( version < Version(20, 1, 0, 2) ) {
+    if ( version >= Version(4, 1, 0, 12) && version < Version(20, 1, 0, 2) ) {
+        // UNVERIFIED MIN
         TestFunction testFunction ENUM16_PAD32;
     }
 } NiZBufferProperty <name="NiZBufferProperty">;
@@ -116,6 +123,7 @@ typedef struct {
     STRING filename;
     Ref data; // NiPixelData if < 20.2.0.4 or !persistentRenderData
               // else NiPersistentSrcTextureRendererData
+
     PixelLayout pixelLayout;
     MipMapFormat mipMapFormat;
     AlphaFormat alphaFormat;
@@ -154,9 +162,15 @@ typedef struct {
 
     if ( version >= Version(20, 5, 0, 4) )
         ushort maxAnisotropy;
-    bool hasTexTransform;
-    if ( hasTexTransform )
-        TexTransform transform;
+    
+    if ( version >= Version(10, 1, 0, 0) ) {
+        bool hasTexTransform;
+        if ( hasTexTransform )
+            TexTransform transform;
+    }
+
+    if ( version <= Version(4, 1, 0, 12) ) // UNVERIFIED MAX
+        ushort unk;
 } Map;
 
 typedef struct {
@@ -170,12 +184,15 @@ typedef struct {
 typedef struct {
     NiProperty prop;
     if ( version < Version(20, 1, 0, 2) ) {
+        if ( version <= Version(10, 0, 1, 2) )
+            ushort flags;
         ApplyMode applyMode ENUM16_PAD32;
     } else {
         TexturingFlags flags;
     }
 
     uint textureCount;
+    local uint numTex = textureCount;
     bool hasBaseTex;
     if ( hasBaseTex )
         Map baseTex;
@@ -199,44 +216,48 @@ typedef struct {
         Vec4 bumpMatrix;
     }
 
-    if ( textureCount > 6 ) {
+    if ( numTex > 6 ) {
         bool hasNormalTex;
         if ( hasNormalTex )
             Map normalTex;
     }
 
-    if ( textureCount > 7 ) {
-        bool hasUnkTex;
-        if ( hasUnkTex ) {
-            Map unkTex;
-            float unkFloat;
+    if ( numTex > 7 && version >= Version(20, 2, 0, 5) ) {
+        bool hasParallaxTex;
+        if ( hasParallaxTex ) {
+            Map parallaxTex;
+            float parallaxOffset;
         }
+    } else {
+        numTex++;
     }
 
-    if ( textureCount > 8 ) {
+    if ( numTex > 8 ) {
         bool hasDecalTex0;
         if ( hasDecalTex0 )
             Map decalTex0;
     }
     
-    if ( textureCount > 9 ) {
+    if ( numTex > 9 ) {
         bool hasDecalTex1;
         if ( hasDecalTex1 )
             Map decalTex1;
     }
-    if ( textureCount > 10 ) {
+    if ( numTex > 10 ) {
         bool hasDecalTex2;
         if ( hasDecalTex2 )
             Map decalTex2;
     }
-    if ( textureCount > 11 ) {
+    if ( numTex > 11 ) {
         bool hasDecalTex3;
         if ( hasDecalTex3 )
             Map decalTex3;
     }
     
-    uint numShaderTex;
-    if ( numShaderTex > 0 ) {
-        ShaderMap shaderTex[numShaderTex] <optimize=false>;
+    if ( version >= Version(10, 0, 1, 0) ) {
+        uint numShaderTex;
+        if ( numShaderTex > 0 ) {
+            ShaderMap shaderTex[numShaderTex] <optimize=false>;
+        }
     }
 } NiTexturingProperty <name="NiTexturingProperty">;

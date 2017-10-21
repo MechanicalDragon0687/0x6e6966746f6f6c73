@@ -32,3 +32,730 @@ void NetImmerse3()
         unkBlocks++;
     }
 }
+
+// Boolean size changed from 4 bytes to 1 byte
+typedef struct {
+    if ( version > V4_0_0_2 )
+        bool value;
+    else
+        bool32 value;
+} Bool;
+
+
+// NiObjectNET Override
+// Abstract override as function to reduce struct nesting in Objects.bt
+void NiObjectNETLegacy()
+{
+    NIOBJECT
+    STRING name;
+    if ( version <= V2_3 ) {
+        bool32 hasExtraData;
+        if ( hasExtraData ) {
+            SSTRING extraPropName;
+            uint size;
+            if ( size == 4 )
+                Ref extraData;
+            else
+                SSTRING name;
+        }
+        byte unkByte;
+    } else {
+        Ref extraData; // NiExtraData
+        Ref controller; // NiTimeController
+    }
+}
+
+typedef struct {
+    NiObjectNETLegacy();
+} NiObjectNET_LEGACY <name="NiObjectNET", open=true>;
+
+
+// NiAVObject Override
+// Abstract override as function to reduce struct nesting in Objects.bt
+void NiAVObjectLegacy()
+{
+    NiObjectNET base;
+    if ( version >= V3_0 )
+        ushort flags;
+    Vec3 translation;
+    Matrix33 rotation;
+    float scale;
+    Vec3 velocity;
+    RefArray properties( "Property" ); // NiProperty
+
+    if ( version <= V2_3 )
+        uint unkInts[2];
+    
+    if ( version >= V3_0 ) {
+        Bool hasBoundingVolume;
+        if ( hasBoundingVolume.value )
+            NiBoundingVolume boundingVolume;
+    }
+}
+
+typedef struct {
+    NiAVObjectLegacy();
+} NiAVObject_LEGACY <name="NiAVObject", open=true>;
+
+
+// NiGeometry Override
+// Abstract override as function to reduce struct nesting in Geometry.bt
+void NiGeometryLegacy()
+{
+    NiAVObject_LEGACY base;
+    // Versions <= 2.3 do not have NiGeometryData
+    if ( version <= V2_3 ) {
+        local bool isAutoNormal = exists(parentof(this).isAutoNormal);
+
+        ushort numVerts;
+        uint unkLink;
+        Vec3 verts[numVerts];
+        if ( !isAutoNormal )
+            Vec3 normals[numVerts];
+        float unkFloat;
+        NiBound bound;
+        ushort numTris;
+        ushort numUVs;
+        uint unkLink2;
+        if ( numUVs > 0 ) {
+            TexCoord uvs[numVerts];
+            float unkUVFloats[numVerts];
+        }
+        float unkFloat2;
+        uint unkLink3;
+        Vec4 unkTriVec[numTris];
+        Triangle triangles[numTris];
+
+        return;
+    }
+
+    // Versions 3.0+
+
+    Ref data; // NiGeometryData
+    if ( version >= V3_3_0_13 )
+        Ref skin; // NiSkinInstance
+    if ( version >= Version(10, 0, 1, 0) ) {
+        bool shader;
+        if ( shader ) {
+            STRING shaderName;
+            uint implementation;
+        }
+    }
+}
+
+typedef struct {
+    NiGeometryLegacy();
+} NiGeometry_LEGACY <name="NiGeometry", open=true>; // Abstract
+
+
+// NiGeometryData Override
+typedef struct {
+    NIOBJECT
+    ushort numVerts;
+    Bool hasVerts;
+    if ( hasVerts.value )
+        Vec3 vertices[numVerts] <OPTARRAY>;
+
+    local ubyte numTextureSets = 0;
+    local ushort nbtMethod = 0;
+    if ( version > Version(10, 0, 0, 0) ) {
+        // NBT Method is uppermost 4 bits, Num UV Sets is lowest 4 bits
+        ushort dataFlags;
+
+        nbtMethod = dataFlags & 0xF000;
+        Assert( (nbtMethod >> 12) <= 3, "Unsupported NBT method" );
+
+        numTextureSets = dataFlags & 0x3F; // The max UV Sets is 63
+    }
+
+    Bool hasNormals;
+    if ( hasNormals.value )
+        Vec3 normals[numVerts] <OPTARRAY>;
+
+    NiBound boundingSphere;
+
+    Bool hasVertColors;
+    if ( numVerts > 0 ) {
+        if ( hasVertColors.value )
+            Color4 vertColors[numVerts] <OPTARRAY>;
+
+        if ( version <= Version(4, 2, 2, 0) ) {
+            ushort numUVSets;
+            numTextureSets = numUVSets;
+        }
+
+        local bool hasUV = 0;
+        if ( version <= Version(4, 0, 0, 2) ) {
+            Bool _hasUV;
+            hasUV = (_hasUV.value != 0);
+        } else {
+            hasUV = (numTextureSets > 0);
+        }
+
+        if ( hasVerts.value && hasUV )
+            TexCoordArray UVSets(numVerts)[numTextureSets] <OPTARRAY>;
+    }
+
+    if ( version > Version(10, 0, 0, 0) )
+        ConsistencyType consistencyType;
+
+} NiGeometryData_LEGACY <open=true>; // Abstract
+
+// NiTriShapeData Override
+typedef struct {
+    NiGeometryData_LEGACY base <open=true>;
+    ushort numTris;
+    uint numPoints;
+    Assert( numPoints == numTris * 3, "Unexpected triangle info" );
+
+    Triangle tris[numTris] <OPTARRAY>;
+
+    if ( version >= V3_1 ) {
+        ushort numSharedNormals;
+        if ( numSharedNormals > 0 ) {
+            struct {
+                struct {
+                    ushort size;
+                    if ( size > 0 )
+                        ushort normal[size];
+                } sharedNormals[numSharedNormals] <open=suppress, optimize=false>;
+            } sharedNormalsArray <open=suppress>;
+        }
+    }
+} NiTriShapeData_LEGACY <name="NiTriShapeData">;
+
+// NiTriStripsData Override
+typedef struct {
+    NiGeometryData_LEGACY base <open=true>;
+    ushort numTris;
+    ushort numStrips;
+    if ( numStrips ) {
+        ushort stripLength[numStrips];
+        struct {
+            local int j = 0;
+            for ( j; j < numStrips; j++ ) {
+                if ( stripLength[j] > 0 ) {
+                    struct {
+                        ushort strip[stripLength[j]] <optimize=false>;
+                    } strip <optimize=false>;
+                }
+            }
+        } strips;
+    }
+} NiTriStripsData_LEGACY <name="NiTriStripsData">;
+
+// SKINNING
+
+typedef struct {
+    ushort numVerts;
+    ushort numTris;
+    ushort numBones;
+    ushort numStrips;
+    ushort numWeights;
+    ushort bones[numBones];
+
+    if ( numVerts )
+        ushort map[numVerts];
+
+    if ( numWeights && numVerts )
+        FloatArray weights(numWeights, "Weight")[numVerts] <name="Bone Weights", optimize=true>;
+
+    if ( numStrips ) {
+        ushort stripLength[numStrips];
+        struct {
+            local int j = 0;
+            for ( j; j < numStrips; j++ ) {
+                if ( stripLength[j] > 0 ) {
+                    struct {
+                        ushort strip[stripLength[j]] <optimize=false>;
+                    } strip <optimize=false>;
+                }
+            }
+        } strips;
+    } else {
+        if ( numTris )
+            Triangle triangle[numTris];
+    }
+
+    Bool hasBoneIndices;
+    if ( hasBoneIndices.value && numWeights && numVerts )
+        UByteArray boneIndices(numWeights, "Index")[numVerts] <name="Bone Indices", optimize=true>;
+
+} SkinPartition_LEGACY <optimize=false>;
+
+// NiSkinData Override
+typedef struct {
+    NIOBJECT
+    NiTransform transform;
+    uint numBones;
+    if ( version >= Version(4, 0, 0, 2) )
+        Ref partition; // NiSkinPartition
+    
+    if ( version >= Version(4, 2, 1, 0) )
+        bool hasWeights;
+    else
+        local bool hasWeights = 1;
+    
+    if ( numBones > 0 )
+        struct {
+            SkinData boneData(hasWeights)[numBones];
+        } BoneData <name="Bone Data">;
+} NiSkinData_LEGACY <name="NiSkinData">;
+
+// NiSkinPartition Override
+typedef struct {
+    NIOBJECT
+    uint numParts;
+    SkinPartition_LEGACY parts[numParts];
+} NiSkinPartition_LEGACY <name="NiSkinPartition">;
+
+// NiLODNode Override
+typedef struct {
+    NiSwitchNode node <open=true>;
+    if ( version > V4_0_0_2 )
+        Vec3 center;
+    
+    uint numLevels;
+    if ( numLevels > 0 ) {
+        struct {
+            float nearExtent;
+            float farExtent;
+            if ( version <= V3_1 )
+                uint unkInts[3];
+        } lodLevel[numLevels] <OPTOPEN>;
+    }
+} NiLODNode_LEGACY <name="NiLODNode">;
+
+// NODES
+
+typedef NiNode NiBone <name="NiBone">;
+typedef NiNode NiCollisionSwitch <name="NiCollisionSwitch">;
+
+// EXTRA DATA
+
+typedef struct {
+    //NiExtraData data;
+    NIOBJECT
+    Ref nextED;
+    uint numBytes;
+    ushort numWeights;
+    if ( numWeights > 0 )
+        float weights[numWeights];
+} NiVertWeightsED <name="NiVertWeightsExtraData">;
+
+
+// PROPERTIES
+
+typedef struct ( int count ) {
+    NiProperty prop;
+    if ( version <= Version(10, 0, 1, 2) )
+        ushort flags;
+    ApplyMode applyMode ENUM16_PAD32;
+
+    if ( count == -1 )
+        uint textureCount;
+    else
+        local uint textureCount = 5;
+
+    Bool hasBaseTex;
+    if ( hasBaseTex.value )
+        Map baseTex;
+    Bool hasDarkTex;
+    if ( hasDarkTex.value )
+        Map darkTex;
+    Bool hasDetailTex;
+    if ( hasDetailTex.value )
+        Map detailTex;
+    Bool hasGlossTex;
+    if ( hasGlossTex.value )
+        Map glossTex;
+    Bool hasGlowTex;
+    if ( hasGlowTex.value )
+        Map glowTex;
+
+    if ( textureCount > 5 ) {
+        Bool hasBumpTex;
+        if ( hasBumpTex.value ) {
+            Map bumpTex;
+            float lumaScale;
+            float lumaOffset;
+            Vec4 bumpMatrix;
+        }
+    }
+
+    if ( textureCount > 6 ) {
+        Bool hasNormalTex;
+        if ( hasNormalTex.value )
+            Map normalTex;
+    }
+
+    if ( textureCount > 7 ) {
+        Bool hasDecal0Tex;
+        if ( hasDecal0Tex.value ) {
+            Map decal0Tex;
+        }
+    }
+
+    if ( version >= Version(10, 0, 1, 0) ) {
+        uint numShaderTex;
+        if ( numShaderTex > 0 ) {
+            ShaderMap shaderTex[numShaderTex] <optimize=false>;
+        }
+    }
+} NiTexturingPropertyOLD <name="NiTexturingProperty">;
+
+typedef struct {
+    NiProperty prop;
+    if ( version >= V3_0 ) {
+        VertexColorFlags flags;
+        SourceVertexMode sourceVertexMode ENUM16_PAD32;
+        LightingMode lightingMode ENUM16_PAD32;
+    } else {
+        uint flags;
+    }
+} NiVertexColorPropertyOLD <name="NiVertexColorProperty">;
+
+// STBC, NetImmerse 3.1
+// DAoC, NetImmerse 2.3, 3.0
+typedef struct {
+    NiProperty property;
+
+    if ( version <= V2_3 ) {
+        uint unkInts[3];
+    } else {
+        ushort unkShort;
+        if ( version >= V3_1 )
+            short LandK[2];
+    }
+} NiTextureModeProperty <name="NiTextureModeProperty">;
+
+// STBC, NetImmerse 3.1
+// DAoC, NetImmerse 2.3, 3.0
+typedef struct {
+    NiProperty property;
+    if ( version <= Version(2, 3, 0, 0) )
+        uint unkInts[2];
+    
+    if ( version >= Version(3, 0, 0, 0) )
+        ushort flags;
+    
+    Ref image; // NiImage
+
+    if ( version >= Version(3, 0, 0, 0) && version <= Version(3, 0, 3, 0) )
+        uint unkInts2[2];
+} NiTextureProperty <name="NiTextureProperty">;
+
+// STBC, NetImmerse 3.1
+// DAoC, NetImmerse 2.3, 3.0
+typedef struct {
+    NIOBJECT
+    byte useExternal;
+    if ( useExternal ) {
+        STRING filename;
+    } else {
+        Ref data;
+    }
+    uint unkInt;
+    if ( version >= Version(3, 1, 0, 0) )
+        float unkFloat;
+    
+    if ( version == V2_3 ) {
+        STRING filename;
+        uint what;
+    }
+} NiImage <name="NiImage">;
+
+// STBC, NetImmerse 3.1
+// DAoC, NetImmerse 2.3, 3.0
+typedef struct {
+    NIOBJECT
+    if ( version <= V2_3 ) {
+        uint unkInts[2];
+    }
+    uint width;
+    uint height;
+    enum <uint> {
+        RAW_RGB = 1,
+        RAW_RGBA = 2
+    } imageType;
+    if ( imageType == RAW_RGB )
+        ByteColor3 data[width*height];
+    if ( imageType == RAW_RGBA )
+        ByteColor4 data[width*height];
+} NiRawImageData <name="NiRawImageData">;
+
+typedef struct {
+    NIOBJECT
+    byte unkByte;
+    uint numEntries;
+    if ( numEntries > 0 )
+        ByteColor4 palette[numEntries];
+} NiPalette <name="NiPalette">;
+
+typedef struct {
+    NiTexture tex;
+    bool useExternal;
+    if ( useExternal ) {
+        STRING filename;
+    } else {
+        byte unk;
+        Ref data;
+    }
+
+    PixelLayout pixelLayout;
+    MipMapFormat mipMapFormat;
+    AlphaFormat alphaFormat;
+    bool isStatic;
+} NiSourceTexture_LEGACY <name="NiSourceTexture">;
+
+// ANIMATION
+
+typedef struct {
+    NIOBJECT
+    STRING name;
+    STRING textKeysName;
+    Ref textKeys; // NiTextKeyExtraData
+    uint numBlocks;
+    if ( numBlocks > 0 )
+        struct {
+            STRING target;
+            Ref controller; // NiTimeController
+        } controlledBlock[numBlocks] <optimize=false>;
+} NiSequence <name="NiSequence">;
+
+typedef NiSequence NiControllerSequence_LEGACY <name="NiControllerSequence">;
+
+typedef NiObjectNET_LEGACY NiSequenceStreamHelper <name="NiSequenceStreamHelper">;
+
+typedef struct {
+    NiTimeController controller;
+    ushort flags;
+    Ref data; // NiUVData
+} NiUVController <name="NiUVController">;
+
+typedef struct {
+    FloatKeyGrp uvGroups( "UV" )[4] <optimize=false>;
+} NiUVData <name="NiUVData">;
+
+typedef struct {
+    NiTimeController controller;
+    uint numBones;
+    if ( numBones > 0 ) {
+        uint vertexCounts[numBones];
+        Ref bones[numBones]; // NiBone
+        local int i;
+        for ( i = 0; i < numBones; i++ ) {
+            struct {
+                struct {
+                    float weight;
+                    ushort index;
+                    Vec3 unk;
+                } data[vertexCounts[i]];
+            } boneData;
+        }
+    }
+} NiTriShapeSkinController <name="NiTriShapeSkinController">;
+
+// PARTICLES
+
+typedef NiParticles NiRotatingParticles <name="NiRotatingParticles", open=false>;
+typedef struct {
+    local bool isAutoNormal = 1;
+    NiGeometry_LEGACY base;
+} NiAutoNormalParticles <name="NiAutoNormalParticles", open=false>;
+typedef NiParticles NiParticleMeshes <name="NiParticleMeshes", open=false>;
+
+typedef struct {
+    NiTimeController controller;
+    if ( version <= Version(3, 1, 0, 0) )
+        uint oldSpeed;
+    else
+        float speed;
+    
+    float speedRandom;
+    float verticalDirection;
+    float verticalAngle;
+    float horizontalDirection;
+    float horizontalAngle;
+    Vec3 unkNormal;
+    Color4 unkColor;
+    float size;
+    float startTime;
+    float stopTime;
+    //if ( version >= Version(4, 0, 0, 2) )
+    if ( version >= Version(3, 3, 0, 13) )
+        byte unkByte;
+
+    if ( version <= Version(3, 1, 0, 0) )
+        uint oldEmitRate;
+    else
+        float emitRate;
+    
+    float lifetime;
+    float lifetimeVariation;
+
+    //if ( version >= Version(4, 0, 0, 2) )
+    if ( version >= Version(3, 3, 0, 13) )
+        ushort flags;
+
+    Vec3 startDirection;
+    Ref emitter;
+
+    //if ( version >= Version(4, 0, 0, 2) ) {
+    if ( version >= Version(3, 3, 0, 13) ) {
+        ushort unkShort;
+        float unkFloat;
+        uint unkInt1;
+        uint unkInt2;
+        ushort unkShort2;
+        ushort numParticles;
+        ushort numValid;
+        if ( numParticles > 0 ) {
+            struct {
+                Vec3 velocity;
+                Vec3 unkVec;
+                float lifetime;
+                float lifespan;
+                uint timestamp;
+                ushort unkShort;
+                ushort vertex;
+            } blah[numParticles] <optimize=true>;
+        }
+        Ref unkRef;
+    } else {
+        Vec3 velocity;
+        Vec3 unkVec;
+        float lifetime;
+        float lifespan;
+        Ref unkRef;
+        uint timestamp;
+        ushort unkShort;
+        ushort vertex;
+    }
+    Ref particleModifier;
+    Ref unkRef2;
+    if ( version >= Version(4, 0, 0, 2) ) {
+        byte trailer;
+    } else if ( version < Version(3, 3, 0, 13) ) { // TODO: UNTESTED
+        Ref colorData;
+        float unkFloat;
+        float unkFloats[unkShort];
+    }
+} NiParticleSystemController <name="NiParticleSystemController">;
+
+typedef struct {
+    NIOBJECT
+    Ref nextModifier;
+    if ( version >= Version(3, 3, 0, 13) )
+        Ref controller;
+} NiParticleModifier <name="NiParticleModifier", open=true>; // Abstract
+
+typedef struct {
+    NiParticleModifier modifier;
+    if ( version >= Version(3, 3, 0, 13) )
+        float unkFloat;
+    float force;
+    uint fieldType; // ENUM
+    Vec3 position;
+    Vec3 direction;
+} NiGravity <name="NiGravity">;
+
+typedef struct {
+    NiParticleModifier modifier;
+    float decay;
+    float duration;
+    float deltaV;
+    float start;
+    uint decayType;
+    uint symmType;
+    Vec3 position;
+    Vec3 direction;
+} NiParticleBomb <name="NiParticleBomb">;
+
+typedef struct {
+    NiParticleModifier modifier;
+    Ref colorData; // NiColorData
+} NiParticleColorModifier <name="NiParticleColorModifier">;
+
+typedef struct {
+    NiParticleModifier modifier;
+    float grow;
+    float fade;
+} NiParticleGrowFade <name="NiParticleGrowFade">;
+
+typedef struct {
+    NiParticleModifier modifier;
+    RefArray particleMeshes( "Mesh" ); // NiAVObject
+} NiParticleMeshModifier <name="NiParticleMeshModifier">;
+
+typedef struct {
+    NiParticleModifier modifier;
+    byte initialAxis;
+    Vec3 direction;
+    float speed;
+} NiParticleRotation <name="NiParticleRotation">;
+
+typedef struct {
+    NiGeometryData_LEGACY base;
+    if ( version <= Version(4, 0, 0, 2) )
+        ushort numParticles;
+    float radius;
+    ushort numActive;
+    Bool hasSizes;
+    if ( hasSizes.value && base.numVerts )
+        float sizes[base.numVerts];
+    
+    if ( version >= Version(10, 0, 1, 0) ) {
+        Bool hasRotations;
+        if ( hasRotations.value && base.numVerts )
+            Quat rotations[base.numVerts];
+    }
+} NiParticlesDataOLD <name="NiParticlesData">;
+
+typedef NiParticlesDataOLD NiAutoNormalParticlesData <name="NiAutoNormalParticlesData">;
+
+typedef struct {
+    NiParticlesDataOLD base;
+    if ( version <= Version(4, 2, 2, 0) ) {
+        Bool hasRotations;
+        if ( hasRotations.value && base.base.numVerts )
+            Quat rotations[base.base.numVerts];
+    }
+} NiRotatingParticlesData <name="NiRotatingParticlesData">;
+
+typedef struct {
+    NiRotatingParticlesData base;
+    Ref unkRef;
+} NiParticleMeshesData <name="NiParticleMeshesData">;
+
+typedef struct {
+    NiParticleModifier modifier;
+    if ( version >= Version(10, 0, 1, 0) )
+        ushort unkShort;
+    float unkFloat1;
+    float unkFloat2;
+    if ( version == Version(4, 2, 2, 0) )
+        ushort unkShort2;
+    float unkFloats[14];
+} NiPlanarCollider <name="NiPlanarCollider">;
+
+typedef struct {
+    NiParticleModifier modifier;
+    float unkFloat1;
+    ushort unkShort;
+    float unkFloat2;
+    if ( version <= Version(4, 2, 0, 2) )
+        ushort unkShort2;
+    if ( version >= Version(4, 2, 1, 0) )
+        float unkFloat3;
+    float unkFloats[2];
+} NiSphericalCollider <name="NiSphericalCollider">;
+
+// Morrowind
+
+typedef NiNode AvoidNode <name="AvoidNode">;
+typedef NiNode RootCollisionNode <name="RootCollisionNode">;
+typedef NiNode NiBSAnimationNode <name="NiBSAnimationNode">;
+typedef NiNode NiBSParticleNode <name="NiBSParticleNode">;
+typedef NiParticleSystemController NiBSPArrayController <name="NiBSPArrayController">;
+
