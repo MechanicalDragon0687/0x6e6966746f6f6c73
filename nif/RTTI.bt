@@ -715,6 +715,9 @@ RTTICode NetImmerseRTTI( string str )
     case "NiBone":
         NiBone data;
         return RTTI_FOUND;
+    case "NiWall":
+        NiWall data;
+        return RTTI_FOUND;
     case "NiSequenceStreamHelper":
         NiSequenceStreamHelper data;
         return RTTI_FOUND;

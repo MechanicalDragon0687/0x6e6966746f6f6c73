@@ -244,6 +244,11 @@ typedef struct {
     }
 } NiTriStripsData_LEGACY <name="NiTriStripsData">;
 
+typedef struct {
+    NiNode base;
+    NiPlane plane;
+} NiWall <name="NiWall">;
+
 // SKINNING
 
 typedef struct {

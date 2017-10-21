@@ -116,10 +116,14 @@ typedef BSBlastNode BSDamageStage <name="BSDamageStage">;
 // NiRoom/NiRoomGroup
 typedef struct {
     NiNode node <open=true>;
-    uint numWalls;
-    if ( numWalls > 0 )
-        NiPlane wall[numWalls];
-    
+    if ( version > Version(3, 3, 0, 13) ) { // UNVERIFIED MIN
+        uint numWalls;
+        if ( numWalls > 0 )
+            NiPlane wall[numWalls];
+    } else {
+        RefArray walls( "Wall" ); // NiWall
+    }
+
     RefArray inPortals( "In Portal" ); // NiPortal
     RefArray outPortals( "Out Portal" ); // NiPortal
     RefArray fixtures( "Fixture" ); // NiAVObject
