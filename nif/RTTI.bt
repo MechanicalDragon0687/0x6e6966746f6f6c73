@@ -359,6 +359,80 @@ RTTICode RTTI( string str )
         NiBSplineBasisData data;
         return RTTI_FOUND;
 
+// NEW ANIMATION (20.5+ KF)
+    case "NiSequenceData":
+        if ( version < V20_5_0_1 )
+            NiControllerSequence data <name="NiSequenceData">;
+        else
+            NiSequenceData data;
+        return RTTI_FOUND;
+    case "NiBoolEvaluator":
+        NiBoolEvaluator data;
+        return RTTI_FOUND;
+    case "NiConstBoolEvaluator":
+        NiConstBoolEvaluator data;
+        return RTTI_FOUND;
+    case "NiColorEvaluator":
+        NiColorEvaluator data;
+        return RTTI_FOUND;
+    case "NiConstColorEvaluator":
+        NiConstColorEvaluator data;
+        return RTTI_FOUND;
+    case "NiFloatEvaluator":
+        NiFloatEvaluator data;
+        return RTTI_FOUND;
+    case "NiConstFloatEvaluator":
+        NiConstFloatEvaluator data;
+        return RTTI_FOUND;
+    case "NiPoint3Evaluator":
+        NiPoint3Evaluator data;
+        return RTTI_FOUND;
+    case "NiConstPoint3Evaluator":
+        NiConstPoint3Evaluator data;
+        return RTTI_FOUND;
+    case "NiQuaternionEvaluator":
+        NiQuaternionEvaluator data;
+        return RTTI_FOUND;
+    case "NiConstQuaternionEvaluator":
+        NiConstQuaternionEvaluator data;
+        return RTTI_FOUND;
+    case "NiTransformEvaluator":
+        NiTransformEvaluator data;
+        return RTTI_FOUND;
+    case "NiConstTransformEvaluator":
+        NiConstTransformEvaluator data;
+        return RTTI_FOUND;
+    case "NiLookAtEvaluator":
+        NiLookAtEvaluator data;
+        return RTTI_FOUND;
+    case "NiPathEvaluator":
+        NiPathEvaluator data;
+        return RTTI_FOUND;
+    case "NiBSplineColorEvaluator":
+        NiBSplineColorEvaluator data;
+        return RTTI_FOUND;
+    case "NiBSplineCompColorEvaluator":
+        NiBSplineCompColorEvaluator data;
+        return RTTI_FOUND;
+    case "NiBSplineFloatEvaluator":
+        NiBSplineFloatEvaluator data;
+        return RTTI_FOUND;
+    case "NiBSplineCompFloatEvaluator":
+        NiBSplineCompFloatEvaluator data;
+        return RTTI_FOUND;
+    case "NiBSplinePoint3Evaluator":
+        NiBSplinePoint3Evaluator data;
+        return RTTI_FOUND;
+    case "NiBSplineCompPoint3Evaluator":
+        NiBSplineCompPoint3Evaluator data;
+        return RTTI_FOUND;
+    case "NiBSplineTransformEvaluator":
+        NiBSplineTransformEvaluator data;
+        return RTTI_FOUND;
+    case "NiBSplineCompTransformEvaluator":
+        NiBSplineCompTransformEvaluator data;
+        return RTTI_FOUND;
+
 // OLD PARTICLES
     case "NiParticles":
         NiParticles data;

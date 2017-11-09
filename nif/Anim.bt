@@ -90,7 +90,9 @@ typedef struct {
 typedef struct {
     // NiControllerSequence::InterpArrayItem
     Ref interpolator;
-    Ref controller;
+    if ( version < V20_5_0_1 )
+        Ref controller;
+    
     if ( BSStream() )
         byte priority;
     if ( version < Version(10, 1, 0, 111) ) {
@@ -177,15 +179,17 @@ typedef struct {
 // Renamed to NiTransformController in 10.2
 typedef NiKeyframeCtlr NiTransCtlr <name="NiTransformController">;
 
+typedef enum <int> {
+    BANK_NEGATIVE = -1,
+    BANK_POSITIVE = 1
+} BankDir;
+
 // Deprecated in 10.2, use NiTransformController & NiPathInterpolator
 typedef struct {
     NiTimeController controller;
     if ( version >= Version(10, 1, 0, 0) )
         PathFlags flags;
-    enum <int> {
-        BANK_NEGATIVE = -1,
-        BANK_POSITIVE = 1
-    } bankDir;
+    BankDir bankDir;
     float maxBankAngle;
     float smoothing;
     short followAxis;
@@ -563,6 +567,187 @@ typedef struct {
     NiBSplinePoint3Interpolator base;
     float compScalars[2];
 } NiBSplineCompPoint3Interpolator <name="NiBSplineCompPoint3Interpolator">;
+
+// New Animation (20.5+ KF)
+
+#define NIEVAL NiEvaluator base;
+#define NIKBEVAL NiKeyBasedEvaluator base;
+
+typedef struct {
+    NIOBJECT
+    STRING name;
+    if ( version < Version(20, 5, 0, 2) ) {
+        // Pre Interpolator -> Evaluator
+        uint numBlocks;
+        uint arrayGrowBy;
+        if ( numBlocks > 0 )
+            ControlledBlock block[numBlocks] <optimize=true>;
+    } else {
+        RefArray evaluators( "Evaluator" ); // NiEvaluator
+    }
+
+    Ref textKeys;
+    float duration;
+    CycleType cycleType ENUM16_PAD32;
+    float frequency;
+    STRING accumRootName;
+    uint accumFlags;
+} NiSequenceData <name="NiSequenceData">;
+
+typedef struct {
+    NIOBJECT
+
+    // IDTag
+    STRING AVObjectName;
+    STRING propertyType;
+    STRING controllerType;
+    STRING controllerID;
+    STRING evaluatorID;
+
+    // Channel Indices are BASE/POS = 0, ROT = 1, SCALE = 2, FLAG = 3
+    // Channel Types are:
+    //  INVALID = 0, COLOR, BOOL, FLOAT, POINT3, ROT = 5
+    // Any channel may be | 0x40 which means POSED
+    // The FLAG (3) channel flags affects the whole evaluator:
+    //  REFERENCED = 0x1, TRANSFORM = 0x2, ALWAYSUPDATE = 0x4, SHUTDOWN = 0x8
+    byte channelTypes[4];
+} NiEvaluator <name="NiEvaluator", open=true>; // Abstract
+
+typedef NiEvaluator NiKeyBasedEvaluator <name="NiKeyBasedEvaluator", open=true>; // Abstract
+
+typedef struct {
+    NIKBEVAL
+    Ref data; // NiBoolData
+} NiBoolEvaluator <name="NiBoolEvaluator">;
+
+typedef struct {
+    NIEVAL
+    float boolValue;
+} NiConstBoolEvaluator <name="NiConstBoolEvaluator">;
+
+typedef struct {
+    NIKBEVAL
+    Ref data; // NiColorData
+} NiColorEvaluator <name="NiColorEvaluator">;
+
+typedef struct {
+    NIEVAL
+    Color4 colorValue;
+} NiConstColorEvaluator <name="NiConstColorEvaluator">;
+
+typedef struct {
+    NIKBEVAL
+    Ref data; // NiFloatData
+} NiFloatEvaluator <name="NiFloatEvaluator">;
+
+typedef struct {
+    NIEVAL
+    float floatValue;
+} NiConstFloatEvaluator <name="NiConstFloatEvaluator">;
+
+typedef struct {
+    NIKBEVAL
+    Ref data; // NiPosData
+} NiPoint3Evaluator <name="NiPoint3Evaluator">;
+
+typedef struct {
+    NIEVAL
+    Vec3 posValue;
+} NiConstPoint3Evaluator <name="NiConstPoint3Evaluator">;
+
+typedef struct {
+    NIKBEVAL
+    Ref data; // NiRotData
+} NiQuaternionEvaluator <name="NiQuaternionEvaluator">;
+
+typedef struct {
+    NIEVAL
+    Quat quatValue;
+} NiConstQuaternionEvaluator <name="NiConstQuaternionEvaluator">;
+
+typedef struct {
+    NIKBEVAL
+    NiQuatTransform transformValue;
+    Ref data; // NiTransformData
+} NiTransformEvaluator <name="NiTransformEvaluator">;
+
+typedef struct {
+    NIEVAL
+    NiQuatTransform transformValue;
+} NiConstTransformEvaluator <name="NiConstTransformEvaluator">;
+
+typedef struct {
+    NIEVAL
+    ushort flags;
+    STRING lookAtName;
+    STRING drivenName;
+    Ref translateInterp;
+    Ref rollInterp;
+    Ref scaleInterp;
+} NiLookAtEvaluator <name="NiLookAtEvaluator">;
+
+typedef struct {
+    NIKBEVAL
+    PathFlags flags;
+    BankDir bankDir;
+    float maxBankAngle;
+    float smoothing;
+    short followAxis;
+    Ref pathData; // NiPosData
+    Ref pctData;  // NiFloatData
+} NiPathEvaluator <name="NiPathEvaluator">;
+
+typedef struct {
+    NIEVAL
+    float startTime;
+    float endTime;
+    Ref data; // NiBSplineData
+    Ref basisData; // NiBSplineBasisData
+} NiBSplineEvaluator <name="NiBSplineEvaluator", open=true>; // Abstract
+
+typedef struct {
+    NiBSplineEvaluator base;
+    uint colorCPHandle;
+} NiBSplineColorEvaluator <name="NiBSplineColorEvaluator">;
+
+typedef struct {
+    NiBSplineColorEvaluator base <open=true>;
+    float compScalars[2];
+} NiBSplineCompColorEvaluator <name="NiBSplineCompColorEvaluator">;
+
+typedef struct {
+    NiBSplineEvaluator base;
+    uint floatCPHandle;
+} NiBSplineFloatEvaluator <name="NiBSplineFloatEvaluator">;
+
+typedef struct {
+    NiBSplineFloatEvaluator base <open=true>;
+    float compScalars[2];
+} NiBSplineCompFloatEvaluator <name="NiBSplineCompFloatEvaluator">;
+
+typedef struct {
+    NiBSplineEvaluator base;
+    uint posCPHandle;
+} NiBSplinePoint3Evaluator <name="NiBSplinePoint3Evaluator">;
+
+typedef struct {
+    NiBSplinePoint3Evaluator base <open=true>;
+    float compScalars[2];
+} NiBSplineCompPoint3Evaluator <name="NiBSplineCompPoint3Evaluator">;
+
+typedef struct {
+    NiBSplineEvaluator base;
+    NiQuatTransform transform;
+    uint transCPHandle;
+    uint rotationCPHandle;
+    uint scaleCPHandle;
+} NiBSplineTransformEvaluator <name="NiBSplineTransformEvaluator">;
+
+typedef struct {
+    NiBSplineTransformEvaluator base <open=true>;
+    float compScalars[6];
+} NiBSplineCompTransformEvaluator <name="NiBSplineCompTransformEvaluator">;
+
 
 // BETHESDA
 

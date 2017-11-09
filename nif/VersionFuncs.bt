@@ -67,6 +67,8 @@ typedef enum <uint> {
     V20_3_0_6   = 0x14030006,   //! NIF Version 20.3.0.6
     V20_3_0_9   = 0x14030009,   //! NIF Version 20.3.0.9
     V20_5_0_0   = 0x14050000,   //! NIF Version 20.5.0.0
+    // First version to use NiSequenceData
+    V20_5_0_1   = 0x14050001,   //! NIF Version 20.5.0.1
     V20_6_0_0   = 0x14060000,   //! NIF Version 20.6.0.0
     V20_6_5_0   = 0x14060500,   //! NIF Version 20.6.5.0
     V30_0_0_2   = 0x1E000002,   //! NIF Version 30.0.0.2
