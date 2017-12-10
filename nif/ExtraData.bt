@@ -229,6 +229,79 @@ typedef struct {
 // BSClothExtraData
 typedef BinaryData BSClothExtraData <name="BSClothExtraData">;
 
+typedef struct {
+    uint triCount;
+    uint triOffset;
+} LODLevel;
+
+typedef struct {
+    float g2pScale;
+    NiTransform transform;
+    NiBound bound;
+} GeomData;
+
+typedef struct {
+    NiExtraData data;
+    VertexDesc desc <open=false>;
+    uint numVerts;
+    uint numTris;
+    uint unk1;
+    uint unk2;
+    uint numObjects;
+    if ( numObjects > 0 ) {
+        uint64 shapeID[numObjects] <optimize=true>;
+        struct {
+            uint numVerts;
+            uint lodLevels;
+            if ( lodLevels > 0 )
+                LODLevel lodLevel[lodLevels] <optimize=true>;
+            
+            // LOD Levels necessary for tri count
+            Assert( lodLevels == 3, "lodLevels must be 3." );
+
+            uint numCombined;
+            if ( numCombined > 0 )
+               GeomData combined[numCombined] <optimize=true>;
+            
+            VertexDesc vertexDesc <open=false>;
+        } object[numObjects] <optimize=false>;
+    }
+} BSPackedCombinedSharedGeomDataExtra <name="BSPackedCombinedSharedGeomDataExtra">;
+
+typedef struct {
+    NiExtraData data;
+    VertexDesc desc;
+    uint numVertsTotal;
+    uint numTrisTotal;
+    uint unk1;
+    uint unk2;
+    uint numObjects;
+    if ( numObjects > 0 ) {
+        struct {
+            uint numVerts;
+            uint lodLevels;
+            if ( lodLevels > 0 )
+                LODLevel lodLevel[lodLevels] <optimize=true>;
+            
+            // LOD Levels necessary for tri count
+            Assert( lodLevels == 3, "lodLevels must be 3." );
+            
+            // Sum up tris from LOD levels
+            local uint numTris;
+            local uint i;
+            for ( i = 0; i < lodLevels; i++ )
+                numTris += lodLevel[i].triCount;
+            
+            uint numCombined;
+            if ( numCombined > 0 )
+                GeomData combined[numCombined] <optimize=true>;
+            
+            VertexDesc vertexDesc <open=false>;
+            BSVertexData vertexData(vertexDesc.value)[numVerts] <OPTARRAY>;
+            Triangle triangles[numTris] <optimize=true>;
+        } object[numObjects] <optimize=false>;
+    }
+} BSPackedCombinedGeomDataExtra <name="BSPackedCombinedGeomDataExtra">;
 
 // READ FUNCTIONS
 

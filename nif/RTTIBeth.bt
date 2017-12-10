@@ -172,6 +172,12 @@ RTTICode BethRTTI( string str, uint stream )
     case "BSDistantObjectLargeRefExtraData":
         BSDistantObjectLargeRefED data;
         return RTTI_FOUND;
+    case "BSPackedCombinedSharedGeomDataExtra":
+        BSPackedCombinedSharedGeomDataExtra data;
+        return RTTI_FOUND;
+    case "BSPackedCombinedGeomDataExtra":
+        BSPackedCombinedGeomDataExtra data;
+        return RTTI_FOUND;
 
 // PARTICLES
     case "BSMasterParticleSystem":

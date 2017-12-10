@@ -47,9 +47,9 @@ typedef enum {
 // DECODED BLOCKS
 
 #include "Objects.bt"
-#include "ExtraData.bt"
 #include "Nodes.bt"
 #include "Geometry.bt"
+#include "ExtraData.bt"
 #include "Anim.bt"
 #include "Particles.bt"
 #include "Property.bt"
