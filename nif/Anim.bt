@@ -35,10 +35,15 @@ typedef struct {
     Ref target;
 } NiTimeController <open=true>; // Abstract
 
-typedef NiTimeController NiInterpController <open=true>; // Abstract
-
 typedef struct {
     NiTimeController controller;
+    // Between 10.1.0.104 and 10.1.0.108
+    if ( version < Version(10, 1, 0, 109) )
+        bool managerControlled;
+} NiInterpController <open=true>; // Abstract
+
+typedef struct {
+    NiInterpController controller;
     if ( version >= Version(10, 1, 0, 104) )
         Ref interpolator;
 } NiSingleInterpController <open=true>; // Abstract
@@ -92,9 +97,6 @@ typedef struct {
     Ref interpolator;
     if ( version < V20_5_0_1 )
         Ref controller;
-    
-    if ( BSStream() )
-        byte priority;
     if ( version < Version(10, 1, 0, 111) ) {
         Ref blendInterp;
         ushort blendIndex;
@@ -141,6 +143,9 @@ typedef struct {
         float phase;
     float beginKeyTime;
     float endKeyTime;
+    if ( version < Version(10, 1, 0, 107) )
+        bool playBackwards;
+
     Ref owner; // NiControllerManager
     STRING accumRootName;
     if ( version >= Version(20, 3, 0, 8) )
@@ -169,11 +174,9 @@ typedef struct {
 } NiStringPalette <name="NiStringPalette">;
 
 typedef struct {
-    NiTimeController controller;
+    NiSingleInterpController controller;
     if ( version < Version(10, 1, 0, 104) )
         Ref data; // NiKeyframeData/NiTransformData
-    else
-        Ref interpolator; // NiInterpolator
 } NiKeyframeCtlr <name="NiKeyframeController">;
 
 // Renamed to NiTransformController in 10.2
@@ -285,6 +288,7 @@ typedef struct {
 
 typedef NiFloatInterpController NiLightRadiusCtlr <name="NiLightRadiusController", open=false>;
 typedef NiFloatInterpController NiLightDimmerCtlr <name="NiLightDimmerController", open=false>;
+
 
 // BETHESDA
 
@@ -412,27 +416,68 @@ typedef struct {
 #define NIINTERP NiInterpolator base;
 
 typedef struct {
+    Ref interpolator;
+    float weight;
+    float normalizedWeight;
+    if ( version < Version(10, 1, 0, 110) )
+        int priority;
+    else
+        byte priority;
+    float easeSpinner;
+} InterpArrayItem <optimize=true>;
+
+typedef struct {
     NIINTERP
-    BlendInterpFlags flags;
-    byte arraySize;
-    float weightThreshold;
-    if ( !(flags.value & BI_MANAGER_CONTROLLED) ) {
-        byte interpCount;
-        byte singleIndex;
-        char highPriority;
-        char nextHighPriority;
-        float singleTime;
-        float highSumOfWeights;
-        float nextHighSumOfWeights;
-        float highEaseSpinner;
-        if ( arraySize ) {
-            struct {
-                Ref interpolator;
-                float weight;
-                float normalizedWeight;
-                byte priority;
-                float easeSpinner;
-            } interpArrayItem[arraySize] <optimize=true>;
+    if ( version >= Version(10, 1, 0, 112) )
+        BlendInterpFlags flags;
+        
+    if ( version < Version(10, 1, 0, 110) ) {
+        ushort arraySize;
+        ushort arrayGrowBy;
+    } else {
+        byte arraySize;
+    }
+    
+    if ( version >= Version(10, 1, 0, 112) ) {
+        float weightThreshold;
+        if ( !(flags.value & BI_MANAGER_CONTROLLED) ) {
+            byte interpCount;
+            byte singleIndex;
+            char highPriority;
+            char nextHighPriority;
+            float singleTime;
+            float highSumOfWeights;
+            float nextHighSumOfWeights;
+            float highEaseSpinner;
+            if ( arraySize )
+                InterpArrayItem interpArrayItem[arraySize] <optimize=true>;
+        }
+    } else {
+        if ( arraySize )
+            InterpArrayItem interpArrayItem[arraySize] <optimize=true>;
+        bool managerControlled;
+        float weightThreshold;
+        bool onlyUseHighestWeight;
+
+        if ( version < Version(10, 1, 0, 110) ) {
+            ushort interpCount;
+            ushort singleIndex;
+        } else {
+            byte interpCount;
+            byte singleIndex;
+        }
+
+        if ( version >= Version(10, 1, 0, 108) ) {
+            Ref singleInterpolator; // NiInterpolator
+            float singleTime;
+        }
+
+        if ( version < Version(10, 1, 0, 110) ) {
+            int highPriority;
+            int nextHighPriority;
+        } else {
+            byte highPriority;
+            byte nextHighPriority;
         }
     }
 } NiBlendInterpolator <name="NiBlendInterpolator", open=true>; // Abstract
@@ -476,6 +521,8 @@ typedef struct {
 
 typedef struct {
     NIBLENDINTERP
+    if ( version < Version(10, 1, 0, 110) )
+        NiQuatTransform value;
 } NiBlendTransformInterp <name="NiBlendTransformInterpolator">;
 
 typedef struct {
@@ -790,7 +837,8 @@ typedef struct {
 typedef struct ( uint numVerts ) {
     if ( version >= Version(10, 1, 0, 104) ) {
         STRING frameName;
-        if ( version < Version(20, 1, 0, 3) && !BS_OBL )
+        // Exclude Bethesda
+        if ( (version < Version(20, 1, 0, 3) && stream < 10) )
             float weight;
     } else {
         uint numKeys;
@@ -802,7 +850,7 @@ typedef struct ( uint numVerts ) {
 
     if ( numVerts > 0 )
         Vec3 vector[numVerts];
-} Morph;
+} Morph <optimize=false>;
 
 typedef struct {
     NIOBJECT

@@ -121,7 +121,9 @@ typedef struct {
     Vec3 translation;
     Quat rotation;
     float scale;
-} NiQuatTransform <open=true, name="Transform", size=32>;
+    if ( version < Version(10, 1, 0, 109) )
+        bool trsValid[3];
+} NiQuatTransform <open=true, name="Transform">;
 
 typedef struct {
     float U;
