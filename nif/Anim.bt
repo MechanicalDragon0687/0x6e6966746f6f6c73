@@ -669,6 +669,8 @@ typedef struct {
     Ref data; // NiBoolData
 } NiBoolEvaluator <name="NiBoolEvaluator">;
 
+typedef NiBoolEvaluator NiBoolTimelineEvaluator <name="NiBoolTimelineEvaluator">;
+
 typedef struct {
     NIEVAL
     float boolValue;

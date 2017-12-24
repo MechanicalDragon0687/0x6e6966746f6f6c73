@@ -369,6 +369,9 @@ RTTICode RTTI( string str )
     case "NiBoolEvaluator":
         NiBoolEvaluator data;
         return RTTI_FOUND;
+    case "NiBoolTimelineEvaluator":
+        NiBoolTimelineEvaluator data;
+        return RTTI_FOUND;
     case "NiConstBoolEvaluator":
         NiConstBoolEvaluator data;
         return RTTI_FOUND;
