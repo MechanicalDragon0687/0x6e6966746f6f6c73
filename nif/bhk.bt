@@ -25,6 +25,11 @@ typedef struct {
     ushort group;
 } HavokFilter <name="Filter", open=true, size=4>;
 
+typedef struct {
+    if ( version == V10_0_1_0 )
+        uint unk;
+    uint material;
+} HavokMaterial <name="Material", open=true>;
 
 typedef struct {
     uint data;
@@ -35,13 +40,15 @@ typedef struct {
 typedef struct {
     Ref shape;
     // hkWorldObjectCinfo
+    if ( stream == 0 )
+        uint unkInt;
     HavokFilter filter;
     int unkInt1;
     BroadPhaseType broadPhaseType;
     byte unkBytes[3];
     hkWorldObjCinfoProperty prop;
     // end hkWorldObjectCinfo
-} bhkWorldObject <open=true, size=28>;
+} bhkWorldObject <open=true>;
 
 typedef struct {
     bhkWorldObject obj;
@@ -50,23 +57,23 @@ typedef struct {
     ubyte unknownByte;
     ushort processContactCallbackDelay;
     // bhkRigidBodyCinfo
-    uint unkInt2;
-    HavokFilter filter;
-    uint unkInt3;
-    if ( stream > 34 ) {
-        uint unkInt4;
-        Assert( unkInt4 == 0, "bhkRigidBody unkInt4 is non-zero" );
+
+    if ( stream > 0 ) {
+        uint unkInt2;
+        HavokFilter filter;
+        uint unkInt3;
+        if ( stream > 34 ) {
+            uint unkInt4;
+            Assert( unkInt4 == 0, "bhkRigidBody unkInt4 is non-zero" );
+        }
+        hkResponseType collisionResponse2;
+        ubyte unknownByte2;
+        ushort processContactCallbackDelay2;
+        //Assert( collisionResponse == collisionResponse2, "Collision Response and copy are not equal" );
+        //Assert( processContactCallbackDelay == processContactCallbackDelay2, "Callback Delay and copy are not equal" );
     }
-
-    hkResponseType collisionResponse2;
-    ubyte unknownByte2;
-    ushort processContactCallbackDelay2;
-    Assert( collisionResponse == collisionResponse2, "Collision Response and copy are not equal" );
-    Assert( processContactCallbackDelay == processContactCallbackDelay2, "Callback Delay and copy are not equal" );
-
     if ( stream < 83 )
         uint unkInt5;
-
     Vec4 position;
     QuatXYZW rotation;
     Vec4 linearVelocity;
@@ -86,9 +93,11 @@ typedef struct {
     if ( stream > 34 )
         float rollingFrictionMult;
     float restitution;
-    float maxLinearVelocity;
-    float maxAngularVelocity;
-    float allowedPenetrationDepth;
+    if ( stream > 0 ) {
+        float maxLinearVelocity;
+        float maxAngularVelocity;
+        float allowedPenetrationDepth;
+    }
     MotionType motionSystem;
     if ( stream > 34 )
         bool enableDeactivation;
@@ -96,14 +105,18 @@ typedef struct {
         byte deactivatorType;
     SolverDeactivation solverDeactivation;
     byte qualityType;
-    byte autoRemoveLevel;
-    byte responseModifierFlags;
-    byte numShapeKeysInContactPointProps;
-    bool forceCollideOntoPpu;
-    uint unkInt5;
-    uint unkInt6;
-    if ( stream > 34 )
-        uint unkInt7;
+    struct {
+        // Some of these variable names are only applicable to FO4
+        byte autoRemoveLevel;
+        byte responseModifierFlags;
+        byte numShapeKeysInContactPointProps;
+        bool forceCollideOntoPpu;
+        uint unkInt5;
+        uint unkInt6;
+        if ( stream > 34 )
+            uint unkInt7;
+    } unknownValues;
+
     // end bhkSerializable
     RefArray constraints( "Action Constraints" );
     
@@ -149,14 +162,17 @@ typedef struct {
     bhkCollisionObj base <open=true>;
     float heirGain;
     float velGain;
-} bhkBlendCollisionObj <name="bhkBlendCollisionObject", size=18>;
+    if ( stream < 9 )
+        float unk1;
+        float unk2;
+} bhkBlendCollisionObj <name="bhkBlendCollisionObject">;
 
 
 // SHAPES
 
 typedef struct {
     RefArray shape( "Shape" );
-    uint HavokMaterial; // enum
+    HavokMaterial material;
     hkWorldObjCinfoProperty childShapeProp;
     hkWorldObjCinfoProperty childFilterProp;
     uint numUnkInt;
@@ -166,12 +182,12 @@ typedef struct {
 } bhkListShape <name="bhkListShape">;
 
 typedef struct {
-    uint HavokMaterial; // enum
+    HavokMaterial material;
     float radius;
-} bhkConvexShape <open=true, size=8>; // Abstract
+} bhkConvexShape <open=true>; // Abstract
 
 typedef struct {
-    uint HavokMaterial;
+    HavokMaterial material;
     Vec3 unkVec;
     Vec3 direction;
     float constant;
@@ -186,7 +202,7 @@ typedef struct {
     uint64 padding; // The following hkVector4 wants to be aligned at 16 bytes
     Vec3 dimensions;
     float radius;
-} bhkBoxShape <name="bhkBoxShape", size=32>;
+} bhkBoxShape <name="bhkBoxShape">;
 
 typedef struct {
     bhkConvexShape shape;
@@ -219,17 +235,17 @@ typedef struct {
 
 typedef struct {
     Ref shape;
-    uint HavokMaterial; // Enum
+    HavokMaterial material;
     float radius;
     uint64 padding;
     Matrix44 transform;
-} bhkTS <name="bhkTransformShape", size=84>;
+} bhkTS <name="bhkTransformShape">;
 
 typedef bhkTS bhkCTS <name="bhkConvexTransformShape", size=84>;
 
 typedef struct {
     // Cinfo size 48
-    uint HavokMaterial; // Enum
+    HavokMaterial material;
     float radius;
     uint unused1;
     uint unused2;
@@ -253,11 +269,14 @@ typedef struct {
     uint code;
     float scale;  // End Cinfo
     uint dataSize;
+    local uint off = 0;
+    if ( version == V10_0_1_0 )
+        off = 16;
     Vec4 offset;
     if ( stream > 34 )
         byte buildType;
     if ( dataSize > 0 )
-        byte data[dataSize];
+        byte data[dataSize - off];
 } bhkMoppBVShape <name="bhkMoppBvTreeShape">;
 
 typedef struct {
@@ -761,3 +780,23 @@ typedef struct {
                 } matrix[numMatrices];
         } poseArray[numPoses] <optimize=false>;
 } bhkPoseArray <name="bhkPoseArray">;
+
+typedef struct {
+    uint unk1;
+    uint unk2;
+    float radius;
+    byte unused[8];
+    Vec4 scale;
+    uint numShapeProps;
+    if ( numShapeProps > 0 )
+        hkWorldObjCinfoProperty shapeProp[numShapeProps];
+    uint unks[3];
+    RefArray stripsData( "Strips Data" ); // NiTriStripsData
+} bhkMeshShape <name="bhkMeshShape">;
+
+typedef struct {
+    Ref shape;
+    HavokMaterial material;
+    float radius;
+    Vec3 unknown;
+} bhkConvexSweepShape <name="bhkConvexSweepShape">;

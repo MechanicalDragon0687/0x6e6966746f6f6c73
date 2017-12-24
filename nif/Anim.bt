@@ -101,6 +101,8 @@ typedef struct {
         Ref blendInterp;
         ushort blendIndex;
     }
+    if ( BSStream() )
+        byte priority;
     // NiControllerSequence::IDTag
     if ( version >= Version(10, 2, 0, 0) && version < Version(20, 1, 0, 1) ) {
         Ref palette; // NiStringPalette
@@ -881,7 +883,7 @@ typedef struct {
     if ( version >= Version(10, 1, 0, 104) ) {
         if ( version < Version(20, 1, 0, 3) ) {
             RefArray interpolators( "Interpolator" ); // NiInterpolator
-            if ( BS_OBL ) {
+            if ( stream > 9 ) {
                 uint numUnk;
                 if ( numUnk > 0 )
                     float unk[numUnk];

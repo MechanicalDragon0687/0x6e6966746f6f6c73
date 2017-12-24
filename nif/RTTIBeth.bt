@@ -403,6 +403,12 @@ RTTICode BethRTTI( string str, uint stream )
     case "bhkBlendController":
         bhkBlendController data;
         return RTTI_FOUND;
+    case "bhkConvexSweepShape":
+        bhkConvexSweepShape data;
+        return RTTI_FOUND;
+    case "bhkMeshShape":
+        bhkMeshShape data;
+        return RTTI_FOUND;
     default:
         return RTTI_MISSING;
     }

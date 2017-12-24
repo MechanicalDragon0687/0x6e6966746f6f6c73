@@ -236,6 +236,9 @@ struct FILE {
             // For NIFs using deprecated NetImmerse blocks
             if ( version <= V10_1_0_0 && NetImmerseRTTI( str ) == RTTI_FOUND )
                 continue;
+            // For some Oblivion NIFs in some foreign distributions
+            if ( version == V10_0_1_0 && BethRTTI( str, stream ) == RTTI_FOUND )
+                continue;
 #endif
 
             // Official RTTI
