@@ -437,15 +437,30 @@ typedef struct {
 } MotorDesc;
 
 typedef struct {
-    Vec4 axleA;
-    Vec4 axleInA1;
-    Vec4 axleInA2;
-    Vec4 pivotA;
-    Vec4 axleB;
-    Vec4 axleInB1;
-    if ( stream > 29 ) // ???
-        Vec4 axleInB2;
-    Vec4 pivotB;
+    Vec4 axisA;
+    Vec4 axisB;
+} EntitySystem;
+
+typedef struct {
+    Vec4 pivot;
+    Vec4 axis;
+} EntityAxis;
+
+typedef struct {
+    Vec4 pivot;
+    EntitySystem system;
+} EntityJoint;
+
+typedef struct {
+    if ( stream > 29 ) {
+        // Axle, Axle in A1, Axle in A2, Pivot
+        Vec4 transformA[4];
+        Vec4 transformB[4];
+    } else {
+        EntityJoint entityA;
+        Vec4 pivot;
+        EntityJoint entityB;
+    }
 } HingeDesc <open=true>;
 
 typedef struct {
@@ -457,16 +472,14 @@ typedef struct {
 } LimitedHingeDesc <open=true>;
 
 typedef struct {
-    Vec4 twistA;
-    Vec4 planeA;
-    if ( stream > 29 ) // ???
-        Vec4 motorA;
-    Vec4 pivotA;
-    Vec4 twistB;
-    Vec4 planeB;
-    if ( stream > 29 ) // ???
-        Vec4 motorB;
-    Vec4 pivotB;
+    if ( stream > 29 ) {
+        // Twist, Plane, Motor, Pivot
+        Vec4 transformA[4];
+        Vec4 transformB[4];
+    } else {
+        EntityJoint entityA;
+        EntityJoint entityB;
+    }
     float coneMaxAngle;
     float planeMinAngle;
     float planeMaxAngle;
@@ -474,7 +487,6 @@ typedef struct {
     float twistMaxAngle;
     float maxFriction;
     MotorDesc motor;
-
 } RagdollDesc <open=true>;
 
 typedef struct {
@@ -489,21 +501,19 @@ typedef struct {
 } BallAndSocketDesc <open=true>;
 
 typedef struct {
-    Vec4 slidingA;
-    Vec4 rotationA;
-    if ( stream > 29 )
-    Vec4 planeA;
-    Vec4 pivotA;
-    Vec4 slidingB;
-    Vec4 rotationB;
-    if ( stream > 29 )
-    Vec4 planeB;
-    Vec4 pivotB;
+    if ( stream > 29 ) {
+        // Sliding, Rotation, Plane, Pivot
+        Vec4 transformA[4];
+        Vec4 transformB[4];
+    } else {
+        EntityJoint entityA;
+        EntitySystem plane;
+        EntityJoint entityB;
+    }
     float minDistance;
     float maxDistance;
     float friction;
     MotorDesc motor;
-
 } PrismaticDesc <open=true>;
 
 typedef struct {
