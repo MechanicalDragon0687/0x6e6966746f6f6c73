@@ -143,11 +143,10 @@ byte IsBethesda20_2( uint version, uint userVersion ) {
 }
 
 byte IsOblivion( uint version, uint userVersion ) {
-    // Unused Oblivion NIFs: V10_0_1_2 (One File: MinotaurOLD.nif)
-    // Absent Oblivion NIFs in GOG and Steam versions: V10_1_0_0, V10_1_0_101
-    return ((version == V10_1_0_106 || version == V10_2_0_0) && userVersion >= 3 && userVersion < 11)
-            || (version == V20_0_0_4 && (userVersion == 10 || userVersion == 11))
-            || (version == V20_0_0_5 && userVersion == 11);
+    // V10_0_1_0 is used in Oblivion but it does not have a BSStreamHeader
+    return version == V10_0_1_2 || (
+            (version == V20_0_0_5 || (version >= V10_1_0_0 && version <= V20_0_0_4))
+            && userVersion >= 3);
 }
 
 byte IsBethesda( uint version, uint userVersion ) {

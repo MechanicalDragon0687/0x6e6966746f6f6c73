@@ -26,7 +26,7 @@ typedef struct {
 } HavokFilter <name="Filter", open=true, size=4>;
 
 typedef struct {
-    if ( version == V10_0_1_0 )
+    if ( version <= V10_0_1_2 )
         uint unk;
     uint material;
 } HavokMaterial <name="Material", open=true>;
@@ -40,7 +40,7 @@ typedef struct {
 typedef struct {
     Ref shape;
     // hkWorldObjectCinfo
-    if ( stream == 0 )
+    if ( version <= V10_0_1_2 )
         uint unkInt;
     HavokFilter filter;
     int unkInt1;
@@ -58,7 +58,7 @@ typedef struct {
     ushort processContactCallbackDelay;
     // bhkRigidBodyCinfo
 
-    if ( stream > 0 ) {
+    if ( version > V10_0_1_2 ) {
         uint unkInt2;
         HavokFilter filter;
         uint unkInt3;
@@ -93,7 +93,7 @@ typedef struct {
     if ( stream > 34 )
         float rollingFrictionMult;
     float restitution;
-    if ( stream > 0 ) {
+    if ( version > V10_0_1_2 ) {
         float maxLinearVelocity;
         float maxAngularVelocity;
         float allowedPenetrationDepth;
@@ -143,13 +143,13 @@ typedef bhkRigidBody bhkRigidBodyT <name="bhkRigidBodyT">;
 */
 
 typedef struct {
-    NiCollisionObject base <open=true>;
+    Ref target;
     ushort flags;
     Ref body;
 } bhkCollisionObj <name="bhkCollisionObject", size=10>;
 
 typedef struct {
-    NiCollisionObject base <open=true>;
+    Ref target;
     ushort flags;
     Ref data;
     uint bodyID;
@@ -162,9 +162,10 @@ typedef struct {
     bhkCollisionObj base <open=true>;
     float heirGain;
     float velGain;
-    if ( stream < 9 )
+    if ( stream < 9 ) {
         float unk1;
         float unk2;
+    }
 } bhkBlendCollisionObj <name="bhkBlendCollisionObject">;
 
 
@@ -253,7 +254,9 @@ typedef struct {
     uint unused4; // size;
     uint unused5; // eSize;
     uint growBy;
-    Vec4 scale; // End Cinfo
+    if ( version > V10_0_1_2 )
+        Vec4 scale;
+    // End Cinfo
     RefArray part( "Part" );
     uint numFilters;
     if ( numFilters > 0 )
@@ -263,20 +266,27 @@ typedef struct {
 
 typedef struct {
     Ref shape;
-    // Cinfo size 16
-    uint userData;
-    uint shapeCollection;
-    uint code;
-    float scale;  // End Cinfo
+    if ( stream > 0 ) {
+        // Cinfo size 16
+        uint userData;
+        uint shapeCollection;
+        uint code;
+        float scale;
+        // End Cinfo
+    } else {
+        byte unk[3];
+        // Could just be a garbage vector from memory in the padding
+        Vec3 unknown;
+        byte unkByte;
+    }
+
     uint dataSize;
-    local uint off = 0;
-    if ( version == V10_0_1_0 )
-        off = 16;
-    Vec4 offset;
+    if ( version > V10_1_0_0 )
+        Vec4 offset;
     if ( stream > 34 )
         byte buildType;
     if ( dataSize > 0 )
-        byte data[dataSize - off];
+        byte data[dataSize];
 } bhkMoppBVShape <name="bhkMoppBvTreeShape">;
 
 typedef struct {
@@ -293,7 +303,7 @@ typedef struct {
 } bhkCMS <name="bhkCompressedMeshShape", size=56>;
 
 typedef struct {
-    uint material;
+    HavokMaterial material;
     HavokFilter filter;
 } bhkBSMaterial <size=8>;
 
@@ -306,7 +316,7 @@ typedef struct {
     ushort triA;
     ushort triB;
     ushort triC;
-    uint material;
+    HavokMaterial material;
     ushort weldingInfo;
 } bhkCMSDBT <size=12>;
 
@@ -656,7 +666,7 @@ typedef struct {
     float restitution;
     float friction;
     float radius;
-    uint material; // Havok Material
+    HavokMaterial material;
     uint numConstraints;
     if ( numConstraints > 0 )
         ConstraintData constraints[numConstraints] <optimize=false>;
@@ -679,7 +689,7 @@ typedef struct {
 
 typedef struct {
     RefArray shapes( "Shape" );
-    uint material;
+    HavokMaterial material;
     float radius;
     uint unkInt1;
     float unkFloat1;
@@ -717,7 +727,7 @@ typedef struct {
 typedef struct {
     HavokFilter filter;
     uint numVerts;
-    uint material;
+    HavokMaterial material;
 } hkSubPartData;
 
 typedef struct {

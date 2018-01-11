@@ -37,8 +37,7 @@ typedef struct {
 
 typedef struct {
     NiTimeController controller;
-    // Between 10.1.0.104 and 10.1.0.108
-    if ( version < Version(10, 1, 0, 109) )
+    if ( version > Version(10, 1, 0, 103) && version < Version(10, 1, 0, 109) )
         bool managerControlled;
 } NiInterpController <open=true>; // Abstract
 
@@ -815,6 +814,11 @@ typedef struct {
         } infos[numInfo] <OPTARRAY>;
     Ref data;
 } BSTreadTransfInterp <name="BSTreadTransfInterpolator">;
+
+typedef struct {
+    NiKeyframeCtlr base <open=true>;
+    Ref data2; // NiKeyframeData
+} BSKeyframeCtlr <name="BSKeyframeController">;
 
 // Legacy Anim
 

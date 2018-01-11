@@ -278,6 +278,9 @@ RTTICode BethRTTI( string str, uint stream )
     case "BSTreadTransfInterpolator":
         BSTreadTransfInterp data;
         return RTTI_FOUND;
+    case "BSKeyframeController":
+        BSKeyframeCtlr data;
+        return RTTI_FOUND;
 
 // HAVOK
     case "bhkRigidBody":
