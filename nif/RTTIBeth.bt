@@ -382,6 +382,12 @@ RTTICode BethRTTI( string str, uint stream )
     case "bhkStiffSpringConstraint":
         bhkSSpringConstraint data;
         return RTTI_FOUND;
+    case "bhkWheelConstraint":
+        bhkWheelConstraint data;
+        return RTTI_FOUND;
+    case "bhkPointToPathConstraint":
+        bhkPointToPathConstraint data;
+        return RTTI_FOUND;
     case "bhkRagdollTemplate":
         bhkRagdollTemplate data;
         return RTTI_FOUND;
@@ -412,6 +418,29 @@ RTTICode BethRTTI( string str, uint stream )
     case "bhkMeshShape":
         bhkMeshShape data;
         return RTTI_FOUND;
+// UNVERIFIED ACTIONS/CONSTRAINTS
+    case "bhkFixedConstraint":
+        bhkFixedConstraint data;
+        return RTTI_FOUND;
+    case "bhkGenericConstraint":
+        bhkGenericConstraint data;
+        return RTTI_FOUND;
+    case "bhkMotorAction":
+        bhkMotorAction data;
+        return RTTI_FOUND;
+    case "bhkMouseSpringAction":
+        bhkMouseSpringAction data;
+        return RTTI_FOUND;
+    case "bhkSpringAction":
+        bhkSpringAction data;
+        return RTTI_FOUND;
+    case "bhkDashpotAction":
+        bhkDashpotAction data;
+        return RTTI_FOUND;
+    case "bhkAngularDashpotAction":
+        bhkAngularDashpotAction data;
+        return RTTI_FOUND;
+
     default:
         return RTTI_MISSING;
     }

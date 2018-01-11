@@ -392,7 +392,14 @@ typedef struct {
 
 // CONSTRAINT DESCRIPTORS
 
-typedef enum<byte> {
+typedef enum <byte> {
+    CONSTRAIN_ORIENTATION_INVALID = 0,
+    CONSTRAIN_ORIENTATION_NONE = 0x1,
+    CONSTRAIN_ORIENTATION_ALLOW_SPIN = 0x2,
+    CONSTRAIN_ORIENTATION_TO_PATH = 0x3
+} OrientationConstraintType;
+
+typedef enum <byte> {
     MotorNone = 0,
     MotorPosition = 1,
     MotorVelocity = 2,
@@ -501,6 +508,26 @@ typedef struct {
 } BallAndSocketDesc <open=true>;
 
 typedef struct {
+    float maxFrictionForce;
+    OrientationConstraintType angularConstrainedDOF;
+    Vec4 constraintToObjectTransformA[4];
+    Vec4 constraintToObjectTransformB[4];
+} PointToPathDesc <open=true>;
+
+typedef struct {
+    Vec4 suspensionTransformA[4];
+    Vec4 suspensionTransformB[4];
+    Vec4 steeringRotationA[3];
+    Vec4 steeringRotationB[3];
+    Vec4 initialAxleInB;
+    Vec4 initialSteeringAxisInB;
+    float linearLimitMin;
+    float linearLimitMax;
+    float tau;
+    float damping;
+} WheelDesc <open=true>;
+
+typedef struct {
     if ( stream > 29 ) {
         // Sliding, Rotation, Plane, Pivot
         Vec4 transformA[4];
@@ -531,30 +558,30 @@ typedef enum <uint> {
     BallAndSocket = 0,
     Hinge = 1,
     LimitedHinge = 2,
-    //POINTTOPATH = 3,
+    PointToPath = 3,
     Prismatic = 6,
     Ragdoll = 7,
     StiffSpring = 8,
-    //WHEEL     = 9,
-    //GENERIC   = 10,
-    //CONTACT   = 11,
+    Wheel = 9,
+    Generic = 10,
+    //!CONTACT = 11,
     Breakable = 12,
     Malleable = 13,
-    //POINTTOPLANE       = 14, 
-    //PULLEY             = 15, 
-    //ROTATIONAL         = 16, 
-    //HINGE_LIMITS       = 18, 
-    //RAGDOLL_LIMITS     = 19, 
-    //CUSTOM             = 20, 
-    //RACK_AND_PINION    = 21, 
-    //COG_WHEEL          = 22, 
-    //FIXED              = 23, 
-    //DEFORMABLE_FIXED   = 24, 
-    //LINEAR_SLACK       = 25, 
+    //!POINTTOPLANE      = 14, 
+    //!PULLEY            = 15, 
+    //!ROTATIONAL        = 16, 
+    //HINGE_LIMITS       = 18, // TODO: bhkHingeLimitsConstraint
+    //RAGDOLL_LIMITS     = 19, // TODO: bhkRagdollLimitsConstraint
+    //!CUSTOM            = 20, 
+    //!RACK_AND_PINION   = 21, 
+    //!COG_WHEEL         = 22, 
+    Fixed                = 23, 
+    //!DEFORMABLE_FIXED  = 24, 
+    //!LINEAR_SLACK      = 25, 
     //// Chain types
-    //STIFF_SPRING_CHAIN = 100,
-    //BALL_SOCKET_CHAIN  = 101,
-    //POWERED_CHAIN      = 102
+    //!STIFF_SPRING_CHAIN = 100,
+    //BALL_SOCKET_CHAIN  = 101, // bhkBallSocketConstraintChain?
+    //!POWERED_CHAIN      = 102
 } hkConstraintType;
 
 typedef struct {
@@ -574,6 +601,9 @@ typedef struct {
         case LimitedHinge:
             LimitedHingeDesc desc;
             break;
+        case PointToPath:
+            PointToPathDesc desc;
+            break;
         case Prismatic:
             PrismaticDesc desc;
             break;
@@ -583,11 +613,17 @@ typedef struct {
         case StiffSpring:
             StiffSpringDesc desc;
             break;
+        case Wheel:
+            WheelDesc desc;
+            break;
         case Breakable:
             BreakableDesc desc;
             break;
         case Malleable:
             MalleableDesc desc;
+            break;
+        case Generic:
+        case Fixed:
             break;
     }
 
@@ -640,6 +676,19 @@ typedef struct {
     MalleableDesc desc;
 } bhkMalleableConstraint <name="bhkMalleableConstraint">;
 
+typedef bhkConstraint bhkFixedConstraint <name="bhkFixedConstraint">;
+typedef bhkConstraint bhkGenericConstraint <name="bhkGenericConstraint">;
+
+typedef struct {
+    bhkConstraint base;
+    WheelDesc desc;
+} bhkWheelConstraint <name="bhkWheelConstraint">;
+
+typedef struct {
+    bhkConstraint base;
+    PointToPathDesc desc;
+} bhkPointToPathConstraint <name="bhkPointToPathConstraint">;
+
 typedef struct {
     uint numPivots;
     Assert( numPivots % 2 == 0, "numPivots is not even" );
@@ -664,6 +713,117 @@ typedef struct {
     uint priority;
 } bhkBASConstraintChain <name="bhkBallSocketConstraintChain">;
 
+// ACTIONS
+
+typedef struct {
+    Ref body;
+    uint userData;
+    uint padding;
+} bhkUnaryAction <name="bhkUnaryAction", open=true, size=12>; // ABSTRACT
+
+typedef struct {
+    Ref EntityA;
+    Ref EntityB;
+    uint userData;
+    uint64 padding;
+} bhkBinaryAction <name="bhkBinaryAction", open=true, size=20>; // ABSTRACT
+
+typedef struct {
+    bhkUnaryAction base;
+    // hkOrientHingedBodyActionCinfo
+    uint64 padding;
+    Vec4 hingeAxisLS;
+    Vec4 forwardLS;
+    float strength;
+    float damping;
+    uint64 padding;
+} bhkOrientHingedBodyAction <name="bhkOrientHingedBodyAction", size=68>;
+
+typedef struct {
+    bhkUnaryAction base;
+    float initialStickForce;
+    float stickStrength;
+    float neighborDistance;
+    float neighborStrength;
+} bhkLiquidAction <name="bhkLiquidAction", size=28>;
+
+// UNVERIFIED UNARY ACTIONS
+
+typedef struct {
+    bhkUnaryAction base;
+    uint padding[3];
+    Vec4 axis;
+    float spinRate;
+    float gain;
+    bool active;
+} bhkMotorAction <name="bhkMotorAction", size=49>;
+
+typedef struct {
+    bhkUnaryAction base;
+    uint padding[3];
+    Vec4 positionInRigidBodyLocal;
+    Vec4 mousePositionInWorld;
+    float springDamping;
+    float springElasticity;
+    float maxRelativeForce;
+    float objectDamping;
+} bhkMouseSpringAction <name="bhkMouseSpringAction", size=60>;
+
+typedef struct {
+    bhkUnaryAction base;
+    float stickTimeMin;
+    float stickTimeMax;
+    float stretchLengthMin;
+    float stretchLengthMax;
+    float stretchSpeedMin;
+    float stretchSpeedMax;
+    float gravityFactor;
+    bool stayInPlace;
+    bool stretch;
+    bool useAnchorBody;
+    byte padding8;
+} bhkStickyContactAction <name="bhkStickyContactAction", size=44>;
+
+// UNVERIFIED BINARY ACTIONS
+
+typedef struct {
+    bhkBinaryAction base;
+    uint padding;
+    Vec4 pivotA;
+    Vec4 pivotB;
+    float strength;
+    float damping;
+} bhkDashpotAction <name="bhkDashpotAction", size=64>;
+
+typedef struct {
+    bhkBinaryAction base;
+    uint padding;
+    Vec4 rotation;
+    float strength;
+    float damping;
+} bhkAngularDashpotAction <name="bhkAngularDashpotAction", size=48>;
+
+typedef struct {
+    bhkBinaryAction base;
+    uint padding;
+    Vec4 pivotA;
+    Vec4 pivotB;
+    float restLength;
+    float strength;
+    float damping;
+    bool onCompression;
+    bool onExtension;
+    ushort padding16;
+} bhkSpringAction <name="bhkSpringAction", size=72>;
+
+
+// FO4 SYSTEMS
+
+typedef BinaryData bhkPhysSystem <name="bhkPhysicsSystem">;
+typedef BinaryData bhkRagSystem <name="bhkRagdollSystem">;
+
+
+// Legacy
 
 typedef struct {
     STRING name;
@@ -682,14 +842,6 @@ typedef struct {
         ConstraintData constraints[numConstraints] <optimize=false>;
 } bhkRagdollTemplateData <name="bhkRagdollTemplateData">;
 
-// SYSTEMS
-
-typedef BinaryData bhkPhysSystem <name="bhkPhysicsSystem">;
-typedef BinaryData bhkRagSystem <name="bhkRagdollSystem">;
-
-
-// Legacy
-
 typedef struct {
     bhkWorldObject obj;
     uint64 padding;
@@ -707,32 +859,6 @@ typedef struct {
     byte unkByte1;
     float unkFloat2;
 } bhkConvexListShape <name="bhkConvexListShape">;
-
-typedef struct {
-    Ref body;
-    // hkUnaryActionCinfo
-    uint unkInt1;
-    uint unkInt2;
-    // hkOrientHingedBodyActionCinfo
-    uint64 padding;
-    Vec4 hingeAxisLS;
-    Vec4 forwardLS;
-    float strength;
-    float damping;
-    uint64 padding;
-} bhkOrientHingedBodyAction <name="bhkOrientHingedBodyAction", size=68>;
-
-typedef struct {
-    uint userData;
-    // hkActionCinfo
-    uint unkInt2;
-    // hkUnaryActionCinfo
-    uint unkInt1;
-    float initialStickForce;
-    float stickStrength;
-    float neighborDistance;
-    float neighborStrength;
-} bhkLiquidAction <name="bhkLiquidAction">;
 
 typedef struct {
     HavokFilter filter;
