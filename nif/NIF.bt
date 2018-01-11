@@ -23,6 +23,8 @@
 #define OPTOPEN open=true, optimize=true
 #define OPTARRAY open=suppress, optimize=true
 
+local string ext = FileNameGetExtension(GetFileName());
+
 // DATATYPES
 
 #include "Enums.bt"

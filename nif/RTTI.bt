@@ -678,12 +678,12 @@ RTTICode RTTI( string str )
     case "NiPhysXPropDesc":
         NiPhysXPropDesc data;
         return RTTI_FOUND;
-    //case "NiPhysXScene":
-    //    NiPhysXScene data;
-    //    return RTTI_FOUND;
-    //case "NiPhysXSceneDesc":
-    //    NiPhysXSceneDesc data;
-    //    return RTTI_FOUND;
+    case "NiPhysXScene":
+        NiPhysXScene data;
+        return RTTI_FOUND;
+    case "NiPhysXSceneDesc":
+        NiPhysXSceneDesc data;
+        return RTTI_FOUND;
     case "NiPhysXActorDesc":
         NiPhysXActorDesc data;
         return RTTI_FOUND;

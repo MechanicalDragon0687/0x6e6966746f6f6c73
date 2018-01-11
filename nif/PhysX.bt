@@ -56,6 +56,200 @@ typedef struct {
     }
 } NiPhysXPropDesc <name="NiPhysXPropDesc">;
 
+// Hack for Empire Earth III 20.2.0.8 differences from norm
+local byte EE3 <hidden=true> = 0;
+if ( Memcmp(ext, ".nifcache", 9) == 0 )
+    EE3 = 1;
+
+typedef struct {
+    NiObjectNET base;
+    NiTransform sceneTransform;
+    float scalePtoW;
+    if ( version < Version(20, 3, 0, 2) ) {
+        RefArray sources( "PhysX Source" ); // NiPhysXSrc
+        RefArray dests( "PhysX Dest" ); // NiPhysXDest
+        
+        // Seems to be > instead of >= for EE3
+        if ( version >= Version(20, 2, 0, 8) && !EE3 ) {
+            float timeStep;
+            bool keepMeshesBackwardsCompatible;
+        }
+    } else {
+        RefArray props( "PhysX Prop" ); // NiPhysXProp
+        RefArray sources( "PhysX Source" ); // NiPhysXSrc
+        RefArray dests( "PhysX Dest" ); // NiPhysXDest
+    
+        if ( version >= Version(20, 4, 0, 0) )
+            RefArray modifiedMeshes( "Modified Mesh" ); // NiMesh
+        
+        float timeStep;
+        
+        if ( version >= Version(20, 3, 0, 9) ) {
+            uint numSubSteps;
+            uint maxSubSteps;
+        }
+    }
+    
+    Ref snapshot; // NiPhysXSceneDesc
+    ushort flags;
+} NiPhysXScene <name="NiPhysXScene">;
+
+
+typedef enum <uint> {
+    NX_BROADPHASE_QUADRATIC = 0,
+    NX_BROADPHASE_FULL,
+    NX_BROADPHASE_COHERENT
+} NiSceneDescNxBroadPhaseType;
+
+typedef enum <uint> {
+    NX_HW_RB_PIPELINE_HLP_ONLY = 0,
+    NX_HW_PIPELINE_FULL,
+    NX_HW_PIPELINE_DEBUG
+} NiSceneDescNxHwPipelineSpec;
+
+typedef enum <uint> {
+    NX_HW_SCENE_TYPE_RB = 0,
+    NX_HW_SCENE_TYPE_FLUID,
+    NX_HW_SCENE_TYPE_FLUID_SOFTWARE,
+    NX_HW_SCENE_TYPE_CLOTH
+} NiSceneDescNxHwSceneType;
+
+typedef enum <uint> {
+    NX_TIMESTEP_FIXED = 0,
+    NX_TIMESTEP_VARIABLE
+} NxTimeStepMethod;
+
+typedef enum <uint> {
+    NX_SIMULATION_SW = 0,
+    NX_SIMULATION_HW
+} NxSimulationType;
+
+typedef enum <uint> {
+    NX_BP_TYPE_SAP_SINGLE = 0,
+    NX_BP_TYPE_SAP_MULTI
+} NxBroadPhaseType;
+
+typedef enum <uint> {
+    NX_FILTEROP_AND = 0,
+    NX_FILTEROP_OR,
+    NX_FILTEROP_XOR,
+    NX_FILTEROP_NAND,
+    NX_FILTEROP_NOR,
+    NX_FILTEROP_NXOR,
+    NX_FILTEROP_SWAP_AND
+} NxFilterOp;
+
+typedef struct {
+    NIOBJECT
+    if ( version < Version(20, 2, 0, 8) )
+        NiSceneDescNxBroadPhaseType broadPhaseType;
+    Vec3 gravity;
+    float maxTimestep;
+    uint maxIter;
+    NxTimeStepMethod timeStepMethod;
+    bool hasBound;
+    if ( hasBound ) {
+        Vec3 maxBoundsMin;
+        Vec3 maxBoundsMax;
+    }
+    bool hasLimits;
+    if ( hasLimits ) {
+        uint maxActors;
+        uint maxBodies;
+        uint maxStaticShapes;
+        uint maxDynamicShapes;
+        uint maxJoints;
+    }
+    NxSimulationType simType;
+    
+    if ( version < Version(20, 3, 0, 0) ) {
+        NiSceneDescNxHwSceneType hwSceneType;
+        NiSceneDescNxHwPipelineSpec hwPipelineSpec;
+    }
+
+    bool groundPlane;
+    bool boundsPlane;
+
+    if ( version < Version(20, 2, 0, 8) )
+        bool collisionDetection;
+
+    // Seems to be > instead of >= for EE3
+    if ( version >= Version(20, 2, 0, 8) && !EE3  ) {
+        uint flags;
+        uint internalThreadCount;
+        uint backgroundThreadCount;
+        uint threadMask;
+    }
+
+    if ( version >= Version(20, 5, 0, 3) )
+        uint backgroundThreadPriority;
+
+    // Seems to be > instead of >= for EE3
+    if ( version >= Version(20, 2, 0, 8) && !EE3 )
+        uint backgroundThreadMask;
+
+    if ( version >= Version(20, 3, 0, 1) && version < Version(20, 3, 0, 6) )
+        uint numHWScenes;
+
+    if ( version >= Version(20, 3, 0, 1) ) {
+        uint simThreadStackSize;
+        uint simThreadPriority;
+        uint workerThreadStackSize;
+        uint workerThreadPriority;
+        uint upAxis;
+        uint subdivisionLevel;
+        uint staticStructure;
+        uint dynamicStructure;
+    }
+
+    if ( version >= Version(20, 5, 0, 3) )
+        uint dynamicTreeRebuildRateHint;
+
+    if ( version >= Version(20, 4, 0, 0) ) {
+        NxBroadPhaseType broadPhaseType;
+        uint gridCellsX;
+        uint gricCellsY;
+    }
+
+    if ( version < Version(20, 3, 0, 2) ) {
+        RefArray actors( "Actor" ); // NiPhysXActorDesc
+        RefArray joints( "Joint" ); // NiPhysXJointDesc
+        
+        uint numMaterials;
+        if ( numMaterials > 0 ) {
+            struct {
+                ushort key;
+                Ref material; // NiPhysXMaterialDesc
+            } materials[numMaterials];
+        }
+    }
+
+    bool groupCollisionFlags[32*32];
+    NxFilterOp filterOps[3];
+    uint filterConstants[8];
+    bool filter;
+
+    if ( version < Version(20, 3, 0, 2) )
+        uint numStates;
+    
+    if ( version >= Version(20, 3, 0, 6) ) {
+        uint numCompartments;
+        if ( numCompartments > 0 ) {
+            struct {
+                uint ID;
+                enum {
+                    NX_SCT_RIGIDBODY,
+                    NX_SCT_FLUID,
+                    NX_SCT_CLOTH
+                } compartmentType;
+                uint deviceCode;
+                float gridHashCellSize;
+                uint gridHashTablePower;
+            } compartment[numCompartments];
+        }
+    }
+} NiPhysXSceneDesc <name="NiPhysXSceneDesc">;
+
 
 typedef struct {
     NIOBJECT
