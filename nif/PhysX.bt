@@ -641,3 +641,33 @@ typedef struct {
 
 typedef NiPhysXRigidBodySrc NiPhysXKinematicSrc <name="NiPhysXKinematicSrc", size=6>;
 typedef NiPhysXRigidBodySrc NiPhysXDynamicSrc <name="NiPhysXDynamicSrc", size=6>;
+
+
+// NiPSParticleSystem
+
+typedef struct {
+    NiPSParticleSystem base;
+    Ref prop; // NiPhysXPSParticleSystemProp
+    Ref dest; // NiPhysXPSParticleSystemDest
+    Ref scene; // NiPhysXScene
+    byte flags;
+    uint defaultActorPoolSize;
+    uint generationPoolSize;
+    Vec3 actorPoolCenter;
+    Vec3 actorPoolDimensions;
+    Ref actor; // NiPhysXActorDesc
+} NiPhysXPSParticleSystem <name="NiPhysXPSParticleSystem">;
+
+typedef struct {
+    NiPhysXProp base;
+    RefArray systems( "Systems" ); // NiPhysXPSParticleSystem
+} NiPhysXPSParticleSystemProp <name="NiPhysXPSParticleSystemProp">;
+
+typedef struct {
+    NiPhysXDest base;
+    Ref target; // NiPSParticleSystem
+} NiPhysXPSParticleSystemDest <name="NiPhysXPSParticleSystemDest">;
+
+typedef NiPSSimulator NiPhysXPSSimulator <name="NiPhysXPSSimulator">;
+typedef NiPSSimulatorStep NiPhysXPSSimulatorInitialStep <name="NiPhysXPSSimulatorInitialStep">;
+typedef NiPSSimulatorStep NiPhysXPSSimulatorFinalStep <name="NiPhysXPSSimulatorFinalStep">;

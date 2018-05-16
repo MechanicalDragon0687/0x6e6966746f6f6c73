@@ -738,6 +738,24 @@ RTTICode RTTI( string str )
     case "NiPhysXDynamicSrc":
         NiPhysXDynamicSrc data;
         return RTTI_FOUND;
+    case "NiPhysXPSParticleSystem":
+        NiPhysXPSParticleSystem data;
+        return RTTI_FOUND;
+    case "NiPhysXPSParticleSystemProp":
+        NiPhysXPSParticleSystemProp data;
+        return RTTI_FOUND;
+    case "NiPhysXPSParticleSystemDest":
+        NiPhysXPSParticleSystemDest data;
+        return RTTI_FOUND;
+    case "NiPhysXPSSimulator":
+        NiPhysXPSSimulator data;
+        return RTTI_FOUND;
+    case "NiPhysXPSSimulatorInitialStep":
+        NiPhysXPSSimulatorInitialStep data;
+        return RTTI_FOUND;
+    case "NiPhysXPSSimulatorFinalStep":
+        NiPhysXPSSimulatorFinalStep data;
+        return RTTI_FOUND;
     default:
         return RTTI_MISSING;
     }
