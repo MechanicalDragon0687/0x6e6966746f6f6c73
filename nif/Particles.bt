@@ -621,6 +621,15 @@ typedef struct {
 
 typedef struct {
     NiPSForce base;
+    Ref fieldObject; // NiAVObject
+    float magnitude;
+    float attenuation;
+    bool useMaxDistance;
+    float maxDistance;
+} NiPSFieldForce <name="NiPSFieldForce", open=true>;
+
+typedef struct {
+    NiPSForce base;
     Vec3 bombAxis;
     float decay;
     float deltaV;
@@ -649,6 +658,41 @@ typedef struct {
     Ref gravityObject; // NiAVObject
 } NiPSGravityForce <name="NiPSGravityForce">;
 
+typedef struct {
+    NiPSFieldForce base;
+    Vec3 direction;
+    float airFriction;
+    float inheritedVelocity;
+    bool inheritRotation;
+    bool enableSpread;
+    float spread;
+} NiPSAirFieldForce <name="NiPSAirFieldForce">;
+
+typedef struct {
+    NiPSFieldForce base;
+    Vec3 direction;
+} NiPSGravityFieldForce <name="NiPSGravityFieldForce">;
+
+typedef struct {
+    NiPSFieldForce base;
+    bool useDirection;
+    Vec3 direction;
+} NiPSDragFieldForce <name="NiPSDragFieldForce">;
+
+typedef struct {
+    NiPSFieldForce base;
+    float radialFactor;
+} NiPSRadialFieldForce <name="NiPSRadialFieldForce">;
+
+typedef struct {
+    NiPSFieldForce base;
+    float frequency;
+} NiPSTurbulenceFieldForce <name="NiPSTurbulenceFieldForce">;
+
+typedef struct {
+    NiPSFieldForce base;
+    Vec3 direction;
+} NiPSVortexFieldForce <name="NiPSVortexFieldForce">;
 
 typedef struct {
     NIOBJECT
@@ -700,6 +744,12 @@ typedef struct {
 } NiPSCylinderEmitter <name="NiPSCylinderEmitter">;
 
 typedef struct {
+    NiPSVolumeEmitter base;
+    float radius;
+    float sectionRadius;
+} NiPSTorusEmitter <name="NiPSTorusEmitter">;
+
+typedef struct {
     NiPSEmitter base;
     RefArray meshEmitters( "Mesh Emitter" ); // NiMesh Ptr
     if ( version < Version(20, 6, 1, 0) )
@@ -732,6 +782,9 @@ typedef NiPSForceCtlr NiPSForceBoolCtlr <name="NiPSForceBoolCtlr">;
 typedef NiPSForceCtlr NiPSForceFloatCtlr <name="NiPSForceFloatCtlr">;
 typedef NiPSForceBoolCtlr NiPSForceActiveCtlr <name="NiPSForceActiveCtlr">;
 typedef NiPSForceFloatCtlr NiPSGravityStrengthCtlr <name="NiPSGravityStrengthCtlr">;
+typedef NiPSForceFloatCtlr NiPSFieldAttenuationCtlr <name="NiPSFieldAttenuationCtlr">;
+typedef NiPSForceFloatCtlr NiPSFieldMagnitudeCtlr <name="NiPSFieldMagnitudeCtlr">;
+typedef NiPSForceFloatCtlr NiPSFieldMaxDistanceCtlr <name="NiPSFieldMaxDistanceCtlr">;
 
 typedef NiPSEmitterFloatCtlr NiPSEmitterSpeedCtlr <name="NiPSEmitterSpeedCtlr">;
 typedef NiPSEmitterFloatCtlr NiPSEmitterRadiusCtlr <name="NiPSEmitterRadiusCtlr">;

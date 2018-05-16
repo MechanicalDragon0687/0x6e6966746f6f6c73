@@ -580,6 +580,21 @@ RTTICode RTTI( string str )
     case "NiPSGravityForce":
         NiPSGravityForce data;
         return RTTI_FOUND;
+    case "NiPSGravityFieldForce":
+        NiPSGravityFieldForce data;
+        return RTTI_FOUND;
+    case "NiPSDragFieldForce":
+        NiPSDragFieldForce data;
+        return RTTI_FOUND;
+    case "NiPSRadialFieldForce":
+        NiPSRadialFieldForce data;
+        return RTTI_FOUND;
+    case "NiPSTurbulenceFieldForce":
+        NiPSTurbulenceFieldForce data;
+        return RTTI_FOUND;
+    case "NiPSVortexFieldForce":
+        NiPSVortexFieldForce data;
+        return RTTI_FOUND;
     case "NiPSBoxEmitter":
         NiPSBoxEmitter data;
         return RTTI_FOUND;
@@ -588,6 +603,9 @@ RTTICode RTTI( string str )
         return RTTI_FOUND;
     case "NiPSCylinderEmitter":
         NiPSCylinderEmitter data;
+        return RTTI_FOUND;
+    case "NiPSTorusEmitter":
+        NiPSTorusEmitter data;
         return RTTI_FOUND;
     case "NiPSMeshEmitter":
         NiPSMeshEmitter data;
@@ -606,6 +624,15 @@ RTTICode RTTI( string str )
         return RTTI_FOUND;
     case "NiPSGravityStrengthCtlr":
         NiPSGravityStrengthCtlr data;
+        return RTTI_FOUND;
+    case "NiPSFieldAttenuationCtlr":
+        NiPSFieldAttenuationCtlr data;
+        return RTTI_FOUND;
+    case "NiPSFieldMagnitudeCtlr":
+        NiPSFieldMagnitudeCtlr data;
+        return RTTI_FOUND;
+    case "NiPSFieldMaxDistanceCtlr":
+        NiPSFieldMaxDistanceCtlr data;
         return RTTI_FOUND;
     case "NiPSEmitterSpeedCtlr":
         NiPSEmitterSpeedCtlr data;
