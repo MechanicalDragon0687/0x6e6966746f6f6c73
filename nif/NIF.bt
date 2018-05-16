@@ -148,6 +148,10 @@ struct FILE {
             local int stream = 0; // Fake stream version
         }
 
+        // Read rest of file as Big Endian
+        if (littleEndian == 0)
+            BigEndian();
+
         if ( version >= Version(5, 0, 0, 1) ) {
             ushort numblocktypes;
             SSTRING btype[numblocktypes] <optimize=false, open=suppress>;
